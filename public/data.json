@@ -1,0 +1,22 @@
+[
+  {
+    "id": "dsa_001",
+    "term": "Binary Search Tree",
+    "domain": "Algorithms",
+    "definition_short": "A sorted tree data structure.",
+    "explanation": "A Binary Search Tree (BST) is a node-based binary tree data structure where left children are smaller and right children are larger.",
+    "comparisons": [{"target": "Hash Table", "note": "BST preserves order, Hash Tables do not."}],
+    "misconceptions": ["BSTs are always balanced. (False)."],
+    "related_terms": []
+  },
+  {
+    "id": "os_001",
+    "term": "Deadlock",
+    "domain": "Operating Systems",
+    "definition_short": "A state where processes are waiting indefinitely.",
+    "explanation": "In an OS, a deadlock occurs when a process enters a waiting state because a requested resource is held by another waiting process.",
+    "comparisons": [{"target": "Starvation", "note": "Deadlock means no progress; Starvation means low priority waits."}],
+    "misconceptions": ["Deadlocks resolve themselves. (False, usually require external intervention)."],
+    "related_terms": []
+  }
+]
