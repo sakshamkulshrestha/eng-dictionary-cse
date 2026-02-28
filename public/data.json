@@ -10,6 +10,196 @@
     "related_terms": []
   },
   {
+    "id": "dsa_002",
+    "term": "Array",
+    "domain": "Algorithms",
+    "definition_short": "A collection of items stored at contiguous memory locations.",
+    "explanation": "Allows fast random access via indices but has a fixed size.",
+    "comparisons": [{"target": "Linked List", "note": "Arrays have fast access but slow insertion; Linked Lists are opposite."}],
+    "misconceptions": ["Arrays can change size dynamically in low-level memory. (False)."],
+    "related_terms": []
+  },
+  {
+    "id": "dsa_003",
+    "term": "Linked List",
+    "domain": "Algorithms",
+    "definition_short": "A linear data structure where elements are linked using pointers.",
+    "explanation": "Nodes contain data and a reference to the next node. Allows efficient insertions.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "dsa_004",
+    "term": "Stack",
+    "domain": "Algorithms",
+    "definition_short": "A linear structure following Last In First Out (LIFO) order.",
+    "explanation": "Like a stack of plates, elements are added and removed from the top only.",
+    "comparisons": [{"target": "Queue", "note": "Stack is LIFO; Queue is FIFO."}],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "dsa_005",
+    "term": "Queue",
+    "domain": "Algorithms",
+    "definition_short": "A linear structure following First In First Out (FIFO) order.",
+    "explanation": "Like a line of people waiting. Elements enter at the rear and leave from the front.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "dsa_006",
+    "term": "Hash Table",
+    "domain": "Algorithms",
+    "definition_short": "A structure that maps keys to values for highly efficient lookup.",
+    "explanation": "Uses a hash function to compute an index into an array of buckets.",
+    "comparisons": [],
+    "misconceptions": ["Hash tables never have collisions. (False)."],
+    "related_terms": []
+  },
+  {
+    "id": "dsa_007",
+    "term": "Binary Tree",
+    "domain": "Algorithms",
+    "definition_short": "A tree structure where each node has at most two children.",
+    "explanation": "Used for hierarchical data storage. The children are referred to as left and right.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "dsa_008",
+    "term": "AVL Tree",
+    "domain": "Algorithms",
+    "definition_short": "A self-balancing binary search tree.",
+    "explanation": "The heights of the two child subtrees of any node differ by at most one.",
+    "comparisons": [{"target": "Red-Black Tree", "note": "AVL is more strictly balanced than Red-Black."}],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "dsa_009",
+    "term": "Red-Black Tree",
+    "domain": "Algorithms",
+    "definition_short": "A self-balancing binary search tree with color properties.",
+    "explanation": "Ensures the tree remains approximately balanced during insertions and deletions.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "dsa_010",
+    "term": "Heap",
+    "domain": "Algorithms",
+    "definition_short": "A specialized tree-based data structure that satisfies the heap property.",
+    "explanation": "In a max heap, the parent is always greater than or equal to its children.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "dsa_011",
+    "term": "Trie",
+    "domain": "Algorithms",
+    "definition_short": "A tree-like data structure used to store associative arrays of strings.",
+    "explanation": "Highly efficient for prefix searches, often used in autocomplete features.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "dsa_012",
+    "term": "Graph",
+    "domain": "Algorithms",
+    "definition_short": "A set of vertices connected by edges.",
+    "explanation": "Can be directed or undirected, weighted or unweighted. Used to model networks.",
+    "comparisons": [{"target": "Tree", "note": "A tree is a graph with no cycles."}],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "dsa_013",
+    "term": "Breadth-First Search (BFS)",
+    "domain": "Algorithms",
+    "definition_short": "An algorithm for traversing tree or graph structures level by level.",
+    "explanation": "Explores all neighbor nodes at the present depth before moving deeper. Uses a queue.",
+    "comparisons": [{"target": "DFS", "note": "BFS uses a queue; DFS uses a stack."}],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "dsa_014",
+    "term": "Depth-First Search (DFS)",
+    "domain": "Algorithms",
+    "definition_short": "An algorithm for traversing structures by exploring as deep as possible first.",
+    "explanation": "Uses a stack (or recursion) to go deep down a branch before backtracking.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "dsa_015",
+    "term": "Binary Search",
+    "domain": "Algorithms",
+    "definition_short": "A search algorithm that finds the position of a target value within a sorted array.",
+    "explanation": "Repeatedly divides the search interval in half. Runs in O(log n) time.",
+    "comparisons": [],
+    "misconceptions": ["Binary search works on unsorted arrays. (False)."],
+    "related_terms": []
+  },
+  {
+    "id": "dsa_016",
+    "term": "Bubble Sort",
+    "domain": "Algorithms",
+    "definition_short": "A simple sorting algorithm that repeatedly steps through the list.",
+    "explanation": "Compares adjacent elements and swaps them if they are in the wrong order. Very slow.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "dsa_017",
+    "term": "Selection Sort",
+    "domain": "Algorithms",
+    "definition_short": "Sorts an array by repeatedly finding the minimum element.",
+    "explanation": "Places the minimum element at the beginning. Inefficient for large lists.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "dsa_018",
+    "term": "Insertion Sort",
+    "domain": "Algorithms",
+    "definition_short": "Builds the final sorted array one item at a time.",
+    "explanation": "Much less efficient on large lists than more advanced algorithms like quicksort.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "dsa_019",
+    "term": "Merge Sort",
+    "domain": "Algorithms",
+    "definition_short": "An efficient, stable, divide-and-conquer sorting algorithm.",
+    "explanation": "Divides the unsorted list into n sublists, then repeatedly merges them.",
+    "comparisons": [{"target": "Quick Sort", "note": "Merge Sort uses more memory than Quick Sort."}],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "dsa_020",
+    "term": "Quick Sort",
+    "domain": "Algorithms",
+    "definition_short": "A highly efficient divide-and-conquer sorting algorithm.",
+    "explanation": "Picks a 'pivot' element and partitions the array around the pivot.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
     "id": "os_001",
     "term": "Deadlock",
     "domain": "Operating Systems",
@@ -17,6 +207,1096 @@
     "explanation": "In an OS, a deadlock occurs when a process enters a waiting state because a requested resource is held by another waiting process.",
     "comparisons": [{"target": "Starvation", "note": "Deadlock means no progress; Starvation means low priority waits."}],
     "misconceptions": ["Deadlocks resolve themselves. (False, usually require external intervention)."],
+    "related_terms": []
+  },
+  {
+    "id": "os_002",
+    "term": "Kernel",
+    "domain": "Operating Systems",
+    "definition_short": "The core component of an OS.",
+    "explanation": "Manages system resources, hardware interactions, and memory.",
+    "comparisons": [{"target": "Shell", "note": "Kernel is the backend; Shell is the user interface."}],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "os_003",
+    "term": "Shell",
+    "domain": "Operating Systems",
+    "definition_short": "A user interface for access to an operating system's services.",
+    "explanation": "Interprets text commands and sends them to the kernel to execute.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "os_004",
+    "term": "Process",
+    "domain": "Operating Systems",
+    "definition_short": "An instance of a computer program that is being executed.",
+    "explanation": "Contains program code and its current activity. Has its own memory space.",
+    "comparisons": [{"target": "Thread", "note": "Processes do not share memory; Threads do."}],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "os_005",
+    "term": "Thread",
+    "domain": "Operating Systems",
+    "definition_short": "The smallest sequence of programmed instructions.",
+    "explanation": "Threads exist within a process and share the process's memory.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "os_006",
+    "term": "Context Switch",
+    "domain": "Operating Systems",
+    "definition_short": "Storing and restoring the state of a CPU.",
+    "explanation": "Allows multiple processes to share a single CPU seamlessly.",
+    "comparisons": [],
+    "misconceptions": ["Context switches take zero time. (False, they have overhead)."],
+    "related_terms": []
+  },
+  {
+    "id": "os_007",
+    "term": "Mutex",
+    "domain": "Operating Systems",
+    "definition_short": "Mutual exclusion object used for locking resources.",
+    "explanation": "Prevents multiple threads from accessing a shared resource simultaneously.",
+    "comparisons": [{"target": "Semaphore", "note": "Mutex is a lock; Semaphore is a signal."}],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "os_008",
+    "term": "Semaphore",
+    "domain": "Operating Systems",
+    "definition_short": "A variable used to control access to a common resource.",
+    "explanation": "Can be binary (like a mutex) or counting (allowing N concurrent accesses).",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "os_009",
+    "term": "Starvation",
+    "domain": "Operating Systems",
+    "definition_short": "A process is perpetually denied necessary resources.",
+    "explanation": "Occurs when high-priority processes monopolize the CPU.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "os_010",
+    "term": "Paging",
+    "domain": "Operating Systems",
+    "definition_short": "A memory management scheme.",
+    "explanation": "Eliminates the need for contiguous allocation of physical memory.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "os_011",
+    "term": "Segmentation",
+    "domain": "Operating Systems",
+    "definition_short": "Dividing memory into variable-sized segments.",
+    "explanation": "Segments map directly to program structure (functions, objects).",
+    "comparisons": [{"target": "Paging", "note": "Paging uses fixed sizes; Segmentation uses variable sizes."}],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "os_012",
+    "term": "Virtual Memory",
+    "domain": "Operating Systems",
+    "definition_short": "Faking RAM by using disk space.",
+    "explanation": "Allows programs to run even if they require more memory than physical RAM provides.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "os_013",
+    "term": "Thrashing",
+    "domain": "Operating Systems",
+    "definition_short": "Excessive paging operations causing system slowdown.",
+    "explanation": "The OS spends more time swapping pages than executing processes.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "os_014",
+    "term": "Interrupt",
+    "domain": "Operating Systems",
+    "definition_short": "A signal to the processor indicating an event needs attention.",
+    "explanation": "Halts current execution to handle critical hardware or software tasks.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "os_015",
+    "term": "System Call",
+    "domain": "Operating Systems",
+    "definition_short": "Programmatic way to request a service from the kernel.",
+    "explanation": "How user programs interact with hardware (e.g., reading a file).",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "net_001",
+    "term": "OSI Reference Model",
+    "domain": "Computer Networks",
+    "definition_short": "A seven-layer conceptual framework for understanding and designing computer network architectures.",
+    "explanation": "The Open Systems Interconnection (OSI) Reference Model was developed by the International Standards Organization (ISO) to guide the international standardization of protocols. It divides network communication into seven distinct layers: Physical, Data Link, Network, Transport, Session, Presentation, and Application. The primary purpose of this model is to reduce design complexity by defining clean, standardized interfaces between adjacent layers. This abstraction allows a layer to offer services to the layer above it while shielding it from underlying implementation details. By using this model, different hardware and software from various vendors can communicate seamlessly. Although the exact OSI protocols never became universally adopted due to complexity and bad timing, the model itself remains a vital educational and design tool in the real world for troubleshooting and structuring network systems.",
+    "comparisons": [
+      {
+        "target": "TCP/IP Reference Model",
+        "note": "The OSI model has seven layers and makes a strict distinction between services, interfaces, and protocols, whereas the TCP/IP model has four layers and is less strictly layered."
+      }
+    ],
+    "misconceptions": [
+      "A common misunderstanding is that the OSI model is widely used in practice for routing internet traffic; in reality, the TCP/IP protocol suite is used, while OSI remains largely a theoretical reference model."
+    ],
+    "related_terms": [
+      "Protocol Hierarchy",
+      "Network Architecture"
+    ]
+  },
+  {
+    "id": "net_002",
+    "term": "TCP/IP Reference Model",
+    "domain": "Computer Networks",
+    "definition_short": "A four-layer network model that forms the basis of the worldwide Internet.",
+    "explanation": "The TCP/IP Reference Model was created by the U.S. Department of Defense to connect disparate networks into a seamless, fault-tolerant internetwork that could survive infrastructure loss. It consists of four layers: Host-to-Network, Internet, Transport, and Application. The model exists primarily to facilitate robust, connectionless routing using the Internet Protocol (IP) and reliable end-to-end communication using the Transmission Control Protocol (TCP). Its working principle involves breaking data into discrete packets that are routed independently across various networks. In real-world contexts, TCP/IP is the foundational architecture of the modern Internet, enabling everything from web browsing to email. Unlike other models that were designed theoretically, TCP/IP evolved organically from practical implementation, leading to highly efficient, albeit somewhat ad hoc, protocols that dominate global networking.",
+    "comparisons": [
+      {
+        "target": "OSI Reference Model",
+        "note": "TCP/IP was built around specific, working protocols rather than abstract boundaries, making it highly practical but less useful as a general design template compared to OSI."
+      }
+    ],
+    "misconceptions": [
+      "People often think TCP/IP refers only to two protocols, but it actually describes an entire layered architecture housing dozens of protocols including UDP, ICMP, and HTTP."
+    ],
+    "related_terms": [
+      "Internet Protocol (IP)",
+      "Transmission Control Protocol (TCP)"
+    ]
+  },
+  {
+    "id": "net_003",
+    "term": "Packet Switching",
+    "domain": "Computer Networks",
+    "definition_short": "A network communication method where messages are divided into independent, uniformly sized blocks called packets for routing.",
+    "explanation": "Packet switching was designed as a highly robust, distributed communication method to replace vulnerable circuit-switched telephone networks. In this architecture, a message generated by a sender is chopped into smaller payloads, or packets, each bearing a sequence number and a destination address. These packets are injected into the subnet and travel independently through intermediate routers via a store-and-forward mechanism. Each router examines the packet's destination and dynamically decides the best next hop based on current network topology and congestion. Because packets do not follow a fixed, dedicated path, the network can easily route around destroyed or failed nodes. In the real world, the Internet is the largest packet-switched network, efficiently sharing bandwidth among millions of users rather than dedicating idle lines to specific connections.",
+    "comparisons": [
+      {
+        "target": "Circuit Switching",
+        "note": "Packet switching sends discrete blocks of data over shared dynamic paths, whereas circuit switching establishes a dedicated, fixed path for the duration of a communication session."
+      }
+    ],
+    "misconceptions": [
+      "A common misunderstanding is that packets belonging to the same file always follow the same path to the receiver; in reality, they can take entirely different routes and arrive out of order."
+    ],
+    "related_terms": [
+      "Store-and-Forward",
+      "Datagram"
+    ]
+  },
+  {
+    "id": "net_004",
+    "term": "Data Link Layer",
+    "domain": "Computer Networks",
+    "definition_short": "The protocol layer responsible for transforming a raw physical bit stream into a reliable link.",
+    "explanation": "The Data Link Layer is the second layer in both the OSI and TCP/IP-hybrid models. Its fundamental purpose is to detect and potentially correct transmission errors that occur in the physical medium, presenting an error-free communication channel to the Network Layer. It achieves this by breaking the incoming bit stream into discrete data frames, computing a checksum for each, and transmitting them sequentially. If a frame is damaged or lost, the protocol typically requires the receiver to request a retransmission. Additionally, this layer manages flow control to prevent a fast transmitter from overwhelming a slow receiver. Real-world technologies operating at this layer include Ethernet and Point-to-Point Protocol (PPP), which dictate how devices physically connected to the same medium share access and communicate without collisions or data corruption.",
+    "comparisons": [
+      {
+        "target": "Physical Layer",
+        "note": "The Physical layer merely transmits raw bits over a medium without verifying them, while the Data Link layer frames those bits and checks for errors."
+      }
+    ],
+    "misconceptions": [
+      "It is a common misunderstanding that the Data Link Layer routes packets across the global Internet, but it actually only handles node-to-node communication on a single local network or link."
+    ],
+    "related_terms": [
+      "Medium Access Control (MAC)",
+      "Framing"
+    ]
+  },
+  {
+    "id": "net_005",
+    "term": "Medium Access Control",
+    "domain": "Computer Networks",
+    "definition_short": "A sublayer of the Data Link layer that controls how multiple devices share a single broadcast communication channel.",
+    "explanation": "The Medium Access Control (MAC) sublayer exists to resolve the channel allocation problem in broadcast networks where multiple stations share a single transmission medium, such as a coaxial cable or wireless frequency. Without arbitration, simultaneous transmissions would collide and garble the signals. The MAC sublayer dictates the rules for when a station is allowed to transmit. It uses algorithms like Carrier Sense Multiple Access with Collision Detection (CSMA/CD) to monitor the channel, wait for it to become idle, and handle any collisions that occur by backing off and retrying. In the real world, the MAC sublayer is the defining component of Local Area Networks (LANs); for instance, Ethernet and Wi-Fi (IEEE 802.11) differ primarily in their MAC sublayer protocols due to the unique challenges of wired versus wireless media.",
+    "comparisons": [
+      {
+        "target": "Logical Link Control",
+        "note": "The MAC sublayer handles hardware-specific medium sharing and collisions, whereas the LLC sublayer provides a uniform interface to the network layer above it."
+      }
+    ],
+    "misconceptions": [
+      "People often think MAC addresses are assigned dynamically by the user or software, but they are typically hardcoded into the network interface card by the manufacturer to uniquely identify the hardware."
+    ],
+    "related_terms": [
+      "CSMA/CD",
+      "Ethernet"
+    ]
+  },
+  {
+    "id": "net_006",
+    "term": "CSMA/CD",
+    "domain": "Computer Networks",
+    "definition_short": "A network protocol where nodes listen to the shared medium before transmitting and detect if their signals collide.",
+    "explanation": "Carrier Sense Multiple Access with Collision Detection (CSMA/CD) is the foundational medium access protocol for classic wired Ethernet. Its purpose is to mediate access to a shared broadcast channel efficiently. When a computer wants to send a frame, it first listens to the cable (carrier sense). If the line is idle, it begins transmitting. However, because propagation delay means two nodes might start sending simultaneously, the node continues to monitor the line while transmitting. If it detects a voltage spike indicating a collision, it immediately aborts transmission, emits a jam signal, and waits a random amount of time before trying again. In real-world enterprise environments, CSMA/CD allowed early Ethernets to function robustly without centralized control, though modern switched Ethernets largely bypass collisions entirely.",
+    "comparisons": [
+      {
+        "target": "CSMA/CA",
+        "note": "CSMA/CD detects collisions as they happen and aborts transmission, whereas CSMA/CA (used in wireless networks) attempts to avoid collisions before they occur."
+      }
+    ],
+    "misconceptions": [
+      "Many assume CSMA/CD completely eliminates data collisions on a network, but it actually relies on collisions happening and provides a mechanism to recover from them gracefully."
+    ],
+    "related_terms": [
+      "Binary Exponential Backoff",
+      "Ethernet"
+    ]
+  },
+  {
+    "id": "net_007",
+    "term": "Binary Exponential Backoff",
+    "domain": "Computer Networks",
+    "definition_short": "A collision resolution algorithm that dynamically increases the waiting time between retransmission attempts.",
+    "explanation": "Binary Exponential Backoff is an algorithm utilized by CSMA/CD networks, most notably Ethernet, to handle network congestion when collisions occur. Its primary purpose is to dynamically adapt the transmission rate to the number of stations actively trying to use the shared medium. After a collision, time is divided into discrete slots. On the first collision, a station waits either 0 or 1 slot times before retrying. If a second collision happens, the randomization interval doubles to between 0 and 3 slot times. After consecutive collisions, the station picks a random wait time from an exponentially growing window. In the real world, this prevents heavy traffic from permanently gridlocking a network, as stations spread out their retransmission attempts over increasingly larger windows, effectively easing the load.",
+    "comparisons": [
+      {
+        "target": "Sliding Window Protocol",
+        "note": "Binary Exponential Backoff controls timing to prevent collisions on a shared medium, while the Sliding Window Protocol manages flow control and sequencing between a single sender and receiver."
+      }
+    ],
+    "misconceptions": [
+      "A common misunderstanding is that a station will try forever if collisions keep happening; in reality, the algorithm typically gives up and drops the frame after 16 unsuccessful attempts."
+    ],
+    "related_terms": [
+      "CSMA/CD",
+      "Collision Domain"
+    ]
+  },
+  {
+    "id": "net_008",
+    "term": "Network Layer",
+    "domain": "Computer Networks",
+    "definition_short": "The layer responsible for routing packets from the source host to the ultimate destination host across multiple networks.",
+    "explanation": "The Network Layer is the third layer of the OSI model, focusing on end-to-end packet delivery across complex, interconnected subnets. Unlike the Data Link Layer, which only cares about adjacent nodes, the Network Layer must maintain a global perspective of the network topology. Its primary purpose is routing—determining the optimal path for packets to traverse from the source to the destination. It handles the translation of logical network addresses (like IP addresses) into physical routes and mitigates network congestion by redirecting traffic or discarding packets. In the real world, the Internet Protocol (IP) serves as the primary Network Layer protocol, functioning within the routers that connect global ISPs, corporate networks, and home users, seamlessly hiding the heterogeneous nature of the underlying data links.",
+    "comparisons": [
+      {
+        "target": "Transport Layer",
+        "note": "The Network Layer routes packets between machines across subnets, whereas the Transport Layer ensures reliable message delivery between the actual application processes running on those machines."
+      }
+    ],
+    "misconceptions": [
+      "Beginners often think the Network Layer guarantees that a packet reaches its destination, but protocols like IP provide best-effort delivery, leaving error recovery to higher layers."
+    ],
+    "related_terms": [
+      "Internet Protocol",
+      "Routing Algorithm"
+    ]
+  },
+  {
+    "id": "net_009",
+    "term": "Distance Vector Routing",
+    "domain": "Computer Networks",
+    "definition_short": "A routing algorithm where each router periodically shares its knowledge of the entire network with its immediate neighbors.",
+    "explanation": "Distance Vector Routing is a dynamic routing algorithm based on the Bellman-Ford equation. Its purpose is to continuously adapt packet routing paths based on the changing topology of a network. Each router maintains a table listing the best-known distance (e.g., hop count or delay) to every other node in the network. Periodically, routers exchange these tables with their directly connected neighbors. Upon receiving a neighbor's table, a router calculates if routing through that neighbor provides a shorter path to a destination; if it does, it updates its own routing table. In the real world, protocols like RIP (Routing Information Protocol) utilize this algorithm. While simple to implement, it suffers from slow convergence and the count-to-infinity problem when a link goes down, leading modern networks to prefer alternative algorithms.",
+    "comparisons": [
+      {
+        "target": "Link State Routing",
+        "note": "Distance Vector Routing sends the entire routing table only to direct neighbors, whereas Link State Routing floods the entire network with information exclusively about a router's direct neighbors."
+      }
+    ],
+    "misconceptions": [
+      "A common misunderstanding is that Distance Vector routers know the exact path a packet will take; they actually only know the next immediate hop and the total estimated distance."
+    ],
+    "related_terms": [
+      "Count-to-Infinity Problem",
+      "Routing Information Protocol"
+    ]
+  },
+  {
+    "id": "net_010",
+    "term": "Link State Routing",
+    "domain": "Computer Networks",
+    "definition_short": "A routing algorithm where routers discover the network topology by flooding local link statuses to all other routers.",
+    "explanation": "Link State Routing was developed to overcome the slow convergence and count-to-infinity flaws of Distance Vector Routing. The working principle requires each router to independently discover its neighbors, measure the delay to each, and construct a Link State Packet containing this local data. This packet is then reliably flooded to every other router in the network. Because every router receives identical topological information, each can build a complete, accurate graph of the entire subnet. They then locally run Dijkstra's algorithm to compute the shortest path to all destinations. In real-world applications, this algorithm is implemented by the OSPF (Open Shortest Path First) protocol, which forms the backbone routing mechanism for the internal networks of modern internet service providers and large corporate autonomous systems.",
+    "comparisons": [
+      {
+        "target": "Distance Vector Routing",
+        "note": "Link State Routing requires more memory and processing power to calculate the entire network graph, but it converges much faster after a topology change than Distance Vector Routing."
+      }
+    ],
+    "misconceptions": [
+      "People often assume the flooding mechanism causes severe network congestion, but Link State Packets are small, sequence-numbered, and sent infrequently unless a topology change occurs."
+    ],
+    "related_terms": [
+      "OSPF",
+      "Flooding"
+    ]
+  },
+  {
+    "id": "net_011",
+    "term": "Internet Protocol",
+    "domain": "Computer Networks",
+    "definition_short": "The principal connectionless network layer protocol responsible for addressing and routing datagrams across the Internet.",
+    "explanation": "The Internet Protocol (IP) is the foundational glue of the global Internet, designed to provide a best-effort, connectionless datagram delivery service. Its primary purpose is to transport packets from a source to a destination across heterogeneous, interconnected networks. The protocol defines the exact format of the packets, including a header with a 32-bit (in IPv4) source and destination address. Because it is connectionless, each IP packet is routed independently; routers look up the destination IP address in their routing tables and forward the packet to the next hop. In real-world operation, IP does not guarantee delivery, sequence preservation, or error correction of the payload—it simply tries its best. If a packet exceeds a network's maximum transmission unit, IP handles the fragmentation and reassembly of that packet.",
+    "comparisons": [
+      {
+        "target": "Transmission Control Protocol",
+        "note": "IP provides unreliable, unsequenced routing of individual packets, whereas TCP operates on top of IP to provide a reliable, sequenced, error-checked stream of data."
+      }
+    ],
+    "misconceptions": [
+      "A common misconception is that IP addresses uniquely identify a computer, whereas they actually identify a specific network interface; a device with multiple network cards has multiple IP addresses."
+    ],
+    "related_terms": [
+      "IPv4",
+      "Datagram"
+    ]
+  },
+  {
+    "id": "net_012",
+    "term": "Network Address Translation",
+    "domain": "Computer Networks",
+    "definition_short": "A mechanism that translates private IP addresses into a single public IP address for internet communication.",
+    "explanation": "Network Address Translation (NAT) was introduced as a quick fix to the rapid depletion of available IPv4 addresses. Its purpose is to allow an entire private network of machines to share a single public IP address. It works by placing a NAT box at the boundary between a company or home LAN and the internet. Internally, devices are assigned reserved private IP addresses. When a packet leaves the network, the NAT box dynamically replaces the private source IP address with its own public IP address and modifies the TCP/UDP source port to uniquely identify the connection. In the real world, nearly all home Wi-Fi routers utilize NAT, effectively hiding multiple personal devices behind the single IP address assigned by the Internet Service Provider.",
+    "comparisons": [
+      {
+        "target": "Classless InterDomain Routing",
+        "note": "NAT conserves addresses by hiding private networks behind a single public address, whereas CIDR conserves addresses by allocating IP address blocks more efficiently than the old classful system."
+      }
+    ],
+    "misconceptions": [
+      "Many people mistakenly believe NAT is primarily a security firewall feature; while it obscures internal topologies, its fundamental purpose is IP address conservation, and it strictly violates protocol layering."
+    ],
+    "related_terms": [
+      "Port Mapping",
+      "IPv4"
+    ]
+  },
+  {
+    "id": "net_013",
+    "term": "Transmission Control Protocol",
+    "domain": "Computer Networks",
+    "definition_short": "A connection-oriented transport protocol that provides reliable, sequenced byte-stream delivery over IP networks.",
+    "explanation": "The Transmission Control Protocol (TCP) was designed to provide a reliable end-to-end byte stream over an inherently unreliable internetwork. Before any data is exchanged, TCP requires a three-way handshake to establish a connection between the sender and receiver. Its working principle involves breaking user data into segments, assigning a unique sequence number to each byte, and starting a timeout timer for each transmitted segment. The receiving TCP entity must send an acknowledgment for the data received; if an acknowledgment is not received before the timer expires, the sender retransmits the segment. Furthermore, TCP handles flow control using a sliding window to prevent a fast sender from overwhelming a slow receiver. In real-world contexts, TCP is the engine behind the World Wide Web, email, and file transfers.",
+    "comparisons": [
+      {
+        "target": "User Datagram Protocol",
+        "note": "TCP establishes a connection and guarantees orderly, error-free delivery of data, whereas UDP sends unacknowledged, connectionless datagrams with minimal overhead."
+      }
+    ],
+    "misconceptions": [
+      "A common misunderstanding is that TCP preserves message boundaries; in reality, it provides a seamless byte stream, meaning four 512-byte writes could be delivered as a single 2048-byte read."
+    ],
+    "related_terms": [
+      "Three-Way Handshake",
+      "Sliding Window Protocol"
+    ]
+  },
+  {
+    "id": "net_014",
+    "term": "Transport Layer",
+    "domain": "Computer Networks",
+    "definition_short": "The protocol layer that provides reliable, end-to-end data transport between application processes.",
+    "explanation": "The Transport Layer is the heart of the protocol hierarchy, sitting above the Network Layer and below the Application Layer. Its ultimate goal is to provide cost-effective, reliable data transport from the source machine to the destination machine, entirely shielding the application from the physical network's unreliability. It achieves this by taking the raw data from the application, segmenting it into Transport Protocol Data Units (TPDUs), and utilizing the network layer for routing. Crucially, the transport layer manages end-to-end error recovery, flow control, and connection management. In the real world, when you open a web browser, the transport layer protocol (TCP) guarantees that the HTML file transferred from the remote server is perfectly reassembled on your local machine, despite packets being dropped or delayed.",
+    "comparisons": [
+      {
+        "target": "Network Layer",
+        "note": "The Network Layer routes packets from machine to machine across various subnets, whereas the Transport Layer delivers data specifically from process to process, ensuring end-to-end reliability."
+      }
+    ],
+    "misconceptions": [
+      "People often confuse the transport layer's flow control with the network layer's congestion control; flow control protects the receiver from being overwhelmed, while congestion control protects the entire network."
+    ],
+    "related_terms": [
+      "Transmission Control Protocol",
+      "Socket"
+    ]
+  },
+  {
+    "id": "net_015",
+    "term": "Three-Way Handshake",
+    "domain": "Computer Networks",
+    "definition_short": "A connection establishment protocol used to safely synchronize sequence numbers between two communicating hosts.",
+    "explanation": "The Three-Way Handshake is a robust protocol used by TCP to establish a secure, reliable connection before data transmission begins. Its purpose is to prevent old, delayed duplicate packets from previous sessions from inadvertently establishing unwanted connections. The working principle is simple: Host A initiates the connection by sending a SYN (synchronize) segment containing its initial sequence number. Host B receives this, acknowledges A's sequence number, and sends its own SYN segment with its own sequence number. Finally, Host A acknowledges Host B's sequence number. In the real world, this handshake occurs every time a user navigates to a new web page; the browser and the web server execute this three-step synchronization to establish a TCP socket, ensuring that both sides are ready and synchronized before any HTTP data flows.",
+    "comparisons": [
+      {
+        "target": "Two-Way Handshake",
+        "note": "A two-way handshake simply requests and accepts a connection, leaving the system vulnerable to delayed duplicate requests, whereas the three-way handshake explicitly verifies the initiator is currently active."
+      }
+    ],
+    "misconceptions": [
+      "A common misunderstanding is that the three-way handshake transfers the first piece of application data; in fact, the standard handshake only exchanges control information and sequence numbers."
+    ],
+    "related_terms": [
+      "Transmission Control Protocol",
+      "Sequence Number"
+    ]
+  },
+  {
+    "id": "net_016",
+    "term": "User Datagram Protocol",
+    "domain": "Computer Networks",
+    "definition_short": "A simple, connectionless transport protocol that provides fast but unreliable packet delivery.",
+    "explanation": "The User Datagram Protocol (UDP) is a minimalist transport layer protocol designed for applications where speed is more critical than absolute reliability. Unlike TCP, UDP does not establish a connection, nor does it track sequence numbers, manage flow control, or automatically retransmit lost packets. It merely takes data from the application, attaches source and destination port numbers along with a small checksum, and passes it down to the IP layer. If a packet is lost in transit, it is permanently gone unless the application layer detects and handles the loss. In real-world networking, UDP is heavily used for Domain Name System (DNS) lookups, where a single request-reply exchange is needed quickly, and for streaming multimedia like Internet radio or VoIP, where an occasional dropped packet is preferable to pausing the audio.",
+    "comparisons": [
+      {
+        "target": "Transmission Control Protocol",
+        "note": "UDP sends discrete packets without any guarantee of delivery or order, whereas TCP guarantees an ordered, error-checked stream of data bytes."
+      }
+    ],
+    "misconceptions": [
+      "People often assume UDP is completely useless because it is unreliable, but its lack of overhead makes it highly superior for real-time video, gaming, and fast query-response applications."
+    ],
+    "related_terms": [
+      "Transport Layer",
+      "Remote Procedure Call"
+    ]
+  },
+  {
+    "id": "net_017",
+    "term": "Domain Name System",
+    "domain": "Computer Networks",
+    "definition_short": "A hierarchical, distributed database used to map human-readable domain names to numerical IP addresses.",
+    "explanation": "The Domain Name System (DNS) was invented to resolve the problem of humans navigating the Internet using complex, hard-to-remember IP addresses. Its primary purpose is to decouple machine names from their physical network addresses. DNS organizes the Internet's name space into a tree-like hierarchy of domains, such as .com, .edu, and country codes. When a user types a URL, a local program called a resolver sends a UDP packet to a local DNS server. If the server lacks the IP address in its cache, it recursively queries authoritative name servers up and down the global hierarchy until the correct IP address is located and returned. In the real world, DNS acts as the phone book of the Internet; without it, navigating the World Wide Web or sending email would be nearly impossible for average users.",
+    "comparisons": [
+      {
+        "target": "Address Resolution Protocol",
+        "note": "DNS translates global ASCII hostnames into IP addresses for human convenience, whereas ARP translates IP addresses into hardware MAC addresses for local data link delivery."
+      }
+    ],
+    "misconceptions": [
+      "It is a common misunderstanding that a central database holds every domain name in the world; DNS is actually a highly distributed system partitioned into thousands of independently managed zones."
+    ],
+    "related_terms": [
+      "Uniform Resource Locator",
+      "IP Address"
+    ]
+  },
+  {
+    "id": "net_018",
+    "term": "Asynchronous Transfer Mode",
+    "domain": "Computer Networks",
+    "definition_short": "A connection-oriented networking technology that transmits data in small, fixed-size cells.",
+    "explanation": "Asynchronous Transfer Mode (ATM) was designed in the 1990s as a universal telecommunications protocol intended to merge voice, data, and video networks into a single integrated system. Its defining characteristic is the use of small, fixed-size packets called cells, which are exactly 53 bytes long (a 5-byte header and 48 bytes of payload). Because the cells are fixed in length and small, ATM hardware switches can route them at tremendously high speeds using dedicated circuitry, preventing large data transfers from blocking real-time voice traffic. Although ATM was intended to replace IP to the desktop, in the real world, it proved too complex and expensive for Local Area Networks. However, it found immense success deeply embedded within the core of public telephone systems and wide-area networks for internal carrier transport.",
+    "comparisons": [
+      {
+        "target": "Internet Protocol",
+        "note": "ATM relies on connection-oriented virtual circuits and fixed-size cells for guaranteed service quality, whereas IP relies on connectionless routing of variable-length datagrams."
+      }
+    ],
+    "misconceptions": [
+      "A common misunderstanding is that ATM is an obsolete, failed technology; while it lost the LAN war to Ethernet, it remains heavily used in the backbone of carrier telecom networks."
+    ],
+    "related_terms": [
+      "Virtual Circuit",
+      "Cell Switching"
+    ]
+  },
+  {
+    "id": "net_019",
+    "term": "Leaky Bucket Algorithm",
+    "domain": "Computer Networks",
+    "definition_short": "A traffic shaping mechanism that converts a bursty stream of incoming packets into a steady, regulated output flow.",
+    "explanation": "The Leaky Bucket Algorithm is a congestion control and traffic shaping technique used in networks like ATM to guarantee Quality of Service (QoS). The algorithm conceptually places a bucket at the network interface. When host applications generate packets in unpredictable, massive bursts, these packets are placed into the bucket. Regardless of how fast the packets enter, the bucket leaks them out onto the network at a strict, constant rate. If the burst is so large that the bucket fills up completely, any additional incoming packets are unceremoniously discarded. In the real world, telecommunication companies use this algorithm to enforce service level agreements; it ensures that a corporate customer who pays for a 2 Mbps line cannot flood the carrier's network with a sudden 25 Mbps spike of data.",
+    "comparisons": [
+      {
+        "target": "Token Bucket Algorithm",
+        "note": "The leaky bucket strictly enforces a constant output rate regardless of traffic bursts, whereas the token bucket allows packets to be sent quickly in bursts up to a predetermined maximum limit."
+      }
+    ],
+    "misconceptions": [
+      "People often think the leaky bucket algorithm prevents data loss, but it intentionally discards (drops) packets if the host produces data faster than the bucket's capacity can buffer."
+    ],
+    "related_terms": [
+      "Traffic Shaping",
+      "Congestion Control"
+    ]
+  },
+  {
+    "id": "net_020",
+    "term": "Virtual Private Network",
+    "domain": "Computer Networks",
+    "definition_short": "A secure, encrypted network connection built over a public network infrastructure like the Internet.",
+    "explanation": "A Virtual Private Network (VPN) allows a company or individual to simulate a secure, private leased line using public network infrastructure. Its purpose is to securely connect remote branches or roaming employees to a corporate network without the massive expense of laying dedicated cables. It works primarily through a technique called tunneling, often utilizing protocols like IPsec. When an employee sends data from a remote location, the VPN software encrypts the internal packet and encapsulates it inside a standard Internet IP packet. This packet travels over the public internet. Upon reaching the corporate firewall, the packet is authenticated, decrypted, and the original internal packet is extracted. In the real world, VPNs are strictly required by almost all corporations to allow employees to securely access internal file servers and confidential emails while working remotely.",
+    "comparisons": [
+      {
+        "target": "Local Area Network",
+        "note": "A LAN relies on physical proximity and private cables for security, whereas a VPN relies on heavy cryptographic encryption to maintain security over physically public wires."
+      }
+    ],
+    "misconceptions": [
+      "A common misunderstanding is that using a VPN guarantees total anonymity online; while it secures the data in transit from eavesdroppers, the VPN provider itself can still log traffic."
+    ],
+    "related_terms": [
+      "IPsec",
+      "Tunneling"
+    ]
+  },
+  {
+    "id": "arch_001",
+    "term": "CPU",
+    "domain": "Computer Architecture",
+    "definition_short": "Central Processing Unit.",
+    "explanation": "The primary component of a computer that acts as its 'brain'.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "arch_002",
+    "term": "ALU",
+    "domain": "Computer Architecture",
+    "definition_short": "Arithmetic Logic Unit.",
+    "explanation": "The part of a CPU that performs arithmetic and bitwise operations.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "arch_003",
+    "term": "CU",
+    "domain": "Computer Architecture",
+    "definition_short": "Control Unit.",
+    "explanation": "Directs the operation of the processor, interpreting instructions.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "arch_004",
+    "term": "Register",
+    "domain": "Computer Architecture",
+    "definition_short": "Quickly accessible location available to a computer's CPU.",
+    "explanation": "Holds instructions, storage addresses, or any kind of data.",
+    "comparisons": [{"target": "Cache", "note": "Registers are faster and smaller than Cache."}],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "arch_005",
+    "term": "Cache",
+    "domain": "Computer Architecture",
+    "definition_short": "High-speed data storage layer.",
+    "explanation": "Stores a subset of data for high-speed retrieval by the CPU.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "arch_006",
+    "term": "RAM",
+    "domain": "Computer Architecture",
+    "definition_short": "Random Access Memory.",
+    "explanation": "Volatile memory that stores data currently in use by the CPU.",
+    "comparisons": [{"target": "ROM", "note": "RAM is volatile; ROM is non-volatile."}],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "arch_007",
+    "term": "ROM",
+    "domain": "Computer Architecture",
+    "definition_short": "Read-Only Memory.",
+    "explanation": "Non-volatile memory primarily used for firmware and booting.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "arch_008",
+    "term": "Motherboard",
+    "domain": "Computer Architecture",
+    "definition_short": "The main printed circuit board.",
+    "explanation": "Connects the CPU, memory, and other essential computer hardware.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "arch_009",
+    "term": "GPU",
+    "domain": "Computer Architecture",
+    "definition_short": "Graphics Processing Unit.",
+    "explanation": "Specialized circuit designed to accelerate image rendering and parallel processing.",
+    "comparisons": [{"target": "CPU", "note": "GPU has many smaller cores; CPU has fewer, more powerful cores."}],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "arch_010",
+    "term": "Bus",
+    "domain": "Computer Architecture",
+    "definition_short": "Communication system that transfers data.",
+    "explanation": "Connects components inside a computer, or between computers.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "arch_011",
+    "term": "Clock Speed",
+    "domain": "Computer Architecture",
+    "definition_short": "The rate at which a processor executes instructions.",
+    "explanation": "Measured in gigahertz (GHz), indicating cycles per second.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "arch_012",
+    "term": "Pipelining",
+    "domain": "Computer Architecture",
+    "definition_short": "Overlapping instructions during execution.",
+    "explanation": "Increases CPU throughput by working on multiple instructions simultaneously.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "arch_013",
+    "term": "CISC",
+    "domain": "Computer Architecture",
+    "definition_short": "Complex Instruction Set Computer.",
+    "explanation": "Architecture where single instructions can execute several low-level operations.",
+    "comparisons": [{"target": "RISC", "note": "CISC uses complex instructions; RISC uses simple instructions."}],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "arch_014",
+    "term": "RISC",
+    "domain": "Computer Architecture",
+    "definition_short": "Reduced Instruction Set Computer.",
+    "explanation": "Architecture using a small, highly-optimized set of instructions.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "arch_015",
+    "term": "Von Neumann Architecture",
+    "domain": "Computer Architecture",
+    "definition_short": "A computer architecture model.",
+    "explanation": "Uses a single, shared memory for both instructions and data.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "db_001",
+    "term": "Relational Database",
+    "domain": "Database Systems",
+    "definition_short": "A database structured to recognize relations among stored items of information.",
+    "explanation": "Uses tables with rows and columns. Relies on SQL.",
+    "comparisons": [{"target": "NoSQL", "note": "Relational is table-based; NoSQL is document/key-value based."}],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "db_002",
+    "term": "NoSQL",
+    "domain": "Database Systems",
+    "definition_short": "Non-tabular databases.",
+    "explanation": "Stores data differently than relational tables (e.g., document, key-value).",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "db_003",
+    "term": "SQL",
+    "domain": "Database Systems",
+    "definition_short": "Structured Query Language.",
+    "explanation": "Used to communicate with and manipulate databases.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "db_004",
+    "term": "Primary Key",
+    "domain": "Database Systems",
+    "definition_short": "A specific choice of a minimal set of attributes that uniquely specify a tuple.",
+    "explanation": "Ensures each record in a table is unique.",
+    "comparisons": [{"target": "Foreign Key", "note": "Primary Key uniquely identifies a record; Foreign Key links to another Primary Key."}],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "db_005",
+    "term": "Foreign Key",
+    "domain": "Database Systems",
+    "definition_short": "A column or group of columns that provides a link between data in two tables.",
+    "explanation": "Points to the primary key of another table to establish a relationship.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "db_006",
+    "term": "Index",
+    "domain": "Database Systems",
+    "definition_short": "A data structure that improves the speed of data retrieval.",
+    "explanation": "Like an index in a book. Speeds up reads but slows down writes.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "db_007",
+    "term": "Normalization",
+    "domain": "Database Systems",
+    "definition_short": "The process of structuring a relational database.",
+    "explanation": "Reduces data redundancy and improves data integrity by splitting tables.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "db_008",
+    "term": "ACID",
+    "domain": "Database Systems",
+    "definition_short": "Atomicity, Consistency, Isolation, Durability.",
+    "explanation": "A set of properties that guarantee database transactions are processed reliably.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "db_009",
+    "term": "Transaction",
+    "domain": "Database Systems",
+    "definition_short": "A unit of work performed within a database.",
+    "explanation": "Ensures multiple operations are treated as a single, all-or-nothing unit.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "db_010",
+    "term": "Query",
+    "domain": "Database Systems",
+    "definition_short": "A request for data or information from a database table.",
+    "explanation": "Typically written in SQL to retrieve specific datasets.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "db_011",
+    "term": "Table",
+    "domain": "Database Systems",
+    "definition_short": "A collection of related data held in a structured format.",
+    "explanation": "Consists of columns (attributes) and rows (records).",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "db_012",
+    "term": "View",
+    "domain": "Database Systems",
+    "definition_short": "A virtual table based on the result-set of an SQL statement.",
+    "explanation": "Does not store data itself but displays data stored in other tables.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "db_013",
+    "term": "Trigger",
+    "domain": "Database Systems",
+    "definition_short": "Procedural code that is automatically executed in response to certain events.",
+    "explanation": "Runs automatically when an insert, update, or delete occurs.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "db_014",
+    "term": "Stored Procedure",
+    "domain": "Database Systems",
+    "definition_short": "A prepared SQL code that you can save and reuse over and over again.",
+    "explanation": "Reduces network traffic and improves performance by executing on the server.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "db_015",
+    "term": "Sharding",
+    "domain": "Database Systems",
+    "definition_short": "A type of database partitioning.",
+    "explanation": "Separates very large databases into smaller, faster, more easily managed parts called shards.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "sd_001",
+    "term": "Git",
+    "domain": "Software Development",
+    "definition_short": "A distributed version-control system.",
+    "explanation": "Used for tracking changes in source code during software development.",
+    "comparisons": [{"target": "GitHub", "note": "Git is the tool; GitHub is the hosting service."}],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "sd_002",
+    "term": "GitHub",
+    "domain": "Software Development",
+    "definition_short": "A provider of Internet hosting for software development using Git.",
+    "explanation": "Adds collaboration, issue tracking, and CI/CD features to Git.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "sd_003",
+    "term": "API",
+    "domain": "Software Development",
+    "definition_short": "Application Programming Interface.",
+    "explanation": "A set of rules allowing different software entities to communicate.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "sd_004",
+    "term": "REST",
+    "domain": "Software Development",
+    "definition_short": "Representational State Transfer.",
+    "explanation": "A software architectural style often used for web services and APIs.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "sd_005",
+    "term": "JSON",
+    "domain": "Software Development",
+    "definition_short": "JavaScript Object Notation.",
+    "explanation": "A lightweight format for storing and transporting data.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "sd_006",
+    "term": "Agile",
+    "domain": "Software Development",
+    "definition_short": "A set of values and principles for software development.",
+    "explanation": "Focuses on iterative development, collaboration, and adaptability.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "sd_007",
+    "term": "Scrum",
+    "domain": "Software Development",
+    "definition_short": "An agile framework for developing, delivering, and sustaining products.",
+    "explanation": "Involves sprints, daily stand-ups, and clear team roles.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "sd_008",
+    "term": "CI/CD",
+    "domain": "Software Development",
+    "definition_short": "Continuous Integration / Continuous Deployment.",
+    "explanation": "Automating the integration, testing, and delivery of code changes.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "sd_009",
+    "term": "Bug",
+    "domain": "Software Development",
+    "definition_short": "An error, flaw, or fault in a computer program.",
+    "explanation": "Causes the software to produce an incorrect or unexpected result.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "sd_010",
+    "term": "Refactoring",
+    "domain": "Software Development",
+    "definition_short": "Restructuring existing computer code.",
+    "explanation": "Improves code readability and reduces complexity without changing its external behavior.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "linux_001",
+    "term": "Bash",
+    "domain": "Linux & Terminal",
+    "definition_short": "Bourne Again Shell.",
+    "explanation": "The default command-line interpreter for most Linux distributions.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "linux_002",
+    "term": "Sudo",
+    "domain": "Linux & Terminal",
+    "definition_short": "Superuser Do.",
+    "explanation": "Allows a permitted user to execute a command as the root user.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "linux_003",
+    "term": "Chmod",
+    "domain": "Linux & Terminal",
+    "definition_short": "Change mode.",
+    "explanation": "A command used to change the access permissions of files and directories.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "linux_004",
+    "term": "Grep",
+    "domain": "Linux & Terminal",
+    "definition_short": "Global Regular Expression Print.",
+    "explanation": "A command-line utility for searching plain-text data sets for lines matching a pattern.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "linux_005",
+    "term": "Pipe (|)",
+    "domain": "Linux & Terminal",
+    "definition_short": "A form of redirection.",
+    "explanation": "Takes the output of one command and passes it as the input to another command.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "linux_006",
+    "term": "Cron",
+    "domain": "Linux & Terminal",
+    "definition_short": "A time-based job scheduler.",
+    "explanation": "Used to schedule jobs (commands or shell scripts) to run periodically at fixed times.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "linux_007",
+    "term": "Tar",
+    "domain": "Linux & Terminal",
+    "definition_short": "Tape Archive.",
+    "explanation": "A command used to compress and decompress files and directories.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "linux_008",
+    "term": "ls",
+    "domain": "Linux & Terminal",
+    "definition_short": "List directory contents.",
+    "explanation": "Command to display files and folders in the current directory.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "linux_009",
+    "term": "cd",
+    "domain": "Linux & Terminal",
+    "definition_short": "Change directory.",
+    "explanation": "Command used to navigate between different folders in the terminal.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "linux_010",
+    "term": "pwd",
+    "domain": "Linux & Terminal",
+    "definition_short": "Print working directory.",
+    "explanation": "Command that outputs the full path of the current directory you are in.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "ai_001",
+    "term": "Machine Learning",
+    "domain": "Artificial Intelligence",
+    "definition_short": "Study of computer algorithms that improve automatically through experience.",
+    "explanation": "Builds a model based on sample data to make predictions or decisions.",
+    "comparisons": [{"target": "Artificial Intelligence", "note": "ML is a specific subset of AI."}],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "ai_002",
+    "term": "Deep Learning",
+    "domain": "Artificial Intelligence",
+    "definition_short": "A subset of machine learning based on artificial neural networks.",
+    "explanation": "Uses multiple layers to progressively extract higher-level features from raw input.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "ai_003",
+    "term": "Neural Network",
+    "domain": "Artificial Intelligence",
+    "definition_short": "Computing systems inspired by the biological neural networks.",
+    "explanation": "Consists of artificial neurons connected in layers to process complex data.",
+    "comparisons": [],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "ai_004",
+    "term": "Supervised Learning",
+    "domain": "Artificial Intelligence",
+    "definition_short": "Learning process using labeled datasets.",
+    "explanation": "The algorithm is trained on input-output pairs to predict future outcomes.",
+    "comparisons": [{"target": "Unsupervised Learning", "note": "Supervised uses labeled data; Unsupervised uses unlabeled data."}],
+    "misconceptions": [],
+    "related_terms": []
+  },
+  {
+    "id": "ai_005",
+    "term": "Unsupervised Learning",
+    "domain": "Artificial Intelligence",
+    "definition_short": "Learning process using unlabeled data.",
+    "explanation": "The algorithm finds hidden patterns or intrinsic structures in input data.",
+    "comparisons": [],
+    "misconceptions": [],
     "related_terms": []
   }
 ]

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { List, ArrowRight, Sun, Moon } from 'lucide-react';
-import { getDomainIcon } from './utils/helpers.jsx';
+import { List, Sun, Moon } from 'lucide-react';
 import Logo from './components/Logo.jsx';
 import SearchBar from './components/SearchBar.jsx';
 import DomainCard from './components/DomainCard.jsx';
@@ -13,7 +12,7 @@ export default function App() {
   const [view, setView] = useState('home');
   const [activeId, setActiveId] = useState(null);
   const [activeFilter, setActiveFilter] = useState(null);
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true); // Default to Dark/AMOLED
 
   useEffect(() => {
     fetch('/data.json')
@@ -28,7 +27,7 @@ export default function App() {
   }, [isDark]);
 
   const navigate = (page, id = null, filter = null) => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setView(page);
     setActiveId(id);
     setActiveFilter(filter);
@@ -40,41 +39,49 @@ export default function App() {
     return Object.keys(counts).map(name => ({ name, count: counts[name] }));
   }, [dictionaryData]);
 
-  if (isLoading) return <div className="flex h-screen items-center justify-center">Loading...</div>;
+  if (isLoading) return <div className="flex h-screen items-center justify-center font-mono text-sm tracking-widest uppercase text-gray-500">Initializing...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans text-gray-900">
-      <header className="sticky top-0 z-40 w-full backdrop-blur-lg bg-white/80 dark:bg-gray-900/80 border-b border-gray-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+    <div className="min-h-screen bg-white dark:bg-black font-sans transition-colors duration-300">
+      <header className="sticky top-0 z-50 w-full bg-white/90 dark:bg-black/90 backdrop-blur-md border-b border-gray-200 dark:border-[#27272A]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex justify-between items-center h-16">
           <Logo onClick={() => navigate('home')} />
           <div className="hidden md:flex flex-1 mx-8 justify-center">
             {view !== 'home' && <div className="w-full max-w-md"><SearchBar dictionaryData={dictionaryData} onSelectTerm={(id) => navigate('entry', id)} /></div>}
           </div>
-          <div className="flex items-center space-x-2 sm:space-x-4">
-            <button onClick={() => navigate('index')} className="p-2 text-gray-500 hover:text-indigo-600 dark:text-gray-400"><List className="w-5 h-5" /></button>
-            <button onClick={() => setIsDark(!isDark)} className="p-2 text-gray-500 hover:text-indigo-600 dark:text-gray-400">{isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}</button>
+          <div className="flex items-center space-x-4">
+            <button onClick={() => navigate('index')} className="text-gray-400 hover:text-black dark:hover:text-white transition-colors"><List className="w-5 h-5" /></button>
+            <button onClick={() => setIsDark(!isDark)} className="text-gray-400 hover:text-black dark:hover:text-white transition-colors">{isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}</button>
           </div>
         </div>
       </header>
-      <main className="min-h-[calc(100vh-160px)]">
+      
+      <main className="min-h-[calc(100vh-64px)] pb-20">
         {view === 'home' && (
           <div className="animate-fade-in">
-            <div className="relative overflow-hidden bg-white dark:bg-gray-900 pt-16 pb-12">
-              <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-                <h1 className="text-5xl font-extrabold tracking-tight dark:text-white">The <span className="text-indigo-600">Engineering</span> Dictionary</h1>
-                <div className="mt-10 flex justify-center"><div className="w-full max-w-lg"><SearchBar dictionaryData={dictionaryData} onSelectTerm={(id) => navigate('entry', id)} /></div></div>
+            <div className="pt-24 pb-20 px-4 text-center border-b border-gray-100 dark:border-[#111]">
+              <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-black dark:text-white mb-6">
+                Engineered.
+              </h1>
+              <p className="text-lg md:text-xl text-gray-500 dark:text-gray-400 font-light mb-12 tracking-wide">
+                The minimalist computer science dictionary.
+              </p>
+              <div className="flex justify-center w-full max-w-2xl mx-auto">
+                <SearchBar dictionaryData={dictionaryData} onSelectTerm={(id) => navigate('entry', id)} />
               </div>
             </div>
-            <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-bold dark:text-white">Explore Domains</h2>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {domains.map((d) => <DomainCard key={d.name} title={d.name} icon={getDomainIcon(d.name)} count={d.count} onClick={() => navigate('index', null, d.name)} />)}
+            <div className="max-w-6xl mx-auto px-4 mt-16">
+              <h2 className="text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-8">Categories</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {domains.map((d) => (
+                  <DomainCard key={d.name} title={d.name} count={d.count} onClick={() => navigate('index', null, d.name)} />
+                ))}
               </div>
             </div>
           </div>
         )}
+        
+        {/* Pass dictionaryData to EntryDetail for cross-linking */}
         {view === 'entry' && <EntryDetail entry={dictionaryData.find(i => i.id === activeId)} dictionaryData={dictionaryData} onNavigate={navigate} />}
         {view === 'index' && <IndexView dictionaryData={dictionaryData} activeFilter={activeFilter} navigate={navigate} />}
       </main>
