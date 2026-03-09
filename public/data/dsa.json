@@ -1,0 +1,565 @@
+[
+  {
+    "id": "dsa_001",
+    "term": "Array",
+    "domain": "Algorithms",
+    "definition_short": "A linear collection of data items stored at contiguous memory locations.",
+    "explanation": "An array stores elements of the same type together in memory. You can access any element instantly using its index number. This makes reading data very fast. The main problem is that an array has a fixed size. You must know how many items you need before creating it. Inserting items in the middle is slow because you have to move other items to make room.",
+    "syntax_or_example": "int numbers[5] = {10, 20, 30, 40, 50};\nint first = numbers[0]; // Gets 10",
+    "comparisons": [
+      {
+        "target": "Linked List",
+        "note": "Arrays have fast random access but a fixed size. Linked Lists can grow dynamically but have slow access."
+      }
+    ],
+    "misconceptions": [
+      "Arrays can easily change size. (False: Standard arrays have a strict fixed size in memory)."
+    ],
+    "related_terms": [
+      "Linked List",
+      "Hash Table",
+      "Time Complexity"
+    ]
+  },
+  {
+    "id": "dsa_002",
+    "term": "Linked List",
+    "domain": "Algorithms",
+    "definition_short": "A linear data structure where elements are linked using pointers.",
+    "explanation": "A linked list stores data in separate nodes. Each node contains a value and a pointer to the next node. The memory is not contiguous. This means the list can grow or shrink easily at runtime. Adding or removing elements is very fast if you know the location. However, finding an element is slow because you must start at the beginning and check each node one by one.",
+    "syntax_or_example": "struct Node {\n    int data;\n    Node* next;\n};",
+    "comparisons": [
+      {
+        "target": "Array",
+        "note": "Linked Lists excel at dynamic resizing and insertions. Arrays excel at rapid access."
+      }
+    ],
+    "misconceptions": [
+      "Linked lists save memory. (False: They use extra memory to store the pointers linking the nodes)."
+    ],
+    "related_terms": [
+      "Array",
+      "Stack",
+      "Queue"
+    ]
+  },
+  {
+    "id": "dsa_003",
+    "term": "Stack",
+    "domain": "Algorithms",
+    "definition_short": "A linear structure following Last In First Out (LIFO) order.",
+    "explanation": "A stack works like a stack of plates. You place new items on the top. You remove items from the top. The last item added is always the first item removed. This is called Last-In-First-Out (LIFO). Stacks are used heavily in programming to manage function calls and handle undo features in software. They can be built using an Array or a Linked List.",
+    "syntax_or_example": "#include <stack>\nstd::stack<int> s;\ns.push(5);  // Add to top\ns.pop();    // Remove from top",
+    "comparisons": [
+      {
+        "target": "Queue",
+        "note": "Stacks process the newest items first (LIFO). Queues process the oldest items first (FIFO)."
+      }
+    ],
+    "misconceptions": [
+      "You can search a stack quickly. (False: You can only access the top element directly)."
+    ],
+    "related_terms": [
+      "Queue",
+      "Recursion",
+      "Depth-First Search (DFS)"
+    ]
+  },
+  {
+    "id": "dsa_004",
+    "term": "Queue",
+    "domain": "Algorithms",
+    "definition_short": "A linear structure following First In First Out (FIFO) order.",
+    "explanation": "A queue works exactly like a line of people waiting. The first person to join the line is the first person to leave. This is called First-In-First-Out (FIFO). Items are added at the rear and removed from the front. Queues are used for scheduling tasks, handling website requests, and managing printer jobs.",
+    "syntax_or_example": "#include <queue>\nstd::queue<int> q;\nq.push(10); // Add to back\nq.pop();    // Remove from front",
+    "comparisons": [
+      {
+        "target": "Stack",
+        "note": "Queues process the oldest items first. Stacks process the newest items first."
+      }
+    ],
+    "misconceptions": [
+      "Items can be inserted in the middle of a queue. (False: Standard queues only allow insertion at the rear)."
+    ],
+    "related_terms": [
+      "Stack",
+      "Breadth-First Search (BFS)",
+      "Linked List"
+    ]
+  },
+  {
+    "id": "dsa_005",
+    "term": "Hash Table",
+    "domain": "Algorithms",
+    "definition_short": "A structure that maps keys to values for highly efficient lookups.",
+    "explanation": "A hash table uses a math formula called a hash function. This function takes a key (like a word) and converts it into a number. This number is used as an index to store a value in an Array. This makes finding data almost instant. It is extremely useful for building dictionaries, tracking unique items, and caching data.",
+    "syntax_or_example": "#include <unordered_map>\nstd::unordered_map<std::string, int> ages;\nages[\"Kush\"] = 19; // Fast O(1) insert",
+    "comparisons": [
+      {
+        "target": "Array",
+        "note": "Arrays strictly use numbers as indexes. Hash Tables can use text, objects, or numbers as keys."
+      },
+      {
+        "target": "Binary Search Tree",
+        "note": "Hash tables are faster for exact matches. Binary Search Trees are better for finding ranges of data."
+      }
+    ],
+    "misconceptions": [
+      "Hash tables guarantee no data overlaps. (False: Collisions happen when two keys produce the same hash number)."
+    ],
+    "related_terms": [
+      "Array",
+      "Binary Search Tree",
+      "Time Complexity"
+    ]
+  },
+  {
+    "id": "dsa_006",
+    "term": "Binary Tree",
+    "domain": "Algorithms",
+    "definition_short": "A tree data structure where each node has at most two children.",
+    "explanation": "A binary tree stores data in a hierarchy. It starts at a single top node called the root. Every node can branch out to a maximum of two child nodes. These are called the left child and the right child. It is a fundamental structure used to build more complex search trees and routing algorithms.",
+    "syntax_or_example": "struct TreeNode {\n    int data;\n    TreeNode* left;\n    TreeNode* right;\n};",
+    "comparisons": [
+      {
+        "target": "Graph",
+        "note": "A Binary Tree is a specific type of Graph that flows in one direction and has no loops."
+      }
+    ],
+    "misconceptions": [
+      "Every node must have two children. (False: A node can have zero, one, or two children)."
+    ],
+    "related_terms": [
+      "Binary Search Tree",
+      "Graph",
+      "Breadth-First Search (BFS)",
+      "Depth-First Search (DFS)"
+    ]
+  },
+  {
+    "id": "dsa_007",
+    "term": "Binary Search Tree",
+    "domain": "Algorithms",
+    "definition_short": "A sorted binary tree where left children are smaller and right children are larger.",
+    "explanation": "A Binary Search Tree (BST) organizes data strictly by value. For any given node, everything to its left is strictly smaller. Everything to its right is strictly larger. This rule makes searching very fast because you can cut the remaining possibilities in half at every step. It is highly efficient for sorting and searching dynamic data.",
+    "syntax_or_example": "// To find 5:\n// If 5 < current node, go left.\n// If 5 > current node, go right.",
+    "comparisons": [
+      {
+        "target": "Hash Table",
+        "note": "A BST keeps data in a sorted order. A Hash Table scrambles data but is slightly faster for single lookups."
+      },
+      {
+        "target": "Binary Tree",
+        "note": "A standard Binary Tree has no ordering rules. A BST enforces strict size ordering."
+      }
+    ],
+    "misconceptions": [
+      "A BST is always fast. (False: If you insert already sorted data, the tree forms a straight line and becomes very slow)."
+    ],
+    "related_terms": [
+      "Binary Tree",
+      "AVL Tree",
+      "Red-Black Tree",
+      "Binary Search"
+    ]
+  },
+  {
+    "id": "dsa_008",
+    "term": "AVL Tree",
+    "domain": "Algorithms",
+    "definition_short": "A strictly self-balancing binary search tree.",
+    "explanation": "An AVL tree is an upgraded Binary Search Tree. It solves the problem of trees becoming unbalanced and slow. It constantly measures the height of the left and right sides of every node. If one side grows taller than the other by more than one level, the tree automatically rotates its nodes to balance itself. This guarantees fast operations.",
+    "syntax_or_example": "// Height of left child - Height of right child \n// must be -1, 0, or 1 for every node.",
+    "comparisons": [
+      {
+        "target": "Red-Black Tree",
+        "note": "AVL trees are more strictly balanced, making searches faster. Red-Black trees are loosely balanced, making insertions faster."
+      }
+    ],
+    "misconceptions": [
+      "Balancing is free. (False: The rotation process takes extra time during insertions and deletions)."
+    ],
+    "related_terms": [
+      "Binary Search Tree",
+      "Red-Black Tree",
+      "Time Complexity"
+    ]
+  },
+  {
+    "id": "dsa_009",
+    "term": "Red-Black Tree",
+    "domain": "Algorithms",
+    "definition_short": "A self-balancing binary search tree using color properties.",
+    "explanation": "A Red-Black tree is a self-balancing tree. Each node is tagged with a color, either red or black. The tree uses strict color rules to ensure that the longest path from the root to a leaf is no more than twice as long as the shortest path. It provides a great balance between fast searches and fast insertions. It is used in many standard C++ libraries.",
+    "syntax_or_example": "#include <map>\n// std::map in C++ is usually implemented \n// as a Red-Black Tree internally.\nstd::map<int, int> rbTree;",
+    "comparisons": [
+      {
+        "target": "AVL Tree",
+        "note": "Red-Black trees require fewer rotations when inserting new data compared to the strict AVL tree."
+      }
+    ],
+    "misconceptions": [
+      "The colors represent actual data. (False: The colors are just a mathematical trick to enforce balance)."
+    ],
+    "related_terms": [
+      "Binary Search Tree",
+      "AVL Tree",
+      "Big O Notation"
+    ]
+  },
+  {
+    "id": "dsa_010",
+    "term": "Heap",
+    "domain": "Algorithms",
+    "definition_short": "A specialized tree structure used to quickly find the maximum or minimum element.",
+    "explanation": "A heap is a complete binary tree that follows a specific priority rule. In a max-heap, every parent node is larger than its children. In a min-heap, the parent is smaller. The most important feature is that the maximum (or minimum) value is always sitting at the very top (the root). Heaps are used to build priority queues.",
+    "syntax_or_example": "#include <queue>\n// Creates a Max Heap by default in C++\nstd::priority_queue<int> maxHeap;\nmaxHeap.push(10);",
+    "comparisons": [
+      {
+        "target": "Binary Search Tree",
+        "note": "A BST allows you to search for any number. A Heap only helps you quickly grab the single largest or smallest number."
+      }
+    ],
+    "misconceptions": [
+      "A heap is completely sorted. (False: Only the relationship between parent and child is guaranteed, siblings are not sorted)."
+    ],
+    "related_terms": [
+      "Binary Tree",
+      "Queue",
+      "Time Complexity"
+    ]
+  },
+  {
+    "id": "dsa_011",
+    "term": "Trie",
+    "domain": "Algorithms",
+    "definition_short": "A tree structure used to store and search for text strings efficiently.",
+    "explanation": "A Trie (pronounced 'try') is a tree made for letters. Instead of storing a whole word in one node, each node stores a single letter. Paths down the tree spell out words. If two words share a prefix (like 'cat' and 'car'), they share the same nodes for 'c' and 'a'. Tries are the magic behind autocomplete features and spell checkers.",
+    "syntax_or_example": "struct TrieNode {\n    TrieNode* children[26]; // 26 alphabet letters\n    bool isEndOfWord;\n};",
+    "comparisons": [
+      {
+        "target": "Hash Table",
+        "note": "Tries are better for searching prefixes (e.g., words starting with 'auto'). Hash Tables only find exact full words."
+      }
+    ],
+    "misconceptions": [
+      "Tries are memory efficient. (False: They can use a lot of memory because they create many small nodes for every letter)."
+    ],
+    "related_terms": [
+      "Binary Tree",
+      "Hash Table",
+      "Space Complexity"
+    ]
+  },
+  {
+    "id": "dsa_012",
+    "term": "Graph",
+    "domain": "Algorithms",
+    "definition_short": "A network of points connected by lines.",
+    "explanation": "A graph is a data structure used to represent networks. It consists of points called vertices (or nodes) and lines connecting them called edges. Roads connecting cities form a graph. Friends connected on social media form a graph. Edges can have directions (one-way streets) and weights (distances).",
+    "syntax_or_example": "#include <vector>\n// Array of vectors to store neighbors\nstd::vector<int> adj[5]; \nadj[0].push_back(1); // Edge from node 0 to 1",
+    "comparisons": [
+      {
+        "target": "Binary Tree",
+        "note": "A Tree is a restricted Graph. Trees flow downwards without cycles. Graphs can have loops and disconnected parts."
+      }
+    ],
+    "misconceptions": [
+      "Graphs can only be drawn in one way. (False: The visual layout does not matter, only the connections matter)."
+    ],
+    "related_terms": [
+      "Binary Tree",
+      "Breadth-First Search (BFS)",
+      "Depth-First Search (DFS)"
+    ]
+  },
+  {
+    "id": "dsa_013",
+    "term": "Breadth-First Search (BFS)",
+    "domain": "Algorithms",
+    "definition_short": "An algorithm that searches a graph level by level.",
+    "explanation": "BFS is a way to explore a Graph or Binary Tree. It starts at a chosen node and looks at all immediate neighbors first. Then, it moves outwards to the neighbors' neighbors. It searches evenly in all directions like a ripple in water. BFS is perfect for finding the shortest path in unweighted networks.",
+    "syntax_or_example": "// BFS uses a Queue to keep track of nodes\nstd::queue<int> q;\nq.push(startNode);\n// Loop until queue is empty...",
+    "comparisons": [
+      {
+        "target": "Depth-First Search (DFS)",
+        "note": "BFS explores wide and shallow using a Queue. DFS explores narrow and deep using a Stack or Recursion."
+      }
+    ],
+    "misconceptions": [
+      "BFS requires recursion. (False: BFS is almost always written using a loop and a Queue)."
+    ],
+    "related_terms": [
+      "Graph",
+      "Queue",
+      "Depth-First Search (DFS)"
+    ]
+  },
+  {
+    "id": "dsa_014",
+    "term": "Depth-First Search (DFS)",
+    "domain": "Algorithms",
+    "definition_short": "An algorithm that explores a graph by going as deep as possible before backtracking.",
+    "explanation": "DFS is a way to explore a Graph or Binary Tree. It picks a path and follows it all the way to the very end. When it hits a dead end, it steps back (backtracks) and tries the next available path. It feels like solving a maze by keeping your hand on the wall. It is great for puzzle solving and finding connected components.",
+    "syntax_or_example": "void dfs(int node) {\n    visited[node] = true;\n    for(int neighbor : adj[node]) {\n        if(!visited[neighbor]) dfs(neighbor);\n    }\n}",
+    "comparisons": [
+      {
+        "target": "Breadth-First Search (BFS)",
+        "note": "DFS uses less memory than BFS for wide graphs, but it will not naturally find the shortest path."
+      }
+    ],
+    "misconceptions": [
+      "DFS is only for trees. (False: DFS is heavily used on general graphs, but you must track visited nodes to avoid infinite loops)."
+    ],
+    "related_terms": [
+      "Graph",
+      "Stack",
+      "Recursion",
+      "Breadth-First Search (BFS)"
+    ]
+  },
+  {
+    "id": "dsa_015",
+    "term": "Binary Search",
+    "domain": "Algorithms",
+    "definition_short": "A fast search algorithm that halves the search space repeatedly on sorted data.",
+    "explanation": "Binary search is the fastest way to find an item in a sorted Array. You look at the middle element. If your target is smaller, you ignore the right half. If it is larger, you ignore the left half. You repeat this until you find the item. It is like finding a word in a physical dictionary by splitting the book in half repeatedly.",
+    "syntax_or_example": "int left = 0, right = n - 1;\nwhile (left <= right) {\n    int mid = left + (right - left) / 2;\n    if (arr[mid] == target) return mid;\n    // move left or right\n}",
+    "comparisons": [
+      {
+        "target": "Binary Search Tree",
+        "note": "Binary Search is the algorithm used on standard Arrays. A Binary Search Tree applies the same logic but stores data in a node structure."
+      }
+    ],
+    "misconceptions": [
+      "Binary search works on any data. (False: The data must be strictly sorted first, otherwise it will fail completely)."
+    ],
+    "related_terms": [
+      "Array",
+      "Binary Search Tree",
+      "Time Complexity"
+    ]
+  },
+  {
+    "id": "dsa_016",
+    "term": "Bubble Sort",
+    "domain": "Algorithms",
+    "definition_short": "A simple sorting algorithm that repeatedly swaps adjacent elements.",
+    "explanation": "Bubble Sort is the easiest sorting algorithm to understand. It steps through an Array and compares the first two items. If they are in the wrong order, it swaps them. It moves to the next pair and repeats. Heavy items 'sink' to the bottom, and light items 'bubble' to the top. It is very slow and rarely used in real software.",
+    "syntax_or_example": "for(int i = 0; i < n-1; i++) {\n    for(int j = 0; j < n-i-1; j++) {\n        if(arr[j] > arr[j+1]) \n            std::swap(arr[j], arr[j+1]);\n    }\n}",
+    "comparisons": [
+      {
+        "target": "Selection Sort",
+        "note": "Bubble Sort swaps elements constantly. Selection Sort only swaps once per pass after finding the absolute minimum."
+      }
+    ],
+    "misconceptions": [
+      "Bubble sort is useful for small arrays. (False: Insertion sort is generally much better for small or nearly sorted arrays)."
+    ],
+    "related_terms": [
+      "Array",
+      "Selection Sort",
+      "Insertion Sort"
+    ]
+  },
+  {
+    "id": "dsa_017",
+    "term": "Selection Sort",
+    "domain": "Algorithms",
+    "definition_short": "An algorithm that sorts an array by repeatedly finding the minimum element.",
+    "explanation": "Selection Sort divides the Array into two parts: sorted and unsorted. It scans the entire unsorted part to find the smallest number. It then swaps that smallest number with the first unsorted position. It repeats this process until the whole array is sorted. It is simple but inefficient for large datasets.",
+    "syntax_or_example": "for (int i = 0; i < n-1; i++) {\n    int min_idx = i;\n    for (int j = i+1; j < n; j++)\n        if (arr[j] < arr[min_idx]) min_idx = j;\n    std::swap(arr[min_idx], arr[i]);\n}",
+    "comparisons": [
+      {
+        "target": "Insertion Sort",
+        "note": "Selection Sort always scans the remaining array. Insertion Sort stops scanning once it finds the right spot, making it faster on sorted data."
+      }
+    ],
+    "misconceptions": [
+      "Selection sort stops early if the array is sorted. (False: It blindly checks every element every time, making its best-case time slow)."
+    ],
+    "related_terms": [
+      "Array",
+      "Bubble Sort",
+      "Insertion Sort"
+    ]
+  },
+  {
+    "id": "dsa_018",
+    "term": "Insertion Sort",
+    "domain": "Algorithms",
+    "definition_short": "A sorting algorithm that builds the sorted array one item at a time.",
+    "explanation": "Insertion sort works exactly like sorting playing cards in your hands. You take one card from the unsorted pile and insert it into its correct position in the sorted pile. It is very efficient for small datasets or arrays that are already mostly sorted. It is often used as a fallback step inside more complex algorithms.",
+    "syntax_or_example": "for (int i = 1; i < n; i++) {\n    int key = arr[i];\n    int j = i - 1;\n    while (j >= 0 && arr[j] > key) {\n        arr[j + 1] = arr[j];\n        j = j - 1;\n    }\n    arr[j + 1] = key;\n}",
+    "comparisons": [
+      {
+        "target": "Bubble Sort",
+        "note": "Insertion Sort is significantly faster than Bubble Sort in practice because it minimizes unnecessary comparisons."
+      }
+    ],
+    "misconceptions": [
+      "Insertion sort is always slow. (False: It is incredibly fast on lists that are almost perfectly sorted already)."
+    ],
+    "related_terms": [
+      "Array",
+      "Bubble Sort",
+      "Selection Sort"
+    ]
+  },
+  {
+    "id": "dsa_019",
+    "term": "Merge Sort",
+    "domain": "Algorithms",
+    "definition_short": "An efficient, divide-and-conquer sorting algorithm.",
+    "explanation": "Merge sort solves sorting by splitting the problem. It divides an Array in half repeatedly until it is broken down into single numbers. A single number is automatically sorted. Then, it starts merging those halves back together in sorted order. It guarantees fast performance but requires extra memory to hold the split pieces.",
+    "syntax_or_example": "void mergeSort(int arr[], int l, int r) {\n    if (l < r) {\n        int m = l + (r - l) / 2;\n        mergeSort(arr, l, m);\n        mergeSort(arr, m + 1, r);\n        merge(arr, l, m, r);\n    }\n}",
+    "comparisons": [
+      {
+        "target": "Quick Sort",
+        "note": "Merge Sort is consistently fast but uses more memory. Quick Sort uses less memory but can occasionally be slow on bad data."
+      }
+    ],
+    "misconceptions": [
+      "Merge sort sorts data in place. (False: It creates temporary arrays during the merge step, using extra space)."
+    ],
+    "related_terms": [
+      "Array",
+      "Quick Sort",
+      "Recursion",
+      "Time Complexity"
+    ]
+  },
+  {
+    "id": "dsa_020",
+    "term": "Quick Sort",
+    "domain": "Algorithms",
+    "definition_short": "A highly efficient, divide-and-conquer sorting algorithm based on partitioning.",
+    "explanation": "Quick sort picks one number from the Array to act as a 'pivot'. It then moves all numbers smaller than the pivot to the left, and all larger numbers to the right. The pivot is now exactly in its final sorted position. It then repeats this process on the left and right halves. It is generally the fastest sorting method in practice.",
+    "syntax_or_example": "int partition(int arr[], int low, int high) {\n    int pivot = arr[high]; \n    // Sort logic around pivot...\n    return pi;\n}",
+    "comparisons": [
+      {
+        "target": "Merge Sort",
+        "note": "Quick Sort does not require extra memory like Merge Sort, making it preferred for large datasets in real systems."
+      }
+    ],
+    "misconceptions": [
+      "Quick sort is always the fastest. (False: If you pick a bad pivot consistently, the performance crashes and it becomes very slow)."
+    ],
+    "related_terms": [
+      "Array",
+      "Merge Sort",
+      "Recursion",
+      "Time Complexity"
+    ]
+  },
+  {
+    "id": "dsa_021",
+    "term": "Dynamic Programming",
+    "domain": "Algorithms",
+    "definition_short": "An optimization method that solves complex problems by storing previous answers.",
+    "explanation": "Dynamic Programming (DP) is a clever trick to speed up algorithms. If a problem forces you to calculate the same mathematical answer multiple times, DP says you should calculate it once, save the answer in memory, and reuse it later. This is called memoization. It turns impossibly slow calculations into very fast ones.",
+    "syntax_or_example": "int memo[100]; // Array to store answers\nint fib(int n) {\n    if(memo[n] != -1) return memo[n];\n    return memo[n] = fib(n-1) + fib(n-2);\n}",
+    "comparisons": [
+      {
+        "target": "Recursion",
+        "note": "Pure Recursion wastes time solving the same sub-problems repeatedly. DP adds memory to Recursion to stop the waste."
+      }
+    ],
+    "misconceptions": [
+      "Dynamic Programming is a specific piece of code. (False: It is a general strategy or mindset for optimizing code, not a specific syntax)."
+    ],
+    "related_terms": [
+      "Recursion",
+      "Time Complexity",
+      "Space Complexity"
+    ]
+  },
+  {
+    "id": "dsa_022",
+    "term": "Recursion",
+    "domain": "Algorithms",
+    "definition_short": "A programming technique where a function calls itself to solve smaller instances of the same problem.",
+    "explanation": "Recursion happens when a function calls itself from within its own code. It breaks a big problem down into smaller chunks until it hits a 'base case' where it can stop. It is extremely useful for navigating trees and graphs. However, if you forget the base case, the function will call itself forever and crash the program.",
+    "syntax_or_example": "int factorial(int n) {\n    if (n <= 1) return 1; // Base case\n    return n * factorial(n - 1); // Calls itself\n}",
+    "comparisons": [
+      {
+        "target": "Stack",
+        "note": "When a function calls itself recursively, the computer uses a Stack behind the scenes to remember where it was."
+      }
+    ],
+    "misconceptions": [
+      "Recursion is faster than looping. (False: Recursion is often slower and uses more memory because of function call overhead)."
+    ],
+    "related_terms": [
+      "Stack",
+      "Dynamic Programming",
+      "Depth-First Search (DFS)"
+    ]
+  },
+  {
+    "id": "dsa_023",
+    "term": "Time Complexity",
+    "domain": "Algorithms",
+    "definition_short": "The mathematical calculation of how the runtime of an algorithm increases as data grows.",
+    "explanation": "Time complexity measures algorithm speed. It does not measure seconds on a clock. It measures how many steps the algorithm takes relative to the input size. If you double the input data, does the algorithm take twice as many steps, or four times as many? This helps engineers choose the right algorithm before writing any code.",
+    "syntax_or_example": "// A simple loop touching every item once.\nfor(int i=0; i<n; i++) {\n    // O(n) Time Complexity\n}",
+    "comparisons": [
+      {
+        "target": "Space Complexity",
+        "note": "Time Complexity measures CPU steps. Space Complexity measures RAM usage."
+      }
+    ],
+    "misconceptions": [
+      "A fast computer improves time complexity. (False: Better hardware lowers actual clock time, but the mathematical complexity remains the same)."
+    ],
+    "related_terms": [
+      "Space Complexity",
+      "Big O Notation",
+      "Array"
+    ]
+  },
+  {
+    "id": "dsa_024",
+    "term": "Space Complexity",
+    "domain": "Algorithms",
+    "definition_short": "The total amount of memory an algorithm needs to run to completion.",
+    "explanation": "Space complexity analyzes how much RAM your algorithm demands. It looks at the memory used by variables, arrays, and the function call stack. Sometimes, to make an algorithm run faster, you have to use more memory to store temporary data. This is known as the space-time tradeoff.",
+    "syntax_or_example": "// Creating a new array equal to input size.\nint* temp = new int[n]; \n// O(n) Space Complexity",
+    "comparisons": [
+      {
+        "target": "Time Complexity",
+        "note": "Often, you sacrifice Space Complexity (using more RAM) to improve Time Complexity (running faster)."
+      }
+    ],
+    "misconceptions": [
+      "Input data size is the only factor. (False: The structure of the code, especially recursion depth, heavily affects space complexity)."
+    ],
+    "related_terms": [
+      "Time Complexity",
+      "Big O Notation",
+      "Dynamic Programming"
+    ]
+  },
+  {
+    "id": "dsa_025",
+    "term": "Big O Notation",
+    "domain": "Algorithms",
+    "definition_short": "The mathematical language used to describe time and space complexity.",
+    "explanation": "Big O Notation provides the worst-case scenario for an algorithm. It drops constants and minor details to focus on the biggest bottleneck. O(1) means instant speed regardless of data size. O(n) means time increases strictly with the data. O(n^2) means time slows down exponentially as data grows.",
+    "syntax_or_example": "// Nested loops equal O(n^2)\nfor(int i=0; i<n; i++) {\n    for(int j=0; j<n; j++) {\n       // Do work\n    }\n}",
+    "comparisons": [
+      {
+        "target": "Time Complexity",
+        "note": "Time complexity is the concept; Big O Notation is the standardized mathematical notation used to express it."
+      }
+    ],
+    "misconceptions": [
+      "Big O is about exact speeds. (False: It only describes the growth curve trend as the input approaches infinity)."
+    ],
+    "related_terms": [
+      "Time Complexity",
+      "Space Complexity",
+      "Array"
+    ]
+  }
+]

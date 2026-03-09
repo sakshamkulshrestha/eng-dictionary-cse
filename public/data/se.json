@@ -1,0 +1,550 @@
+[
+  {
+    "id": "se_001",
+    "term": "Software Engineering",
+    "domain": "Software Engineering",
+    "definition_short": "The systematic application of engineering principles to the development of software.",
+    "explanation": "Software Engineering is more than just writing code. It is the entire lifecycle of building a reliable, scalable product. It includes gathering requirements, designing the architecture, writing the code, testing it, and maintaining it over time.\n\nWithout engineering principles, a small script might work fine, but a massive application built by hundreds of developers will collapse into chaos. It focuses heavily on teamwork, standards, and preventing a Bug before it reaches the customer.",
+    "syntax_or_example": "// Software Engineering applies structure to raw code.\nint main() {\n    // Design -> Code -> Test -> Deploy\n}",
+    "comparisons": [
+      {
+        "target": "Agile",
+        "note": "Software Engineering is the broad discipline of building software. Agile is a specific mindset or methodology used to manage that process."
+      }
+    ],
+    "misconceptions": [
+      "Software engineering is just typing code fast. (False: Typing code is a small fraction of the job; planning, communication, and testing take up the majority of the time)."
+    ],
+    "related_terms": [
+      "Agile",
+      "Waterfall",
+      "Bug"
+    ]
+  },
+  {
+    "id": "se_002",
+    "term": "Agile",
+    "domain": "Software Engineering",
+    "definition_short": "A software development methodology focused on iterative progress and constant feedback.",
+    "explanation": "Agile is a flexible approach to building software. Instead of trying to plan an entire massive project upfront, Agile teams build the software in small, usable chunks. They release a small piece, get feedback from the user, and immediately adjust their plans.\n\nThis prevents the disaster of building a huge product for two years, only to realize the customer actually wanted something else. It relies heavily on daily communication and adapting to change.",
+    "syntax_or_example": "Build a little -> Test -> Get Feedback -> Repeat.",
+    "comparisons": [
+      {
+        "target": "Waterfall",
+        "note": "Agile embraces changing requirements during development. Waterfall locks all requirements at the very beginning."
+      }
+    ],
+    "misconceptions": [
+      "Agile means no planning or documentation. (False: Agile requires constant, short-term planning and highly focused documentation)."
+    ],
+    "related_terms": [
+      "Scrum",
+      "Waterfall",
+      "CI/CD"
+    ]
+  },
+  {
+    "id": "se_003",
+    "term": "Scrum",
+    "domain": "Software Engineering",
+    "definition_short": "A specific framework used to implement Agile development.",
+    "explanation": "Scrum is the most popular way teams 'do' Agile. It organizes work into short, fixed timeboxes called 'Sprints' (usually two weeks long). At the start of a Sprint, the team picks a few tasks. At the end, they must have a working piece of software to show.\n\nScrum assigns strict roles, like the 'Scrum Master' who removes roadblocks, and involves a daily 15-minute meeting called a 'Stand-up' to keep everyone in sync.",
+    "syntax_or_example": "// Sprint 1: Build Login\n// Sprint 2: Build Dashboard\n// Sprint 3: Build Settings",
+    "comparisons": [
+      {
+        "target": "Agile",
+        "note": "Agile is the broad philosophy. Scrum is the specific set of rules and meetings used to apply that philosophy."
+      }
+    ],
+    "misconceptions": [
+      "Scrum guarantees faster coding. (False: Scrum does not make coding faster; it ensures the team is coding the right things in the right order)."
+    ],
+    "related_terms": [
+      "Agile",
+      "Waterfall"
+    ]
+  },
+  {
+    "id": "se_004",
+    "term": "Waterfall",
+    "domain": "Software Engineering",
+    "definition_short": "A traditional, linear software development methodology.",
+    "explanation": "Waterfall is the old-school way of building software. It flows strictly downward through phases: Requirements -> Design -> Coding -> Testing -> Deployment. You cannot move to the next phase until the current one is 100% finished.\n\nIt is excellent for highly regulated industries like aerospace or medicine, where you absolutely must have massive blueprints before writing a single line of code. However, it is very bad at handling changes if the customer changes their mind halfway through.",
+    "syntax_or_example": "1. Write 100-page spec document.\n2. Code for 6 months.\n3. Test the final product.",
+    "comparisons": [
+      {
+        "target": "Agile",
+        "note": "Waterfall flows in one strict direction. Agile constantly loops back around."
+      }
+    ],
+    "misconceptions": [
+      "Waterfall is dead and useless. (False: It is still heavily used in hardware engineering, government contracts, and life-critical systems)."
+    ],
+    "related_terms": [
+      "Software Engineering",
+      "Scrum",
+      "Agile"
+    ]
+  },
+  {
+    "id": "se_005",
+    "term": "Version Control",
+    "domain": "Software Engineering",
+    "definition_short": "A system that records changes to a file or set of files over time.",
+    "explanation": "Version Control is a time machine for your code. It constantly tracks every single modification made to a software project. If a new update completely breaks the system, Version Control allows you to instantly rewind the code back to yesterday's working version.\n\nIt is absolutely mandatory for team projects. It allows dozens of developers to edit the exact same files simultaneously without accidentally overwriting each other's work.",
+    "syntax_or_example": "v1.0 -> v1.1 (bug added) -> Rollback to v1.0",
+    "comparisons": [
+      {
+        "target": "Git",
+        "note": "Version Control is the general concept. Git is the specific, wildly popular software used to do it."
+      }
+    ],
+    "misconceptions": [
+      "It is only for large teams. (False: Even solo developers rely heavily on version control to save their code history and prevent accidental deletions)."
+    ],
+    "related_terms": [
+      "Git",
+      "Repository",
+      "Commit"
+    ]
+  },
+  {
+    "id": "se_006",
+    "term": "Git",
+    "domain": "Software Engineering",
+    "definition_short": "The industry-standard distributed version control system.",
+    "explanation": "Git is a specific program installed on your computer that manages Version Control. It is extremely fast and 'distributed', meaning every developer has a full, independent copy of the entire project history on their own laptop.\n\nGit allows developers to work entirely offline. When they are ready, they sync their local changes with a central server (like GitHub) to share their work with the rest of the team.",
+    "syntax_or_example": "$ git init // Creates a new tracking system in your folder",
+    "comparisons": [
+      {
+        "target": "Version Control",
+        "note": "Git is the tool you download. Version Control is the job the tool performs."
+      }
+    ],
+    "misconceptions": [
+      "Git and GitHub are the exact same thing. (False: Git is the local tracking software on your computer. GitHub is a website that hosts your Git files in the cloud)."
+    ],
+    "related_terms": [
+      "Branch",
+      "Merge",
+      "Repository"
+    ]
+  },
+  {
+    "id": "se_007",
+    "term": "Repository",
+    "domain": "Software Engineering",
+    "definition_short": "A central digital location where software code and its historical versions are stored.",
+    "explanation": "A Repository (or 'Repo') is essentially the master folder for your project. But unlike a normal Windows folder, a repo contains a hidden database managed by Git. This database tracks every change ever made to the files inside.\n\nA project usually has a 'Local Repo' (the copy on your personal computer) and a 'Remote Repo' (the master copy stored on the internet for the whole team to access).",
+    "syntax_or_example": "$ git clone https://github.com/user/project.git",
+    "comparisons": [
+      {
+        "target": "Git",
+        "note": "Git is the engine that runs the tracking. The Repository is the actual folder being tracked."
+      }
+    ],
+    "misconceptions": [
+      "A repository only holds code. (False: It holds documentation, images, configuration files, and the entire timeline of project edits)."
+    ],
+    "related_terms": [
+      "Git",
+      "Version Control",
+      "Commit"
+    ]
+  },
+  {
+    "id": "se_008",
+    "term": "Branch",
+    "domain": "Software Engineering",
+    "definition_short": "An independent line of development within a version control system.",
+    "explanation": "A Branch allows you to safely copy the main code and experiment without breaking anything. Imagine a tree: the 'main' branch goes straight up, representing the stable, working software.\n\nIf you want to build a new feature, you create a new side branch. You can write messy code and make mistakes on this side branch for weeks. The main branch remains completely unaffected and safe.",
+    "syntax_or_example": "$ git checkout -b new-login-feature",
+    "comparisons": [
+      {
+        "target": "Merge",
+        "note": "A Branch splits the timeline into two separate paths. A Merge stitches them back together."
+      }
+    ],
+    "misconceptions": [
+      "Branching copies all the files and wastes hard drive space. (False: Git branches are incredibly lightweight and only track the mathematical differences, taking up almost zero extra space)."
+    ],
+    "related_terms": [
+      "Git",
+      "Merge",
+      "Commit"
+    ]
+  },
+  {
+    "id": "se_009",
+    "term": "Commit",
+    "domain": "Software Engineering",
+    "definition_short": "A saved snapshot of the code at a specific point in time.",
+    "explanation": "A Commit is like a save point in a video game. When you finish writing a chunk of code, you package the changes and 'commit' them to the Repository. \n\nEvery commit is permanently recorded with a unique ID, a timestamp, and a message explaining exactly what you changed (e.g., 'Fixed the login crash'). If the code breaks tomorrow, you can easily load up today's commit to fix it.",
+    "syntax_or_example": "$ git commit -m \"Added user authentication validation\"",
+    "comparisons": [
+      {
+        "target": "Version Control",
+        "note": "Version Control is the timeline. A Commit is a single, specific event on that timeline."
+      }
+    ],
+    "misconceptions": [
+      "Saving a file in your editor is the same as a commit. (False: Saving just updates the file on your hard drive. A commit permanently logs that file into the Git history)."
+    ],
+    "related_terms": [
+      "Git",
+      "Branch",
+      "Version Control"
+    ]
+  },
+  {
+    "id": "se_010",
+    "term": "Merge",
+    "domain": "Software Engineering",
+    "definition_short": "The process of combining code from one branch into another.",
+    "explanation": "When you finish building a new feature on your side Branch, you need to add it to the main project. You do this by performing a Merge. Git automatically looks at the code on both branches and mathematically stitches them together.\n\nUsually, this happens instantly. However, if two developers edited the exact same line of code on different branches, Git pauses and warns you of a 'Merge Conflict', forcing a human to pick which line of code to keep.",
+    "syntax_or_example": "$ git merge new-login-feature",
+    "comparisons": [
+      {
+        "target": "Branch",
+        "note": "A Branch creates an isolated workspace. A Merge pulls the finished work out of isolation and into the main product."
+      }
+    ],
+    "misconceptions": [
+      "Merges always delete the old branch. (False: The branch still exists in history unless you explicitly tell Git to delete it)."
+    ],
+    "related_terms": [
+      "Git",
+      "Branch",
+      "Bug"
+    ]
+  },
+  {
+    "id": "se_011",
+    "term": "CI/CD",
+    "domain": "Software Engineering",
+    "definition_short": "Continuous Integration and Continuous Deployment: automating the testing and release of software.",
+    "explanation": "CI/CD is a robot assistant for developers. Continuous Integration (CI) means that every time a developer makes a Commit, a server automatically builds the code and runs all the Unit Testing to ensure nothing broke.\n\nContinuous Deployment (CD) takes it a step further. If the tests pass, the robot automatically uploads the new code directly to the live production servers. This allows massive companies to release tiny updates to users dozens of times a day safely.",
+    "syntax_or_example": "// Developer pushes code -> Auto Test -> Auto Deploy",
+    "comparisons": [
+      {
+        "target": "Unit Testing",
+        "note": "Unit Testing is the actual script checking for errors. CI/CD is the robotic pipeline that automatically runs those tests every day."
+      }
+    ],
+    "misconceptions": [
+      "CI/CD means humans don't check code anymore. (False: It just automates the boring tests; humans still manually perform Code Review)."
+    ],
+    "related_terms": [
+      "Unit Testing",
+      "Git",
+      "Agile"
+    ]
+  },
+  {
+    "id": "se_012",
+    "term": "API",
+    "domain": "Software Engineering",
+    "definition_short": "Application Programming Interface: a set of rules allowing different software programs to communicate.",
+    "explanation": "An API is a digital waiter. When you sit at a restaurant, you look at the menu, tell the waiter what you want, and the waiter brings the food from the kitchen. You don't need to know how the kitchen cooks the food.\n\nWhen your phone's weather app wants data, it sends a request to a remote Weather API. The API grabs the data from the company's private database and serves it back to your phone in a clean, readable format.",
+    "syntax_or_example": "// C++ making an API request using a library\nresponse = fetch(\"https://api.weather.com/today\");",
+    "comparisons": [
+      {
+        "target": "REST",
+        "note": "An API is the broad concept of software communication. REST is the most common architectural style used to design web APIs."
+      }
+    ],
+    "misconceptions": [
+      "APIs are only for the internet. (False: Your operating system has local APIs that let games talk to the graphics card)."
+    ],
+    "related_terms": [
+      "REST",
+      "JSON",
+      "Microservices"
+    ]
+  },
+  {
+    "id": "se_013",
+    "term": "REST",
+    "domain": "Software Engineering",
+    "definition_short": "Representational State Transfer: a popular design style for building networked APIs.",
+    "explanation": "REST is a set of strict guidelines for building web APIs. It relies on standard HTTP methods like GET (read data), POST (create data), PUT (update data), and DELETE (remove data).\n\nA core rule of REST is that it is 'stateless'. The server does not remember anything about your previous requests. Every time you ask a REST API for data, you must provide all the necessary information (like your authentication token) from scratch.",
+    "syntax_or_example": "GET /api/users/123 // Asks the API for User 123",
+    "comparisons": [
+      {
+        "target": "API",
+        "note": "If an API is a spoken language, REST is the strict grammar rules that make the language easy for everyone to understand."
+      }
+    ],
+    "misconceptions": [
+      "REST is a specific software package you download. (False: It is purely a theoretical design concept and a set of architectural rules)."
+    ],
+    "related_terms": [
+      "API",
+      "JSON",
+      "Microservices"
+    ]
+  },
+  {
+    "id": "se_014",
+    "term": "JSON",
+    "domain": "Software Engineering",
+    "definition_short": "JavaScript Object Notation: a lightweight format for storing and transporting data.",
+    "explanation": "JSON is the universal language of data on the internet. It is a simple, plain-text format that organizes data into key-value pairs. It is extremely easy for humans to read and incredibly fast for machines to parse.\n\nWhen an API sends data from a server to your mobile app, 99% of the time, that data is packaged as a JSON string. Despite the name, it is supported by almost every programming language, not just JavaScript.",
+    "syntax_or_example": "{\n  \"name\": \"Kush\",\n  \"age\": 19,\n  \"isStudent\": true\n}",
+    "comparisons": [
+      {
+        "target": "REST",
+        "note": "REST is the delivery truck carrying the information. JSON is the cardboard box the information is packed inside."
+      }
+    ],
+    "misconceptions": [
+      "JSON can hold complex functions and logic. (False: JSON is strictly for dead data like text, numbers, and lists. It cannot execute code)."
+    ],
+    "related_terms": [
+      "API",
+      "REST"
+    ]
+  },
+  {
+    "id": "se_015",
+    "term": "Bug",
+    "domain": "Software Engineering",
+    "definition_short": "An error, flaw, or fault in a computer program that produces an incorrect or unexpected result.",
+    "explanation": "A Bug is a mistake in the logic or syntax of a software program. It can be as small as a button being the wrong color, or as catastrophic as a banking app transferring money to the wrong account.\n\nBugs happen because software is incredibly complex and humans make typing and logic errors. Software Engineering exists primarily to find and eliminate bugs before the software reaches the public.",
+    "syntax_or_example": "int result = 10 / 0; // Causes a fatal crash bug",
+    "comparisons": [
+      {
+        "target": "Debugging",
+        "note": "A Bug is the actual problem in the code. Debugging is the action of hunting it down and fixing it."
+      }
+    ],
+    "misconceptions": [
+      "Bugs are caused by viruses. (False: Viruses are external attacks. Bugs are internal mistakes made by the original programmer)."
+    ],
+    "related_terms": [
+      "Debugging",
+      "Code Review",
+      "Unit Testing"
+    ]
+  },
+  {
+    "id": "se_016",
+    "term": "Debugging",
+    "domain": "Software Engineering",
+    "definition_short": "The process of identifying, analyzing, and removing errors from software.",
+    "explanation": "Debugging is the detective work of programming. When a Bug is reported, the developer must reproduce the error, find the exact line of code causing it, and write a fix.\n\nDevelopers use special tools called 'Debuggers' that allow them to pause the program while it is running. They can inspect the variables memory frame by frame to see exactly where the math or logic went wrong.",
+    "syntax_or_example": "std::cout << \"Checkpoint A reached\" << std::endl; // Simple print debugging",
+    "comparisons": [
+      {
+        "target": "Refactoring",
+        "note": "Debugging fixes code that is visibly broken. Refactoring cleans up code that is working fine but is messy to read."
+      }
+    ],
+    "misconceptions": [
+      "Debugging is fast. (False: Writing code takes 10% of the time; finding why it doesn't work takes the other 90%)."
+    ],
+    "related_terms": [
+      "Bug",
+      "Refactoring",
+      "Unit Testing"
+    ]
+  },
+  {
+    "id": "se_017",
+    "term": "Refactoring",
+    "domain": "Software Engineering",
+    "definition_short": "The process of restructuring existing computer code without changing its external behavior.",
+    "explanation": "Refactoring is like organizing a messy closet. You don't throw anything away, and you don't buy new clothes; you just fold everything neatly so it is easier to find later.\n\nIn software, developers often write sloppy code just to get a feature working quickly. Refactoring is the act of going back and renaming variables, breaking giant functions into smaller ones, and making the code highly readable for the next developer who has to touch it.",
+    "syntax_or_example": "// Changing a 50-line chaotic function into \n// three clean, 10-line helper functions.",
+    "comparisons": [
+      {
+        "target": "Debugging",
+        "note": "If a user reports an error, you Debug. If another programmer complains your code is ugly, you Refactor."
+      }
+    ],
+    "misconceptions": [
+      "Refactoring adds new features. (False: The golden rule of refactoring is that the software must do exactly what it did before, just with cleaner code under the hood)."
+    ],
+    "related_terms": [
+      "Code Review",
+      "Debugging",
+      "TDD"
+    ]
+  },
+  {
+    "id": "se_018",
+    "term": "Code Review",
+    "domain": "Software Engineering",
+    "definition_short": "A phase where peers systematically examine code written by a developer before it is approved.",
+    "explanation": "Code Review is a quality control checkpoint. Before a developer is allowed to Merge their new Branch into the main project, at least one other programmer must read their code.\n\nThe reviewer looks for hidden bugs, security flaws, and messy formatting. It prevents bad code from ever reaching the main project and serves as a great way for junior developers to learn from senior engineers.",
+    "syntax_or_example": "Reviewer comments: \"Please rename 'var1' to 'userCount' for clarity.\"",
+    "comparisons": [
+      {
+        "target": "Unit Testing",
+        "note": "Unit Testing is computers checking the code for logical errors. Code Review is humans checking the code for readability and design flaws."
+      }
+    ],
+    "misconceptions": [
+      "Code review is just to find bugs. (False: It is equally about maintaining a consistent coding style across the company and sharing knowledge)."
+    ],
+    "related_terms": [
+      "Merge",
+      "Refactoring",
+      "Bug"
+    ]
+  },
+  {
+    "id": "se_019",
+    "term": "Unit Testing",
+    "domain": "Software Engineering",
+    "definition_short": "A testing method where individual, isolated pieces of code are tested for correctness.",
+    "explanation": "Unit Testing is writing code to test your code. A developer writes a tiny function (a 'Unit Test') that feeds fake data into their main function and checks if the correct answer comes out.\n\nIf you write a function to add two numbers, a unit test will feed it '2' and '2', and automatically throw an alarm if the function doesn't output '4'. This ensures that future edits to the code don't accidentally break old math.",
+    "syntax_or_example": "assert( addNumbers(2, 2) == 4 ); // Fails if answer is wrong",
+    "comparisons": [
+      {
+        "target": "Integration Testing",
+        "note": "Unit Testing checks if one single gear works. Integration Testing checks if all the gears work when connected together."
+      }
+    ],
+    "misconceptions": [
+      "Unit tests catch all bugs. (False: They only catch the specific logic flaws the programmer thought to test for; they miss system-wide errors)."
+    ],
+    "related_terms": [
+      "Integration Testing",
+      "TDD",
+      "CI/CD"
+    ]
+  },
+  {
+    "id": "se_020",
+    "term": "Integration Testing",
+    "domain": "Software Engineering",
+    "definition_short": "A phase of testing where individual software modules are combined and tested as a group.",
+    "explanation": "While Unit Testing checks small isolated pieces of code, Integration Testing checks the connections. \n\nFor example, your 'Login Function' might pass its unit test perfectly, and your 'Database Fetch' function might pass perfectly. But when you hook them together, the login function might send the wrong data format to the database, causing a crash. Integration testing catches these communication failures.",
+    "syntax_or_example": "// Testing if the Payment Module successfully talks to the Bank API.",
+    "comparisons": [
+      {
+        "target": "Unit Testing",
+        "note": "Unit tests are fast and run locally. Integration tests are slower because they require real databases and network connections to test the full chain."
+      }
+    ],
+    "misconceptions": [
+      "You can skip unit testing if you do integration testing. (False: If an integration test fails, it is incredibly hard to find exactly which tiny line of code caused it without unit tests)."
+    ],
+    "related_terms": [
+      "Unit Testing",
+      "Microservices",
+      "Monolith"
+    ]
+  },
+  {
+    "id": "se_021",
+    "term": "TDD",
+    "domain": "Software Engineering",
+    "definition_short": "Test-Driven Development: writing the tests before writing the actual code.",
+    "explanation": "TDD reverses the normal programming process. Instead of writing code and then testing it, a developer writes a strict Unit Test first. Since the actual code doesn't exist yet, the test instantly fails.\n\nThen, the developer writes the absolute minimum amount of code required to make that test pass. This forces developers to think deeply about what the code must achieve before typing, resulting in highly reliable, perfectly tested software.",
+    "syntax_or_example": "1. Write Test (Fails)\n2. Write Code (Passes)\n3. Refactor Code (Clean up)",
+    "comparisons": [
+      {
+        "target": "Unit Testing",
+        "note": "Unit Testing is the tool. TDD is the philosophical mindset of writing those tests *before* writing the feature."
+      }
+    ],
+    "misconceptions": [
+      "TDD is always faster. (False: TDD actually slows down initial development significantly, but saves massive amounts of debugging time later)."
+    ],
+    "related_terms": [
+      "Unit Testing",
+      "Refactoring",
+      "Agile"
+    ]
+  },
+  {
+    "id": "se_022",
+    "term": "Framework",
+    "domain": "Software Engineering",
+    "definition_short": "A foundational structure of pre-written code that dictates the architecture of an application.",
+    "explanation": "A Framework is the skeleton of a house. It provides the foundation, the walls, and the strict rules on where the plumbing goes. You just fill in the custom furniture (your code).\n\nFrameworks (like React for web, or Unity for games) force developers to follow a specific design pattern. The framework is actually in control; it calls your custom code when it needs it. This drastically speeds up development for large projects.",
+    "syntax_or_example": "React (Web), Angular (Web), Django (Python), Spring (Java).",
+    "comparisons": [
+      {
+        "target": "Library",
+        "note": "You call a Library when you need a specific tool. A Framework calls *your* code when it needs to run a process."
+      }
+    ],
+    "misconceptions": [
+      "Frameworks make learning to code easier. (False: They often have massive, steep learning curves and hide the underlying language basics)."
+    ],
+    "related_terms": [
+      "Library",
+      "Software Engineering",
+      "API"
+    ]
+  },
+  {
+    "id": "se_023",
+    "term": "Library",
+    "domain": "Software Engineering",
+    "definition_short": "A collection of pre-written, reusable code that developers can call upon to solve specific problems.",
+    "explanation": "A Library is like a toolbox you buy from the hardware store. It contains pre-built tools for specific tasks. If you need to generate a complex math graph, you don't write the math from scratch; you just download a graphing library.\n\nUnlike a Framework, your code is always in control. You decide exactly when and where to reach into the library and use a tool.",
+    "syntax_or_example": "#include <math.h> // A C++ standard library\ndouble root = sqrt(16.0); // Using a tool from the library",
+    "comparisons": [
+      {
+        "target": "Framework",
+        "note": "Your code is the boss of a Library. A Framework is the boss of your code."
+      }
+    ],
+    "misconceptions": [
+      "Libraries are standalone programs. (False: They are just collections of functions that must be integrated into a larger host program)."
+    ],
+    "related_terms": [
+      "Framework",
+      "API",
+      "Software Engineering"
+    ]
+  },
+  {
+    "id": "se_024",
+    "term": "Microservices",
+    "domain": "Software Engineering",
+    "definition_short": "An architectural style that structures an application as a collection of small, independent services.",
+    "explanation": "Microservices break a massive app into tiny, isolated pieces. Imagine an e-commerce site: the 'Payment Cart', the 'User Login', and the 'Search Bar' are all completely separate programs running on different servers.\n\nThey communicate with each other using APIs. If the Search Bar crashes, the rest of the site stays online. If the Payment Cart gets too much traffic, you can upgrade just that one server without touching the others. It is highly scalable but complex to manage.",
+    "syntax_or_example": "SearchService.js talks via REST to LoginService.py",
+    "comparisons": [
+      {
+        "target": "Monolith",
+        "note": "Microservices chop the application into dozens of small, scattered programs. A Monolith builds the entire application as one giant brick of code."
+      }
+    ],
+    "misconceptions": [
+      "Microservices are always better. (False: For small companies, the immense network complexity of microservices drastically outweighs the benefits)."
+    ],
+    "related_terms": [
+      "Monolith",
+      "API",
+      "Integration Testing"
+    ]
+  },
+  {
+    "id": "se_025",
+    "term": "Monolith",
+    "domain": "Software Engineering",
+    "definition_short": "An architectural style where the entire software application is built as a single, unified unit.",
+    "explanation": "A Monolith is the traditional way to build software. The user interface, the business logic, and the database connections are all tightly woven into one massive codebase. When you deploy it, you deploy the entire thing at once.\n\nIt is incredibly easy to develop and test when a project is young. However, as the codebase grows to millions of lines, a single tiny bug in the 'Search Bar' code can crash the entire Monolith, taking the whole application offline.",
+    "syntax_or_example": "A single massive C++ executable file containing the entire application.",
+    "comparisons": [
+      {
+        "target": "Microservices",
+        "note": "A Monolith is simple to build but hard to scale. Microservices are incredibly hard to build but easily scale to millions of users."
+      }
+    ],
+    "misconceptions": [
+      "Monoliths are obsolete. (False: Almost every major tech company (including Netflix and Amazon) started as a Monolith before scaling forced them to switch)."
+    ],
+    "related_terms": [
+      "Microservices",
+      "Integration Testing",
+      "CI/CD"
+    ]
+  }
+]

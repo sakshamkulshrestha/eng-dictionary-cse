@@ -1,0 +1,552 @@
+[
+  {
+    "id": "toc_001",
+    "term": "Theory of Computation",
+    "domain": "Theory of Computation",
+    "definition_short": "The branch of computer science that studies what problems can be solved on a computer, and how efficiently.",
+    "explanation": "Before anyone built a physical computer, mathematicians wanted to know what computing even meant. The Theory of Computation explores the fundamental limits of machines. It doesn't care if you have an Intel CPU or a Mac; it looks at the pure math of problem-solving.\n\nIt is divided into three main branches: Automata Theory (how machines work), Computability Theory (what can be solved), and Complexity Theory (how fast it can be solved). It is the deepest, most philosophical area of computer science.",
+    "syntax_or_example": "Is it mathematically possible to write a program that plays perfect Chess? (Yes, eventually).",
+    "comparisons": [
+      {
+        "target": "Complexity Theory",
+        "note": "Theory of Computation is the entire field. Complexity Theory is the specific sub-field that cares about speed and memory."
+      }
+    ],
+    "misconceptions": [
+      "It is about building better hardware. (False: It is purely theoretical math and logic; it assumes you have a magical computer with infinite memory)."
+    ],
+    "related_terms": [
+      "Automata Theory",
+      "Computability Theory",
+      "Complexity Theory"
+    ]
+  },
+  {
+    "id": "toc_002",
+    "term": "Automata Theory",
+    "domain": "Theory of Computation",
+    "definition_short": "The study of abstract, mathematical computing machines and the problems they can solve.",
+    "explanation": "Automata Theory is the study of fake, simplified computers called 'Automata'. Instead of looking at a complex modern laptop, scientists strip the computer down to its absolute bare minimum logic.\n\nThey create mathematical models of machines that read input, change their internal State, and produce output. By studying these simple models, software engineers can design better text parsers, compilers, and network protocols.",
+    "syntax_or_example": "A vending machine is a real-world example of a simple automaton.",
+    "comparisons": [
+      {
+        "target": "Computability Theory",
+        "note": "Automata Theory builds the imaginary machines. Computability Theory asks what those machines are actually capable of doing."
+      }
+    ],
+    "misconceptions": [
+      "Automata are physical robots. (False: They are abstract mathematical concepts drawn on paper or written in code)."
+    ],
+    "related_terms": [
+      "Finite State Machine (FSM)",
+      "Turing Machine",
+      "Theory of Computation"
+    ]
+  },
+  {
+    "id": "toc_003",
+    "term": "Turing Machine",
+    "domain": "Theory of Computation",
+    "definition_short": "A theoretical mathematical machine capable of simulating any computer algorithm.",
+    "explanation": "Invented by Alan Turing in 1936, the Turing Machine is the ultimate theoretical computer. It consists of an infinitely long paper tape, a read/write head that moves left or right, and a set of internal rules.\n\nDespite being incredibly simple, it is mathematically proven that a Turing Machine can calculate absolutely anything that the world's most powerful modern supercomputer can calculate (it would just take a lot longer). It is the baseline standard for all computing.",
+    "syntax_or_example": "If tape reads '1' -> Write '0' -> Move Right -> Change State.",
+    "comparisons": [
+      {
+        "target": "Pushdown Automaton (PDA)",
+        "note": "A PDA has a limited stack memory. A Turing Machine has an infinite tape memory, making it vastly more powerful."
+      }
+    ],
+    "misconceptions": [
+      "A Turing Machine was a real mechanical device built by Alan Turing. (False: While he built real code-breaking machines like the Bombe, the 'Turing Machine' is purely a thought experiment)."
+    ],
+    "related_terms": [
+      "Church-Turing Thesis",
+      "Halting Problem",
+      "Automata Theory"
+    ]
+  },
+  {
+    "id": "toc_004",
+    "term": "Finite State Machine (FSM)",
+    "domain": "Theory of Computation",
+    "definition_short": "A computational model that can be in exactly one of a finite number of states at any given time.",
+    "explanation": "An FSM is the simplest type of computer. It has no memory and no hard drive. It only knows what 'State' it is currently in, and what rules to follow to move to the next state based on the input it receives.\n\nA turnstile is an FSM. It has two states: 'Locked' and 'Unlocked'. If you input a coin, it transitions to 'Unlocked'. If you push the arm, it transitions back to 'Locked'. It cannot remember how many coins you put in yesterday.",
+    "syntax_or_example": "States: {Locked, Unlocked}. Input: Coin. Action: Unlock.",
+    "comparisons": [
+      {
+        "target": "Turing Machine",
+        "note": "An FSM has zero memory. A Turing Machine has infinite memory."
+      }
+    ],
+    "misconceptions": [
+      "FSMs are only used in theory. (False: They are heavily used in video game AI to switch enemies from 'Patrol' state to 'Attack' state)."
+    ],
+    "related_terms": [
+      "State",
+      "Deterministic Finite Automaton (DFA)",
+      "Nondeterministic Finite Automaton (NFA)"
+    ]
+  },
+  {
+    "id": "toc_005",
+    "term": "Deterministic Finite Automaton (DFA)",
+    "domain": "Theory of Computation",
+    "definition_short": "An FSM where every input guarantees one exact, predictable next state.",
+    "explanation": "A DFA is a rigid, strictly predictable machine. If it is in State A, and it reads the input '1', there is exactly one path it can take (perhaps to State B). \n\nThere is no ambiguity, no guessing, and no choice. Because it is completely deterministic, a computer can execute a DFA incredibly fast. They are used under the hood in search functions and lexical analyzers.",
+    "syntax_or_example": "If State=1 and Input='a', next State is STRICTLY 2.",
+    "comparisons": [
+      {
+        "target": "Nondeterministic Finite Automaton (NFA)",
+        "note": "A DFA has exactly one path for every input. An NFA can have multiple possible paths for the exact same input, or even move without any input."
+      }
+    ],
+    "misconceptions": [
+      "DFAs can count. (False: DFAs have no memory stack, so they cannot check if the number of 'A's equals the number of 'B's)."
+    ],
+    "related_terms": [
+      "Finite State Machine (FSM)",
+      "Regular Language",
+      "Nondeterministic Finite Automaton (NFA)"
+    ]
+  },
+  {
+    "id": "toc_006",
+    "term": "Nondeterministic Finite Automaton (NFA)",
+    "domain": "Theory of Computation",
+    "definition_short": "An FSM where a single input can lead to multiple different states simultaneously.",
+    "explanation": "An NFA breaks the rules of strict predictability. If it is in State A and reads the input '1', it might have the option to go to State B OR State C. It can also jump between states without reading any input at all (called an Epsilon transition).\n\nConceptually, the NFA 'clones' itself and tries all possible paths at the exact same time. If even one of those clones reaches a winning state, the machine accepts the input. They are easier for humans to design than DFAs.",
+    "syntax_or_example": "If State=1 and Input='a', next State could be 2 AND 3 simultaneously.",
+    "comparisons": [
+      {
+        "target": "Deterministic Finite Automaton (DFA)",
+        "note": "Even though an NFA seems magical and more powerful, mathematically, any NFA can be converted into a strict DFA that does the exact same job."
+      }
+    ],
+    "misconceptions": [
+      "Computers can easily run NFAs. (False: Because physical CPUs are deterministic, to run an NFA in real life, a compiler must first convert it into a DFA)."
+    ],
+    "related_terms": [
+      "Finite State Machine (FSM)",
+      "Deterministic Finite Automaton (DFA)",
+      "Transition Function"
+    ]
+  },
+  {
+    "id": "toc_007",
+    "term": "Regular Language",
+    "domain": "Theory of Computation",
+    "definition_short": "The simplest class of formal languages, which can be entirely recognized by a Finite State Machine.",
+    "explanation": "In computer science, a 'Language' is just a set of valid strings (like passwords or email formats). A Regular Language is a set of strings that follow incredibly simple, predictable patterns.\n\nFor example, 'All strings that start with an A and end with a B' is a Regular Language. Because the rules are so simple, a computer does not need memory to verify them; a basic DFA can scan the string once and instantly know if it is valid.",
+    "syntax_or_example": "L = {ab, aabb, aaabbb...} is NOT a regular language because you must remember how many A's you saw.",
+    "comparisons": [
+      {
+        "target": "Context-Free Language",
+        "note": "Regular Languages require no memory to verify. Context-Free Languages require stack memory to verify."
+      }
+    ],
+    "misconceptions": [
+      "Any pattern can be a regular language. (False: Patterns that require counting, like matching open and closed parentheses '()', are mathematically impossible for Regular Languages)."
+    ],
+    "related_terms": [
+      "Regular Expression (Regex)",
+      "Deterministic Finite Automaton (DFA)",
+      "Alphabet"
+    ]
+  },
+  {
+    "id": "toc_008",
+    "term": "Regular Expression (Regex)",
+    "domain": "Theory of Computation",
+    "definition_short": "A sequence of characters that define a search pattern, primarily used for string matching.",
+    "explanation": "Regex is the real-world application of Regular Languages. It is a powerful syntax used by developers to search through text.\n\nIf you want to check if a user typed a valid email address, you don't write 50 lines of C++ checking every letter. You write one line of Regex. The computer compiles your Regex into a DFA under the hood, and runs the text through the machine to see if it matches the pattern.",
+    "syntax_or_example": "^[a-z]+@[a-z]+\\.com$ // Regex pattern for a basic email address",
+    "comparisons": [
+      {
+        "target": "Regular Language",
+        "note": "A Regular Language is the mathematical theory. A Regular Expression is the practical code used to describe that theory."
+      }
+    ],
+    "misconceptions": [
+      "Regex can parse HTML. (False: HTML requires matched tags like <div> and </div>, which requires counting memory. Regex mathematically cannot parse HTML without breaking)."
+    ],
+    "related_terms": [
+      "Regular Language",
+      "String",
+      "Alphabet"
+    ]
+  },
+  {
+    "id": "toc_009",
+    "term": "Context-Free Grammar (CFG)",
+    "domain": "Theory of Computation",
+    "definition_short": "A set of recursive rules used to generate all possible strings in a given formal language.",
+    "explanation": "A CFG is the mathematical blueprint used to define programming languages. It consists of variables and strict replacement rules.\n\nFor example, a rule might say: 'An Expression can be replaced by (Expression + Expression)'. Because the rule references itself, it is recursive. This allows a compiler to understand that `((5 + 3) + 2)` is perfectly valid math. CFGs are the reason your code editor knows when you forgot a semicolon.",
+    "syntax_or_example": "S -> aSb | empty (This rule generates exactly equal numbers of a's and b's: ab, aabb, aaabbb).",
+    "comparisons": [
+      {
+        "target": "Regular Expression (Regex)",
+        "note": "Regex is linear and cannot handle nested loops. A CFG is recursive and handles nested loops easily."
+      }
+    ],
+    "misconceptions": [
+      "CFGs understand meaning. (False: They only understand grammar and structure. A CFG knows that 'Dog flies blue' is a valid sentence structure, even though it makes no sense)."
+    ],
+    "related_terms": [
+      "Context-Free Language",
+      "Pushdown Automaton (PDA)"
+    ]
+  },
+  {
+    "id": "toc_010",
+    "term": "Context-Free Language",
+    "domain": "Theory of Computation",
+    "definition_short": "A language generated by a Context-Free Grammar and recognized by a Pushdown Automaton.",
+    "explanation": "Context-Free Languages are one step above Regular Languages in terms of complexity. They allow for patterns that require a basic level of memory, specifically 'counting'.\n\nAll modern programming languages (like C++, Python, and Java) are built on Context-Free Languages. The compiler uses this theory to verify that every opening bracket `{` in your code has a perfectly matching closing bracket `}`.",
+    "syntax_or_example": "L = {a^n b^n} // Requires memory to ensure the number of 'A's equals 'B's.",
+    "comparisons": [
+      {
+        "target": "Regular Language",
+        "note": "A Context-Free Language is vastly more powerful because it can utilize a memory stack, unlike a Regular Language."
+      }
+    ],
+    "misconceptions": [
+      "Context-Free means it ignores context completely. (False: It just means the grammar rules can be applied anywhere independently, regardless of surrounding characters)."
+    ],
+    "related_terms": [
+      "Context-Free Grammar (CFG)",
+      "Pushdown Automaton (PDA)",
+      "String"
+    ]
+  },
+  {
+    "id": "toc_011",
+    "term": "Pushdown Automaton (PDA)",
+    "domain": "Theory of Computation",
+    "definition_short": "A computational machine similar to a Finite State Machine, but equipped with a memory stack.",
+    "explanation": "A PDA is a Finite State Machine that was given a backpack to hold items. That backpack is a LIFO (Last-In-First-Out) memory Stack.\n\nAs the machine reads a string like `(())`, it pushes the open parentheses onto the stack. When it sees a closing parenthesis, it pops an open one off the stack. If the string finishes and the stack is perfectly empty, the machine accepts it. PDAs are the physical realization of Context-Free Languages.",
+    "syntax_or_example": "Read '(', Push to Stack. Read ')', Pop from Stack.",
+    "comparisons": [
+      {
+        "target": "Finite State Machine (FSM)",
+        "note": "An FSM has zero memory. A PDA has one memory stack. A Turing Machine has infinite memory."
+      },
+      {
+        "target": "Turing Machine",
+        "note": "A PDA can only access the very top of its stack. A Turing Machine can move around and access any part of its memory."
+      }
+    ],
+    "misconceptions": [
+      "A PDA can verify any complex pattern. (False: Because it only has one stack, it cannot check patterns like {a^n b^n c^n}, which require two separate memory checks)."
+    ],
+    "related_terms": [
+      "Context-Free Language",
+      "Context-Free Grammar (CFG)",
+      "Turing Machine"
+    ]
+  },
+  {
+    "id": "toc_012",
+    "term": "State",
+    "domain": "Theory of Computation",
+    "definition_short": "The current condition or status of a computational machine at a specific moment in time.",
+    "explanation": "In Automata Theory, a State represents the machine's memory of the past. Since a simple Finite State Machine has no hard drive, its 'State' is the only way it remembers what happened a second ago.\n\nIf a password requires a capital letter, the machine starts in the 'No Capitals Seen' state. Once you type an 'A', the machine jumps to the 'Capital Seen' state. States are usually drawn as circles on a whiteboard diagram.",
+    "syntax_or_example": "q0 (Start State) -> reads '1' -> q1 (Accept State)",
+    "comparisons": [
+      {
+        "target": "Transition Function",
+        "note": "The State is where the machine is currently sitting. The Transition Function is the road taking it to the next State."
+      }
+    ],
+    "misconceptions": [
+      "Machines can be in multiple states safely. (False: In deterministic machines (DFAs), being in more than one state at a time is impossible)."
+    ],
+    "related_terms": [
+      "Finite State Machine (FSM)",
+      "Transition Function"
+    ]
+  },
+  {
+    "id": "toc_013",
+    "term": "Transition Function",
+    "domain": "Theory of Computation",
+    "definition_short": "The mathematical rulebook that dictates how a machine moves from one State to another.",
+    "explanation": "The Transition Function is the engine of an Automaton. It takes two inputs: the current State the machine is in, and the specific Character it just read. Based on those two things, it outputs exactly which State the machine must move to next.\n\nIn mathematical notation, it is usually represented by the Greek letter delta (δ). It is essentially a massive switch-case statement in programming.",
+    "syntax_or_example": "δ(State_A, '1') = State_B // If in A and read 1, go to B.",
+    "comparisons": [
+      {
+        "target": "State",
+        "note": "States are the cities on a map. The Transition Function represents the highways connecting those cities based on user input."
+      }
+    ],
+    "misconceptions": [
+      "Transition functions must loop infinitely. (False: They can lead to a 'Trap State' or 'Dead State' from which the machine can never escape, halting the process)."
+    ],
+    "related_terms": [
+      "State",
+      "Deterministic Finite Automaton (DFA)",
+      "Alphabet"
+    ]
+  },
+  {
+    "id": "toc_014",
+    "term": "Alphabet",
+    "domain": "Theory of Computation",
+    "definition_short": "A finite, non-empty set of symbols or characters recognized by a machine.",
+    "explanation": "In computing theory, an Alphabet is the set of all allowed inputs. Before a machine can read a string, you must define its alphabet. \n\nFor standard computer binary, the alphabet is incredibly simple: just `{0, 1}`. For a text parser, the alphabet might be `{a, b, c... z}`. If a machine reads a character that is not strictly defined in its Alphabet, it immediately crashes and rejects the input.",
+    "syntax_or_example": "Σ = {0, 1} // The standard binary alphabet.",
+    "comparisons": [
+      {
+        "target": "String",
+        "note": "The Alphabet is the bucket of individual Lego bricks. A String is a structure built by snapping those bricks together."
+      }
+    ],
+    "misconceptions": [
+      "An alphabet must contain letters. (False: An alphabet can be made of numbers, symbols, or even abstract mathematical objects)."
+    ],
+    "related_terms": [
+      "String",
+      "Regular Language",
+      "Transition Function"
+    ]
+  },
+  {
+    "id": "toc_015",
+    "term": "String",
+    "domain": "Theory of Computation",
+    "definition_short": "A finite sequence of symbols chosen from a specific Alphabet.",
+    "explanation": "A String is simply a word or a sentence that a computational machine tries to read. The machine reads the string exactly one character at a time, moving from left to right.\n\nIn theory, there is also the concept of the 'Empty String' (represented by epsilon ε), which is a string containing absolutely zero characters. Handling the Empty String is a crucial part of designing robust computing models.",
+    "syntax_or_example": "If Alphabet is {0,1}, then \"100110\" is a valid String.",
+    "comparisons": [
+      {
+        "target": "Alphabet",
+        "note": "You combine characters from the Alphabet to generate the String."
+      }
+    ],
+    "misconceptions": [
+      "Strings can be infinitely long. (False: In standard automata theory, a string must have a definitive end so the machine can decide to Accept or Reject it)."
+    ],
+    "related_terms": [
+      "Alphabet",
+      "Regular Expression (Regex)",
+      "Context-Free Language"
+    ]
+  },
+  {
+    "id": "toc_016",
+    "term": "Computability Theory",
+    "domain": "Theory of Computation",
+    "definition_short": "The branch of theory that determines whether a problem can be solved by a computer at all.",
+    "explanation": "Computability Theory asks a very deep question: Are there math problems that are fundamentally impossible for a computer to solve, even if the computer had infinite time and infinite RAM?\n\nThe answer is yes. Computability Theory maps the boundary between the 'solvable' (Decidable) and the 'unsolvable' (Undecidable). It proves that there are ultimate limits to what software can achieve in the universe.",
+    "syntax_or_example": "Sorting a list of numbers is Computable. Predicting the future of an arbitrary program is Uncomputable.",
+    "comparisons": [
+      {
+        "target": "Complexity Theory",
+        "note": "Computability Theory asks IF a problem can be solved. Complexity Theory asks HOW FAST it can be solved."
+      }
+    ],
+    "misconceptions": [
+      "If a problem is complex, it is uncomputable. (False: A problem might take a trillion years to solve, but it is still 'Computable'. Uncomputable means there is literally no math formula to solve it)."
+    ],
+    "related_terms": [
+      "Halting Problem",
+      "Decidability",
+      "Theory of Computation"
+    ]
+  },
+  {
+    "id": "toc_017",
+    "term": "Halting Problem",
+    "domain": "Theory of Computation",
+    "definition_short": "The famous mathematical proof showing that it is impossible to predict if every computer program will eventually stop running.",
+    "explanation": "Alan Turing proved the Halting Problem in 1936. Imagine you want to write a 'Debugger' program that looks at other people's code and tells you: 'Will this code finish running, or is it stuck in an infinite loop?'\n\nTuring used brilliant reverse-logic to prove that this 'Debugger' program is mathematically impossible to build. No algorithm can perfectly analyze all other algorithms. It was a massive shock to the math world, proving computers have hard limits.",
+    "syntax_or_example": "while (true) {} // Does it halt? No. But a computer cannot universally prove this for all complex code.",
+    "comparisons": [
+      {
+        "target": "Decidability",
+        "note": "The Halting Problem is the most famous example of an Undecidable problem."
+      }
+    ],
+    "misconceptions": [
+      "We can't find infinite loops in ANY program. (False: We can easily detect simple infinite loops. The proof just states we cannot build a master program that works perfectly for ALL possible programs)."
+    ],
+    "related_terms": [
+      "Turing Machine",
+      "Computability Theory",
+      "Decidability"
+    ]
+  },
+  {
+    "id": "toc_018",
+    "term": "Decidability",
+    "domain": "Theory of Computation",
+    "definition_short": "The property of a problem indicating whether an algorithm can always provide a 'Yes' or 'No' answer.",
+    "explanation": "A problem is Decidable if you can write a C++ program that will always, eventually, print exactly 'True' or 'False' for any input you give it. \n\n'Is this number even?' is a Decidable problem. However, if a problem might force the computer to think infinitely without ever printing an answer, the problem is Undecidable. Computer Scientists must ensure the software they design is actually built on Decidable math.",
+    "syntax_or_example": "bool isEven(int n) { return n % 2 == 0; } // Decidable",
+    "comparisons": [
+      {
+        "target": "Computability Theory",
+        "note": "Decidability is the strict 'Yes/No' classification used inside the broader field of Computability Theory."
+      }
+    ],
+    "misconceptions": [
+      "Undecidable means we know the answer is No. (False: Undecidable means the computer might just freeze forever trying to find the answer)."
+    ],
+    "related_terms": [
+      "Halting Problem",
+      "Computability Theory"
+    ]
+  },
+  {
+    "id": "toc_019",
+    "term": "Complexity Theory",
+    "domain": "Theory of Computation",
+    "definition_short": "The study of the resources (time and memory) required to solve computational problems.",
+    "explanation": "Once Computability Theory proves a problem *can* be solved, Complexity Theory steps in to ask: 'Is it actually practical to solve it?'\n\nIf an algorithm requires so much computing time that the sun would explode before it finished, the problem is practically unsolvable. Complexity Theory groups problems into massive classes (like P and NP) based on how quickly the required time scales up as the data gets larger.",
+    "syntax_or_example": "Analyzing if sorting 1 million items takes 1 second or 100 years.",
+    "comparisons": [
+      {
+        "target": "Computability Theory",
+        "note": "Computability focuses on the boundary between Possible and Impossible. Complexity focuses on the boundary between Fast and Slow."
+      }
+    ],
+    "misconceptions": [
+      "Complexity theory only cares about speed. (False: It also heavily studies 'Space Complexity', which is how much RAM an algorithm demands)."
+    ],
+    "related_terms": [
+      "P vs NP Problem",
+      "Theory of Computation",
+      "P Class"
+    ]
+  },
+  {
+    "id": "toc_020",
+    "term": "P vs NP Problem",
+    "domain": "Theory of Computation",
+    "definition_short": "The greatest unsolved problem in computer science, asking if problems that are easy to verify are also easy to solve.",
+    "explanation": "Imagine a giant Sudoku puzzle. Solving it from scratch is incredibly hard and takes hours. But if someone hands you a completed puzzle, verifying that it is correct takes 10 seconds. \n\nThe P vs NP problem asks a mind-bending question: If a computer can verify an answer instantly, is there a secret mathematical trick that allows the computer to also solve it instantly? If someone proves P = NP, it would break all modern encryption, revolutionize medicine, and change the world overnight. There is a $1 million prize for solving it.",
+    "syntax_or_example": "P: Easy to solve. NP: Easy to verify.",
+    "comparisons": [
+      {
+        "target": "Complexity Theory",
+        "note": "P vs NP is the specific boss-level question that the entire field of Complexity Theory is trying to answer."
+      }
+    ],
+    "misconceptions": [
+      "Most scientists think P equals NP. (False: The vast majority of computer scientists believe P does not equal NP, meaning some problems are just fundamentally hard)."
+    ],
+    "related_terms": [
+      "P Class",
+      "NP Class",
+      "Complexity Theory",
+      "NP-Complete"
+    ]
+  },
+  {
+    "id": "toc_021",
+    "term": "P Class",
+    "domain": "Theory of Computation",
+    "definition_short": "The class of problems that a computer can solve efficiently (Polynomial time).",
+    "explanation": "In complexity theory, 'P' stands for Polynomial time. It represents the group of 'easy' problems. \n\nEven if you give a computer a massive dataset, if the problem is in the P Class, the computer can solve it reasonably fast. Searching through a database, sorting an array of names alphabetically, and finding the shortest route on a GPS are all P Class problems. They are the backbone of modern efficient software.",
+    "syntax_or_example": "O(n), O(n^2), and O(n^3) are all Polynomial (P Class) runtimes.",
+    "comparisons": [
+      {
+        "target": "NP Class",
+        "note": "P problems are fast to solve. NP problems are fast to verify (but might be incredibly slow to solve)."
+      }
+    ],
+    "misconceptions": [
+      "P class problems are solved instantly. (False: A P class problem can still take days to compute on massive data, but the time scales predictably rather than exploding exponentially)."
+    ],
+    "related_terms": [
+      "P vs NP Problem",
+      "NP Class",
+      "Complexity Theory"
+    ]
+  },
+  {
+    "id": "toc_022",
+    "term": "NP Class",
+    "domain": "Theory of Computation",
+    "definition_short": "The class of problems where, if you are given the correct answer, a computer can instantly verify it.",
+    "explanation": "NP stands for Nondeterministic Polynomial time. These are the puzzle problems of the computing world. \n\nIf you want to pack 50 oddly shaped boxes into the trunk of a car, finding the perfect arrangement might take a computer years of calculating every possibility. But if I show you a picture of the perfect arrangement, you can verify it works instantly. Because it is fast to verify, it belongs in the NP Class.",
+    "syntax_or_example": "Sudoku, breaking passwords, and the Traveling Salesman problem.",
+    "comparisons": [
+      {
+        "target": "P Class",
+        "note": "Every problem in P is also in NP (because if it's easy to solve, it's obviously easy to verify). But we don't know if every NP problem is in P."
+      }
+    ],
+    "misconceptions": [
+      "NP stands for 'Not Polynomial'. (False: It stands for Nondeterministic Polynomial, meaning a magical computer that makes lucky guesses could solve it in polynomial time)."
+    ],
+    "related_terms": [
+      "P Class",
+      "P vs NP Problem",
+      "NP-Complete"
+    ]
+  },
+  {
+    "id": "toc_023",
+    "term": "NP-Complete",
+    "domain": "Theory of Computation",
+    "definition_short": "The hardest, most complex problems within the NP class.",
+    "explanation": "NP-Complete problems are the final bosses of computer science. They are a group of thousands of totally different problems (like scheduling airline flights, or routing delivery trucks) that share a magical mathematical connection.\n\nThey are all perfectly equal in difficulty. If a genius ever finds a fast algorithm to solve just *one* NP-Complete problem, that same algorithm can instantly be used to solve *all* of them. Currently, the only way to solve them is by brute-forcing every possible combination.",
+    "syntax_or_example": "The Traveling Salesman Problem is the most famous NP-Complete problem.",
+    "comparisons": [
+      {
+        "target": "NP Class",
+        "note": "NP includes all verifiable problems. NP-Complete is the VIP club of the absolute hardest problems in that group."
+      }
+    ],
+    "misconceptions": [
+      "NP-Complete problems cannot be tackled by software. (False: We can't find the 'perfect' answer quickly, but engineers use heuristics to find a 'good enough' answer in seconds)."
+    ],
+    "related_terms": [
+      "NP Class",
+      "P vs NP Problem"
+    ]
+  },
+  {
+    "id": "toc_024",
+    "term": "Turing Test",
+    "domain": "Theory of Computation",
+    "definition_short": "A conceptual test of a machine's ability to exhibit intelligent behavior indistinguishable from a human.",
+    "explanation": "Proposed by Alan Turing in 1950, this is the ultimate philosophical test for Artificial Intelligence. \n\nA human judge types messages to two hidden participants: one is a real human, the other is a computer program. If the judge cannot reliably tell which one is the computer, the machine has passed the Turing Test. It shifted the debate from 'Can machines think?' to 'Can machines behave identically to humans?'",
+    "syntax_or_example": "Modern chatbots (LLMs) often casually beat the traditional Turing Test.",
+    "comparisons": [
+      {
+        "target": "Turing Machine",
+        "note": "The Turing Machine is a math model of how a computer calculates. The Turing Test is a philosophical model of how a computer behaves."
+      }
+    ],
+    "misconceptions": [
+      "Passing the Turing test means the AI is conscious. (False: It only means the AI is incredibly good at imitating human conversation patterns)."
+    ],
+    "related_terms": [
+      "Turing Machine",
+      "Church-Turing Thesis"
+    ]
+  },
+  {
+    "id": "toc_025",
+    "term": "Church-Turing Thesis",
+    "domain": "Theory of Computation",
+    "definition_short": "The fundamental hypothesis stating that any real-world calculation can be performed by a Turing Machine.",
+    "explanation": "Before the 1930s, mathematicians used different methods to define 'computing'. Alonzo Church invented Lambda Calculus, and Alan Turing invented the Turing Machine.\n\nThey realized their two completely different systems were mathematically identical in power. The Thesis states that no matter how advanced technology gets—whether it's a quantum computer, a silicon chip, or a biological brain—if it can calculate something, a simple Turing Machine can also calculate it. It forms the bedrock of all computer science.",
+    "syntax_or_example": "Anything computable by a Macbook is computable by a Turing Machine.",
+    "comparisons": [
+      {
+        "target": "Computability Theory",
+        "note": "The Church-Turing Thesis is the foundational rule that makes the rest of Computability Theory possible."
+      }
+    ],
+    "misconceptions": [
+      "It is a proven mathematical theorem. (False: It is called a 'Thesis' because it cannot be strictly proven, but it has held universally true for 90 years without exception)."
+    ],
+    "related_terms": [
+      "Turing Machine",
+      "Computability Theory",
+      "Turing Test"
+    ]
+  }
+]

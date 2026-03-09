@@ -15,10 +15,32 @@ export default function App() {
   const [isDark, setIsDark] = useState(true); // Default to Dark/AMOLED
 
   useEffect(() => {
-    fetch('/data.json')
-      .then(res => res.json())
-      .then(data => { setDictionaryData(data); setIsLoading(false); })
-      .catch(err => { console.error(err); setIsLoading(false); });
+    // List all 10 domain files
+    const dataFiles = [
+      '/data/dsa.json',
+      '/data/os.json',
+      '/data/networks.json',
+      '/data/dbms.json',
+      '/data/coa.json',
+      '/data/ai.json',
+      '/data/se.json',
+      '/data/cyber.json',
+      '/data/cloud.json',
+      '/data/toc.json'
+    ];
+
+    // Fetch them all at the exact same time
+    Promise.all(dataFiles.map(file => fetch(file).then(res => res.json())))
+      .then(results => {
+        // Combine them back into one master list for the UI
+        const combinedData = results.flat();
+        setDictionaryData(combinedData);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error("Error fetching files:", err);
+        setIsLoading(false);
+      });
   }, []);
 
   useEffect(() => {
