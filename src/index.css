@@ -7,6 +7,7 @@
   --apple-spring-smooth: cubic-bezier(0.25, 1, 0.5, 1); /* iOS structural ease */
   --apple-ease: cubic-bezier(0.4, 0, 0.2, 1);
   --ios-blue: #007AFF;
+  --ios-blue-rgb: 0 122 255;
   --ios-bg-light: #F2F2F7;
   --ios-bg-dark: #000000;
   --ios-card-light: #FFFFFF;
@@ -25,6 +26,27 @@
     overscroll-behavior-y: none; /* Prevent iOS native double bounce for an app-like feel */
   }
 }
+
+/* --- Accessibility Overrides --- */
+.reduce-motion * {
+  animation: none !important;
+  transition-duration: 0.01s !important;
+  transition-delay: 0s !important;
+}
+
+/* --- Global Element Styles --- */
+::selection {
+  background: rgb(var(--ios-blue-rgb) / 0.25);
+  color: inherit;
+}
+
+/* --- Dynamic Theme Accent System --- */
+.text-accent { color: var(--ios-blue); }
+.bg-accent { background-color: var(--ios-blue); }
+.bg-accent-10 { background-color: rgb(var(--ios-blue-rgb) / 0.1); }
+.bg-accent-20 { background-color: rgb(var(--ios-blue-rgb) / 0.2); }
+.border-accent { border-color: var(--ios-blue); }
+.border-accent-20 { border-color: rgb(var(--ios-blue-rgb) / 0.2); }
 
 @layer utilities {
   .apple-glass {

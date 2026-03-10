@@ -1,18 +1,32 @@
-import React from 'react';
-import { ChevronRight, Bookmark, Tag } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { BookOpen, Hash, Map, Clock, Network, AlertCircle, Bookmark, Code, ChevronRight, Tag } from 'lucide-react';
+import { getFullDomainName } from '../utils/domains';
+import { useLocation } from 'react-router-dom';
 
-export default function IndexView({ dictionaryData, activeFilter, navigate, title }) {
+export default function IndexView({ dictionaryData, onNavigate, initialFilter = null, predefinedBookmarks = [], title }) {
+  const [activeFilter, setActiveFilter] = useState(initialFilter);
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const filterParam = params.get('filter');
+    if (filterParam) {
+      setActiveFilter(filterParam);
+    } else if (location.pathname === '/saved') {
+      setActiveFilter('saved');
+    } else {
+      setActiveFilter(null);
+    }
+  }, [location]);
+
   // Logic: Filters by activeFilter or shows everything if null
-  const filteredData = activeFilter 
-    ? dictionaryData.filter(item => item.domain === activeFilter)
-    : dictionaryData;
+  const filteredData = activeFilter === 'saved'
+    ? predefinedBookmarks
+    : activeFilter 
+      ? dictionaryData.filter(item => item.domain === activeFilter)
+      : dictionaryData;
 
-  const getFullDomainName = (domainName) => {
-    if (domainName === 'DBMS') return 'Database Management System';
-    return domainName;
-  };
-
-  const displayTitle = activeFilter ? getFullDomainName(title) : title;
+  const displayTitle = activeFilter === 'saved' ? 'Saved Bookmarks' : (activeFilter ? getFullDomainName(title) : title);
   const sortedData = [...filteredData].sort((a, b) => a.term.localeCompare(b.term));
 
   return (
@@ -21,10 +35,10 @@ export default function IndexView({ dictionaryData, activeFilter, navigate, titl
       {/* Premium iOS Large Title Header */}
       <header className="mb-14 pl-2 h-auto">
         <div className="flex items-center gap-3 mb-4 animate-slide-up">
-          <div className="w-11 h-11 rounded-full bg-[var(--ios-blue)]/10 flex items-center justify-center">
-            <Tag className="w-5 h-5 text-[var(--ios-blue)]" />
+          <div className="w-11 h-11 rounded-full bg-accent-10 flex items-center justify-center">
+            <Tag className="w-5 h-5 text-accent" />
           </div>
-          <span className="text-[14px] font-bold text-[var(--ios-blue)] uppercase tracking-widest">
+          <span className="text-[14px] font-bold text-accent uppercase tracking-widest">
             {activeFilter ? 'Collection View' : 'Directory Index'}
           </span>
         </div>
@@ -45,23 +59,25 @@ export default function IndexView({ dictionaryData, activeFilter, navigate, titl
             return (
             <div 
               key={item.id} 
-              onClick={() => navigate('entry', item.id)}
-              className={`apple-card cursor-pointer group flex flex-col justify-between min-h-[190px] animate-slide-up ${delayClass}`}
+              onClick={() => onNavigate('entry', item.id)}
+              className={`apple-card cursor-pointer group flex flex-col justify-between min-h-[190px] animate-slide-up hover:bg-accent-10/30 hover:border-accent/40 transition-all duration-300 ${delayClass}`}
             >
-              <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-4 group-hover:translate-x-0 z-10">
-                <div className="w-9 h-9 rounded-full bg-white dark:bg-zinc-800 shadow-md flex items-center justify-center">
-                  <ChevronRight className="w-5 h-5 text-gray-400 dark:text-gray-300" />
+              <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-all duration-500 -translate-x-2 group-hover:translate-x-0 z-10">
+                <div className="w-9 h-9 rounded-full bg-accent shadow-lg shadow-accent/30 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
+                  <ChevronRight className="w-5 h-5 text-white animate-pulse" />
                 </div>
               </div>
               
               <div className="relative z-10">
                 {!activeFilter && (
-                  <span className="inline-block px-3 py-1.5 rounded-full bg-[var(--ios-blue)]/10 text-[11px] font-bold text-[var(--ios-blue)] uppercase tracking-widest mb-4 transition-transform group-hover:scale-105 origin-left">
+                  <span className="inline-block px-3 py-1.5 rounded-full bg-accent-10 text-[11px] font-bold text-accent uppercase tracking-widest mb-4 transition-transform group-hover:scale-105 origin-left">
                     {item.domain}
                   </span>
                 )}
-                <h3 className={`text-[24px] font-bold tracking-tight text-black dark:text-white ${!activeFilter ? 'mb-3' : 'mb-4'} leading-tight pr-6 relative z-10`}>
-                  {item.term}
+                <h3 className={`text-[24px] font-bold tracking-tight text-black dark:text-white group-hover:text-accent transition-colors ${!activeFilter ? 'mb-3' : 'mb-4'} leading-tight pr-6 relative z-10 inline-block`}>
+                  <span className="bg-left-bottom bg-gradient-to-r from-accent/30 to-accent/30 bg-[length:0%_40%] bg-no-repeat group-hover:bg-[length:100%_40%] transition-all duration-500 ease-out pb-1">
+                    {item.term}
+                  </span>
                 </h3>
               </div>
               
