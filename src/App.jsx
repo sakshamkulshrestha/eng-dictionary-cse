@@ -82,20 +82,20 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-6 flex-shrink-0">
-            <button onClick={() => navigate('learn')} className={`transition-colors active:scale-95 ${view === 'learn' ? 'text-[var(--ios-blue)]' : 'text-[#8E8E93] hover:text-black dark:hover:text-white'}`}>
-              <Sparkles className="w-[20px] h-[20px]" strokeWidth={2} />
+            <button onClick={() => navigate('learn')} className={`apple-press ${view === 'learn' ? 'text-[var(--ios-blue)]' : 'text-[#8E8E93] hover:text-black dark:hover:text-white'}`}>
+              <Sparkles className="w-[22px] h-[22px]" strokeWidth={2} />
             </button>
-            <button onClick={() => navigate('saved')} className={`transition-colors active:scale-95 ${view === 'saved' ? 'text-[var(--ios-blue)]' : 'text-[#8E8E93] hover:text-black dark:hover:text-white'}`}>
-              <Bookmark className="w-[20px] h-[20px]" strokeWidth={2} />
+            <button onClick={() => navigate('saved')} className={`apple-press ${view === 'saved' ? 'text-[var(--ios-blue)]' : 'text-[#8E8E93] hover:text-black dark:hover:text-white'}`}>
+              <Bookmark className="w-[22px] h-[22px]" strokeWidth={2} />
             </button>
-            <button onClick={() => navigate('guide')} className={`transition-colors active:scale-95 ${view === 'guide' ? 'text-[var(--ios-blue)]' : 'text-[#8E8E93] hover:text-black dark:hover:text-white'}`}>
-              <Info className="w-[20px] h-[20px]" strokeWidth={2} />
+            <button onClick={() => navigate('guide')} className={`apple-press ${view === 'guide' ? 'text-[var(--ios-blue)]' : 'text-[#8E8E93] hover:text-black dark:hover:text-white'}`}>
+              <Info className="w-[22px] h-[22px]" strokeWidth={2} />
             </button>
-            <button onClick={() => navigate('index', null, null)} className={`transition-colors active:scale-95 ${view === 'index' ? 'text-[var(--ios-blue)]' : 'text-[#8E8E93] hover:text-black dark:hover:text-white'}`}>
-              <List className="w-[20px] h-[20px]" strokeWidth={2} />
+            <button onClick={() => navigate('index', null, null)} className={`apple-press ${view === 'index' ? 'text-[var(--ios-blue)]' : 'text-[#8E8E93] hover:text-black dark:hover:text-white'}`}>
+              <List className="w-[22px] h-[22px]" strokeWidth={2} />
             </button>
-            <button onClick={() => setIsDark(!isDark)} className="text-[#8E8E93] hover:text-black dark:hover:text-white transition-colors active:scale-95 ml-2">
-              {isDark ? <Sun className="w-[20px] h-[20px]" strokeWidth={2} /> : <Moon className="w-[20px] h-[20px]" strokeWidth={2} />}
+            <button onClick={() => setIsDark(!isDark)} className="apple-press text-[#8E8E93] hover:text-black dark:hover:text-white ml-2">
+              {isDark ? <Sun className="w-[22px] h-[22px]" strokeWidth={2} /> : <Moon className="w-[22px] h-[22px]" strokeWidth={2} />}
             </button>
           </div>
         </div>
@@ -103,33 +103,37 @@ export default function App() {
 
       <main className="max-w-5xl mx-auto pb-20">
         {view === 'home' && (
-          <div className="animate-fade-in px-4 sm:px-6 py-16 sm:py-24 flex flex-col items-center text-center">
+          <div className="px-4 sm:px-6 py-16 sm:py-28 flex flex-col items-center text-center perspective-1000">
             {/* Premium Home Intro */}
-            <div className="mb-10 flex flex-col items-center w-full max-w-2xl">
-              <h1 className="text-5xl sm:text-7xl font-bold tracking-tight mb-4 leading-tight">
+            <div className="mb-14 flex flex-col items-center w-full max-w-2xl">
+              <h1 className="text-6xl sm:text-[84px] font-extrabold tracking-[-0.04em] mb-4 leading-tight animate-slide-up bg-clip-text text-transparent bg-gradient-to-b from-black to-gray-600 dark:from-white dark:to-gray-400 pb-2">
                 Engineered
               </h1>
-              <p className="text-xl sm:text-2xl font-medium text-gray-500 dark:text-gray-400">
+              <p className="text-xl sm:text-[22px] font-medium text-[#8E8E93] animate-slide-up delay-100">
                 High-fidelity technical documentation.
               </p>
             </div>
 
-            <div className="w-full max-w-2xl mb-20 shadow-[0_12px_40px_rgb(0,0,0,0.06)] dark:shadow-[0_12px_40px_rgb(0,0,0,0.3)] rounded-full">
+            <div className="w-full max-w-2xl mb-24 shadow-[0_12px_40px_rgb(0,0,0,0.06)] dark:shadow-[0_12px_40px_rgb(0,0,0,0.4)] rounded-full animate-slide-up delay-150">
               <SearchBar dictionaryData={dictionaryData} onSelectTerm={(id) => navigate('entry', id)} history={history} />
             </div>
 
             {/* Categorical Grid List */}
             <div className="w-full text-left">
-              <h2 className="text-[13px] font-bold text-gray-500 mb-6 ml-2 uppercase tracking-widest">Catalog Domains</h2>
+              <h2 className="text-[14px] font-bold text-gray-500 mb-6 ml-2 uppercase tracking-widest animate-fade-in delay-200">Catalog Domains</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {domains.map(d => (
-                  <DomainCard 
-                    key={d.name} 
-                    title={d.name} 
-                    count={d.count} 
-                    onClick={() => navigate('index', null, d.name)} 
-                  />
-                ))}
+                {domains.map((d, i) => {
+                  const delayValue = ((i % 4) * 50) + 100;
+                  return (
+                    <DomainCard 
+                      key={d.name} 
+                      title={d.name} 
+                      count={d.count} 
+                      onClick={() => navigate('index', null, d.name)} 
+                      delay={delayValue}
+                    />
+                  );
+                })}
               </div>
             </div>
           </div>

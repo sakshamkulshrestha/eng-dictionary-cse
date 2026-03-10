@@ -15,8 +15,10 @@ export default function GuideView() {
             UoH Project
           </span>
         </div>
-        <h1 className="text-5xl sm:text-7xl font-bold tracking-tight mb-4 leading-tight">The Mission</h1>
-        <p className="text-xl text-gray-500 font-medium leading-relaxed max-w-2xl">
+        <h1 className="text-6xl sm:text-[84px] font-extrabold tracking-[-0.04em] mb-4 leading-none animate-slide-up bg-clip-text text-transparent bg-gradient-to-b from-black to-gray-600 dark:from-white dark:to-gray-400 pb-3">
+          The Mission
+        </h1>
+        <p className="text-xl sm:text-[22px] text-[#8E8E93] font-medium leading-relaxed max-w-2xl animate-slide-up delay-100">
           A clinical technical catalog designed to replace cluttered textbooks with architectural clarity. Built by IMTech students.
         </p>
       </header>
@@ -29,15 +31,18 @@ export default function GuideView() {
             { icon: <Search className="w-6 h-6 text-[var(--ios-blue)]"/>, bgColor: "bg-[var(--ios-blue)]/10", title: "Fuzzy Search", desc: "Optimized matching logic for high-speed indexing across nodes." },
             { icon: <Bookmark className="w-6 h-6 text-orange-500"/>, bgColor: "bg-orange-500/10", title: "Private Vault", desc: "All user saves and history are persisted locally. Your data never leaves your device." },
             { icon: <Sparkles className="w-6 h-6 text-purple-500"/>, bgColor: "bg-purple-500/10", title: "Synthesis", desc: "Intent-based roadmaps that bridge concepts across disparate domains." }
-          ].map((f, i) => (
-            <div key={i} className="group relative bg-[#F9F9FB] dark:bg-[#1C1C1E] p-7 rounded-[2rem] shadow-sm hover:shadow-[0_24px_48px_rgb(0,0,0,0.06)] dark:hover:shadow-[0_24px_48px_rgb(0,0,0,0.4)] border border-black/[0.03] dark:border-white/[0.05] hover:-translate-y-1 transition-all duration-400 flex flex-col items-start min-h-[200px]">
-              <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-6 transition-transform duration-300 group-hover:scale-110 ${f.bgColor}`}>
+          ].map((f, i) => {
+            const delayClass = `delay-${((i % 3) * 50) + 150}`;
+            return (
+            <div key={i} className={`apple-card cursor-default group flex flex-col items-start min-h-[220px] animate-slide-up ${delayClass}`}>
+              <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-6 transition-transform duration-300 group-hover:scale-110 ${f.bgColor} relative z-10`}>
                 {f.icon}
               </div>
-              <h3 className="text-[22px] font-bold tracking-tight mb-3">{f.title}</h3>
-              <p className="text-[15px] font-medium text-gray-500 dark:text-gray-400 leading-relaxed">{f.desc}</p>
+              <h3 className="text-[24px] font-bold tracking-tight mb-3 relative z-10 text-black dark:text-white leading-tight">{f.title}</h3>
+              <p className="text-[16px] font-medium text-gray-500 dark:text-gray-400 leading-relaxed relative z-10">{f.desc}</p>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -50,17 +55,20 @@ export default function GuideView() {
             { title: "Read & Compare", desc: "In the Entry view, study the core concept. Tap related nodes to seamlessly traverse neighboring architecture.", step: "2" },
             { title: "Save to Vault", desc: "Tap the Bookmark icon. Navigate to the Library tab to review saved terms natively in offline mode.", step: "3" },
             { title: "AI Synthesis", desc: "Navigate to the Synthesis UI. Ask complex multi-domain questions to generate a custom roadmap.", step: "4" }
-          ].map((s, i) => (
-            <div key={i} className="group flex flex-col bg-[#F9F9FB] dark:bg-[#1C1C1E] p-7 rounded-[2rem] border border-black/[0.03] dark:border-white/[0.05] shadow-sm">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-[13px] font-bold text-gray-500">
+          ].map((s, i) => {
+            const delayClass = `delay-${((i % 4) * 50) + 100}`;
+            return (
+            <div key={i} className={`apple-card group flex flex-col cursor-default animate-slide-up ${delayClass}`}>
+              <div className="flex items-center gap-4 mb-5 relative z-10">
+                <div className="w-9 h-9 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-[14px] font-bold text-gray-500">
                   {s.step}
                 </div>
-                <h3 className="text-[19px] font-bold tracking-tight">{s.title}</h3>
+                <h3 className="text-[20px] font-bold tracking-tight relative z-10 text-black dark:text-white">{s.title}</h3>
               </div>
-              <p className="text-[15px] font-medium text-gray-500 dark:text-gray-400 leading-relaxed pl-12">{s.desc}</p>
+              <p className="text-[16px] font-medium text-gray-500 dark:text-gray-400 leading-relaxed pl-13 relative z-10">{s.desc}</p>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 

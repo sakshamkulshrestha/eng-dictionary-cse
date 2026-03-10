@@ -10,22 +10,22 @@ export default function IndexView({ dictionaryData, activeFilter, navigate, titl
   const sortedData = [...filteredData].sort((a, b) => a.term.localeCompare(b.term));
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24 animate-fade-in text-black dark:text-white pb-32">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24 text-black dark:text-white pb-32 perspective-1000">
       
       {/* Premium iOS Large Title Header */}
-      <header className="mb-12 pl-2">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-[var(--ios-blue)]/10 flex items-center justify-center">
+      <header className="mb-14 pl-2 h-auto">
+        <div className="flex items-center gap-3 mb-4 animate-slide-up">
+          <div className="w-11 h-11 rounded-full bg-[var(--ios-blue)]/10 flex items-center justify-center">
             <Tag className="w-5 h-5 text-[var(--ios-blue)]" />
           </div>
-          <span className="text-[13px] font-bold text-[var(--ios-blue)] uppercase tracking-widest">
+          <span className="text-[14px] font-bold text-[var(--ios-blue)] uppercase tracking-widest">
             {activeFilter ? 'Collection View' : 'Directory Index'}
           </span>
         </div>
-        <h1 className="text-5xl sm:text-7xl font-bold tracking-tight mb-4">
+        <h1 className="text-6xl sm:text-[80px] font-extrabold tracking-tight mb-4 animate-slide-up delay-100 leading-none pb-2">
           {title}
         </h1>
-        <p className="text-xl text-gray-500 max-w-2xl font-medium">
+        <p className="text-xl sm:text-[22px] text-[#8E8E93] max-w-2xl font-medium animate-slide-up delay-150">
           {activeFilter ? `Exploring nodes within the ${activeFilter} domain.` : 'Browse through the complete technical index.'}
         </p>
       </header>
@@ -33,32 +33,36 @@ export default function IndexView({ dictionaryData, activeFilter, navigate, titl
       {/* Premium Apple Card Grid */}
       {sortedData.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {sortedData.map((item) => (
+          {sortedData.map((item, idx) => {
+            const delayValue = ((idx % 4) * 50) + 100;
+            const delayClass = delayValue > 0 ? `delay-${delayValue}` : '';
+            return (
             <div 
               key={item.id} 
               onClick={() => navigate('entry', item.id)}
-              className="group relative bg-[#F9F9FB] dark:bg-[#1C1C1E] p-7 rounded-[2rem] shadow-sm hover:shadow-[0_24px_48px_rgb(0,0,0,0.06)] dark:hover:shadow-[0_24px_48px_rgb(0,0,0,0.4)] border border-black/[0.03] dark:border-white/[0.05] cursor-pointer hover:-translate-y-1 transition-all duration-400 active:scale-[0.98] flex flex-col justify-between min-h-[180px] overflow-hidden"
+              className={`apple-card cursor-pointer group flex flex-col justify-between min-h-[190px] animate-slide-up ${delayClass}`}
             >
-              <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-all duration-400 translate-x-4 group-hover:translate-x-0">
-                <div className="w-9 h-9 rounded-full bg-white dark:bg-zinc-800 shadow-sm flex items-center justify-center">
+              <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-4 group-hover:translate-x-0 z-10">
+                <div className="w-9 h-9 rounded-full bg-white dark:bg-zinc-800 shadow-md flex items-center justify-center">
                   <ChevronRight className="w-5 h-5 text-gray-400 dark:text-gray-300" />
                 </div>
               </div>
               
-              <div>
-                <span className="inline-block px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-4 transition-colors group-hover:bg-[var(--ios-blue)] group-hover:text-white">
+              <div className="relative z-10">
+                <span className="inline-block px-3 py-1.5 rounded-full bg-[var(--ios-blue)]/10 text-[11px] font-bold text-[var(--ios-blue)] uppercase tracking-widest mb-4 transition-transform group-hover:scale-105 origin-left">
                   {item.domain}
                 </span>
-                <h3 className="text-[22px] font-bold tracking-tight text-black dark:text-white mb-3 leading-tight pr-6">
+                <h3 className="text-[24px] font-bold tracking-tight text-black dark:text-white mb-3 leading-tight pr-6 relative z-10">
                   {item.term}
                 </h3>
               </div>
               
-              <p className="text-[15px] font-medium text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
+              <p className="text-[15px] font-medium text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed relative z-10">
                 {item.definition_short}
               </p>
             </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="py-32 flex flex-col items-center justify-center text-center">

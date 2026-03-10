@@ -3,7 +3,9 @@
 @tailwind utilities;
 
 :root {
-  --apple-spring: cubic-bezier(0.25, 0.8, 0.25, 1);
+  --apple-spring-bouncy: cubic-bezier(0.175, 0.885, 0.32, 1.15); /* Classic iOS bouncy spring */
+  --apple-spring-smooth: cubic-bezier(0.25, 1, 0.5, 1); /* iOS structural ease */
+  --apple-ease: cubic-bezier(0.4, 0, 0.2, 1);
   --ios-blue: #007AFF;
   --ios-bg-light: #F2F2F7;
   --ios-bg-dark: #000000;
@@ -13,30 +15,88 @@
 
 @layer base {
   html {
-    scroll-behavior: auto; /* iOS scroll is mostly native, no forced smooth CSS needed usually but we'll leave it out */
+    scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    -moz-osx-font-smoothing: grayscale;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
   body {
-    @apply bg-[var(--ios-bg-light)] dark:bg-[var(--ios-bg-dark)] text-black dark:text-white transition-colors duration-300;
+    @apply bg-[var(--ios-bg-light)] dark:bg-[var(--ios-bg-dark)] text-black dark:text-white transition-colors duration-500 ease-out;
+    overscroll-behavior-y: none; /* Prevent iOS native double bounce for an app-like feel */
   }
 }
 
 @layer utilities {
   .apple-glass {
-    @apply backdrop-blur-xl bg-white/80 dark:bg-[#1d1d1f]/80 border-b border-black/5 dark:border-white/10;
-    @apply saturate-[1.8];
+    background-color: rgba(255, 255, 255, 0.75);
+    @apply border-b border-black/[0.04] dark:border-white/[0.08];
   }
+  .dark .apple-glass {
+    background-color: rgba(28, 28, 30, 0.75);
+  }
+  @supports (-webkit-backdrop-filter: blur(40px)) or (backdrop-filter: blur(40px)) {
+    .apple-glass {
+      -webkit-backdrop-filter: blur(40px) saturate(200%);
+      backdrop-filter: blur(40px) saturate(200%);
+    }
+  }
+
+  /* Ultra-Premium Widget Card */
   .apple-card {
-    @apply bg-white dark:bg-[var(--ios-card-dark)] rounded-2xl shadow-sm dark:shadow-none border-t border-b sm:border border-gray-200 dark:border-white/10 p-4 sm:p-6;
-    @apply active:scale-[0.98] transition-transform duration-200;
+    @apply bg-white dark:bg-[#1C1C1E] rounded-[24px] border border-black/[0.03] dark:border-white/[0.04] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none p-6 relative overflow-hidden;
+    transition: transform 0.4s var(--apple-spring-bouncy), shadow 0.4s var(--apple-ease);
   }
+  .apple-card::after {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300 pointer-events-none;
+    background: radial-gradient(circle at top right, rgba(255,255,255,0.8) 0%, transparent 60%);
+  }
+  .dark .apple-card::after {
+    background: radial-gradient(circle at top right, rgba(255,255,255,0.05) 0%, transparent 60%);
+  }
+  .apple-card:hover {
+    @apply shadow-[0_24px_48px_rgb(0,0,0,0.08)] dark:shadow-[0_24px_48px_rgb(0,0,0,0.4)];
+    transform: translateY(-2px) scale(1.005);
+  }
+  .apple-card:hover::after {
+    @apply opacity-30;
+  }
+  .apple-card:active {
+    transform: scale(0.97);
+    @apply shadow-sm;
+  }
+  .apple-card:active::after {
+    @apply opacity-0;
+  }
+
+  /* Standard Press Physics */
+  .apple-press {
+    @apply active:scale-[0.96] transition-transform duration-300;
+  }
+
+  /* Animations */
   .animate-fade-in {
-    animation: appleFade 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    animation: appleFadeIn 0.7s var(--apple-spring-smooth) forwards;
   }
+  .animate-slide-up {
+    animation: appleSlideUp 0.6s var(--apple-spring-bouncy) forwards;
+    opacity: 0;
+  }
+  
+  /* Staggers */
+  .delay-100 { animation-delay: 100ms; }
+  .delay-150 { animation-delay: 150ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-250 { animation-delay: 250ms; }
+  .delay-300 { animation-delay: 300ms; }
 }
 
-@keyframes appleFade {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes appleFadeIn {
+  from { opacity: 0; filter: blur(4px); }
+  to { opacity: 1; filter: blur(0); }
+}
+
+@keyframes appleSlideUp {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 }

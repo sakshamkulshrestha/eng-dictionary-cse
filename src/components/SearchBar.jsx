@@ -67,7 +67,7 @@ export default function SearchBar({ dictionaryData, onSelectTerm, history = [] }
 
       {/* Flyout Results */}
       {isOpen && currentList.length > 0 && (
-        <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-[#1C1C1E] rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-none border border-black/5 dark:border-white/10 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute top-full left-0 w-full mt-3 apple-glass rounded-2xl shadow-[0_24px_48px_rgb(0,0,0,0.12)] dark:shadow-[0_24px_48px_rgb(0,0,0,0.5)] overflow-hidden animate-slide-up border border-black/[0.05] dark:border-white/[0.1]">
           <ul className="divide-y divide-black/5 dark:divide-white/10">
             {currentList.map((itemOrId, idx) => {
               const item = query.length === 0 ? dictionaryData.find(d => d.id === itemOrId) : itemOrId;

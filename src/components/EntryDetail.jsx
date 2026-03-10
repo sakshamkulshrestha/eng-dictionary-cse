@@ -41,7 +41,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
 
       <div className="grid grid-cols-1 gap-6">
         {/* Concept */}
-        <div className="group bg-[#F9F9FB] dark:bg-[#1C1C1E] rounded-[2rem] p-7 sm:p-10 shadow-sm hover:shadow-[0_24px_48px_rgb(0,0,0,0.06)] dark:hover:shadow-[0_24px_48px_rgb(0,0,0,0.4)] border border-black/[0.03] dark:border-white/[0.05] transition-all duration-400">
+        <div className="apple-card group p-7 sm:p-10 cursor-default animate-slide-up delay-100">
           <h2 className="text-[14px] font-bold text-gray-500 mb-5 uppercase tracking-widest flex items-center gap-2">
             <Info className="w-4 h-4"/> Concept Overview
           </h2>
@@ -52,7 +52,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
 
         {/* Technical Definition */}
         {entry.technical_definition && (
-          <div className="group bg-[#F9F9FB] dark:bg-[#1C1C1E] rounded-[2rem] p-7 shadow-sm hover:shadow-[0_24px_48px_rgb(0,0,0,0.06)] dark:hover:shadow-[0_24px_48px_rgb(0,0,0,0.4)] border border-black/[0.03] dark:border-white/[0.05] transition-all duration-400">
+          <div className="apple-card group p-7 cursor-default animate-slide-up delay-150">
             <h2 className="text-[14px] font-bold text-gray-500 mb-4 uppercase tracking-widest flex items-center gap-2">
               <FileText className="w-4 h-4"/> Technical Definition
             </h2>
@@ -65,7 +65,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Differences */}
           {entry.comparisons?.length > 0 && (
-            <div className="flex flex-col group bg-[#F9F9FB] dark:bg-[#1C1C1E] rounded-[2rem] p-7 shadow-sm hover:shadow-[0_24px_48px_rgb(0,0,0,0.06)] dark:hover:shadow-[0_24px_48px_rgb(0,0,0,0.4)] border border-black/[0.03] dark:border-white/[0.05] transition-all duration-400">
+            <div className="apple-card flex flex-col group cursor-default animate-slide-up delay-200">
               <h2 className="text-[14px] font-bold text-gray-500 mb-5 uppercase tracking-widest flex items-center gap-2">
                 <Scale className="w-4 h-4"/> Differences
               </h2>
@@ -92,7 +92,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
 
           {/* Misconceptions */}
           {entry.common_misconceptions?.length > 0 && (
-            <div className="flex flex-col group bg-[#FFF9EB] dark:bg-[#2A2312] rounded-[2rem] p-7 shadow-sm hover:shadow-[0_24px_48px_rgb(0,0,0,0.06)] dark:hover:shadow-[0_24px_48px_rgb(0,0,0,0.4)] border border-amber-500/20 transition-all duration-400">
+            <div className="apple-card flex flex-col group !bg-[#FFF9EB] dark:!bg-[#2A2312] !border-amber-500/20 cursor-default animate-slide-up delay-250">
               <h2 className="text-[14px] font-bold text-amber-600 dark:text-amber-500 mb-5 uppercase tracking-widest flex items-center gap-2">
                 <AlertCircle className="w-4 h-4"/> Misconceptions
               </h2>
@@ -110,7 +110,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
 
         {/* Code Block */}
         {entry.syntax_or_example && (
-          <div className="group bg-[#282A36] dark:bg-[#151517] rounded-[2rem] p-7 shadow-sm hover:shadow-[0_24px_48px_rgb(0,0,0,0.15)] dark:hover:shadow-[0_24px_48px_rgb(0,0,0,0.6)] border border-black/10 dark:border-white/[0.05] transition-all duration-400 relative overflow-hidden mt-2">
+          <div className="apple-card group !bg-[#282A36] dark:!bg-[#151517] p-7 relative overflow-hidden mt-2 cursor-default animate-slide-up delay-300">
             <div className="flex justify-between items-center mb-6">
                <h2 className="text-[14px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                  <Terminal className="w-4 h-4"/> Implementation

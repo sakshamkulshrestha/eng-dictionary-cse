@@ -24,15 +24,17 @@ export default function PromptWindow({ dictionaryData, onNavigate }) {
         <div className="inline-flex w-16 h-16 bg-[var(--ios-blue)]/10 rounded-full items-center justify-center mb-6 shadow-sm">
           <Sparkles className="w-8 h-8 text-[var(--ios-blue)]" />
         </div>
-        <h1 className="text-5xl sm:text-7xl font-bold tracking-tight mb-4 leading-tight">Synthesis</h1>
-        <p className="text-xl text-gray-500 font-medium max-w-2xl mx-auto leading-relaxed">
+        <h1 className="text-6xl sm:text-[84px] font-extrabold tracking-[-0.04em] mb-4 leading-none animate-slide-up bg-clip-text text-transparent bg-gradient-to-b from-blue-500 to-purple-600 pb-3">
+          Synthesis
+        </h1>
+        <p className="text-xl sm:text-[22px] text-[#8E8E93] font-medium max-w-2xl mx-auto leading-relaxed animate-slide-up delay-100">
           Describe your objective to dynamically generate a clinical roadmap.
         </p>
       </header>
 
       {/* Premium INPUT MODULE (Siri / Apple Intelligence Style) */}
-      <div className="w-full max-w-3xl relative mb-20 px-2 sm:px-0">
-        <div className="group relative bg-[#F9F9FB] dark:bg-[#1C1C1E] rounded-[2rem] p-5 shadow-sm focus-within:shadow-[0_24px_48px_rgb(0,0,0,0.06)] dark:focus-within:shadow-[0_24px_48px_rgb(0,0,0,0.4)] border border-black/[0.03] dark:border-white/[0.05] transition-all duration-400 min-h-[160px] pb-16 flex flex-col">
+      <div className="w-full max-w-3xl relative mb-20 px-2 sm:px-0 animate-slide-up delay-150">
+        <div className="apple-card group p-6 min-h-[170px] pb-16 flex flex-col focus-within:shadow-[0_24px_48px_rgb(0,0,0,0.06)] dark:focus-within:shadow-[0_24px_48px_rgb(0,0,0,0.4)]">
           <textarea 
             className="w-full bg-transparent border-none outline-none text-[19px] resize-none text-black dark:text-white placeholder-[#8E8E93] font-medium leading-relaxed flex-1"
             placeholder="e.g. How does a CPU handle logic and memory synchronization?"
@@ -65,36 +67,41 @@ export default function PromptWindow({ dictionaryData, onNavigate }) {
            </div>
            
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-             {results.map((item, idx) => (
+             {results.map((item, idx) => {
+               const delayClass = `delay-${((idx % 4) * 50) + 100}`;
+               return (
                <div 
                  key={item.id} 
                  onClick={() => onNavigate('entry', item.id)} 
-                 className="group relative bg-[#F9F9FB] dark:bg-[#1C1C1E] p-6 rounded-[2rem] shadow-sm hover:shadow-[0_24px_48px_rgb(0,0,0,0.06)] dark:hover:shadow-[0_24px_48px_rgb(0,0,0,0.4)] border border-black/[0.03] dark:border-white/[0.05] cursor-pointer hover:-translate-y-1 transition-all duration-400 active:scale-[0.98] flex flex-col min-h-[180px] overflow-hidden"
+                 className={`apple-card cursor-pointer group flex flex-col min-h-[190px] overflow-hidden animate-slide-up ${delayClass}`}
                >
-                 <div className="absolute top-0 right-0 p-5 opacity-0 group-hover:opacity-100 transition-all duration-400 translate-x-4 group-hover:translate-x-0">
-                   <div className="w-8 h-8 rounded-full bg-white dark:bg-zinc-800 shadow-sm flex items-center justify-center">
+                 <div className="absolute top-0 right-0 p-5 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-4 group-hover:translate-x-0 z-10">
+                   <div className="w-9 h-9 rounded-full bg-white dark:bg-zinc-800 shadow-md flex items-center justify-center">
                      <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-300" />
                    </div>
                  </div>
-
-                 <div className="flex items-center gap-3 mb-4">
-                   <span className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 text-[13px] font-bold text-black dark:text-white flex items-center justify-center flex-shrink-0">
-                     {idx + 1}
-                   </span>
-                   <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest transition-colors group-hover:bg-[var(--ios-blue)] group-hover:text-white">
-                     <Hash className="w-3 h-3" />
-                     {item.domain}
-                   </span>
-                 </div>
                  
-                 <h3 className="text-[20px] font-bold tracking-tight text-black dark:text-white mb-2 leading-tight pr-6">
-                   {item.term}
-                 </h3>
-                 <p className="text-[14px] font-medium text-gray-500 dark:text-gray-400 line-clamp-3 leading-relaxed mt-auto">
+                 <div className="relative z-10">
+                   <div className="flex items-center gap-3 mb-5">
+                     <span className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 text-[13px] font-bold text-black dark:text-white flex items-center justify-center flex-shrink-0">
+                       {idx + 1}
+                     </span>
+                     <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/10 text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest transition-colors group-hover:bg-purple-500 group-hover:text-white">
+                       <Hash className="w-3.5 h-3.5" />
+                       {item.domain}
+                     </span>
+                   </div>
+                   
+                   <h3 className="text-[22px] font-bold tracking-tight text-black dark:text-white mb-2 leading-tight pr-6">
+                     {item.term}
+                   </h3>
+                 </div>
+                 <p className="text-[15px] font-medium text-gray-500 dark:text-gray-400 line-clamp-3 leading-relaxed mt-auto relative z-10">
                    {item.definition_short}
                  </p>
                </div>
-             ))}
+               );
+             })}
            </div>
         </div>
       )}
