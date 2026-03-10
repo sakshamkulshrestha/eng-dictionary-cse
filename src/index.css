@@ -2,39 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --apple-spring: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
   }
   body {
-    /* Pure Black for AMOLED, Pure White for Light mode */
-    @apply bg-white dark:bg-black text-black dark:text-white transition-colors duration-300;
+    @apply bg-white dark:bg-black text-black dark:text-white transition-colors duration-500;
+  }
+  * {
+    transition: all 400ms var(--apple-spring);
   }
 }
 
 @layer utilities {
-  .amoled-border {
-    @apply border border-gray-200 dark:border-[#27272A]; 
+  .apple-glass {
+    @apply backdrop-blur-3xl bg-white/70 dark:bg-black/70 border-b border-zinc-100 dark:border-zinc-900;
   }
-  .amoled-card {
-    @apply bg-white dark:bg-[#0A0A0A] amoled-border hover:border-black dark:hover:border-white transition-all duration-300;
+  .apple-card {
+    @apply bg-zinc-50 dark:bg-zinc-900/40 rounded-[2.5rem] border border-zinc-100 dark:border-zinc-800 p-10;
+    @apply hover:border-black dark:hover:border-white active:scale-[0.98];
   }
   .animate-fade-in {
-    animation: fadeIn 0.3s ease-out forwards;
+    animation: appleFade 0.6s var(--apple-spring) forwards;
   }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
+@keyframes appleFade {
+  from { opacity: 0; transform: translateY(15px); }
   to { opacity: 1; transform: translateY(0); }
-}
-
-::-webkit-scrollbar {
-  width: 4px;
-}
-::-webkit-scrollbar-track {
-  @apply bg-transparent;
-}
-::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 dark:bg-gray-800 rounded-full;
 }
