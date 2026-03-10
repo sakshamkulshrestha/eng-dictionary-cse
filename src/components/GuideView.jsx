@@ -1,63 +1,95 @@
 import React from 'react';
-import { User, MessageSquare, Terminal, Search, Bookmark, Lightbulb } from 'lucide-react';
+import { User, MessageSquare, Search, Bookmark, Sparkles, University, Heart, Terminal, Laptop, ArrowRight, Info } from 'lucide-react';
 
 export default function GuideView() {
   const team = [
-    { name: "Saksham Kulshrestha", role: "Project Coordinator" },
-    { name: "Gotta Pranathi Yadav", role: "Interface Designer" },
-    { name: "Molagara Dravinesh", role: "Data Specialist" },
-    { name: "Kuntumala Muni Sai Charan", role: "Software Engineer" }
+    { name: "Saksham Kulshrestha", role: "Architecture", desc: "Core Engine & Data Routing" },
+    { name: "Gotta Pranathi Yadav", role: "Interface", desc: "Monochrome Visual Language" },
+    { name: "Molagara Dravinesh", role: "Database", desc: "Dictionary Classification" },
+    { name: "Kuntumala Muni Sai Charan", role: "Logic", desc: "Interaction & State Persistence" }
   ];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-20 animate-fade-in">
-      <div className="mb-20 text-center">
-         <h1 className="text-5xl font-black tracking-tight mb-4">Engineering Dictionary</h1>
-         <p className="text-gray-500">Version 1.0.0 | A student-led research project developed and managed by IMTech students, University of Hyderabad</p>
-      </div>
+    <div className="max-w-6xl mx-auto px-8 py-24 transition-all duration-700 bg-white dark:bg-black text-black dark:text-white selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black">
+      
+      {/* --- SECTION 1: SYSTEM OVERVIEW --- */}
+      <header className="mb-40">
+        <div className="inline-flex items-center gap-2 px-4 py-1 border border-black/10 dark:border-white/10 rounded-full text-[9px] font-black uppercase tracking-[0.3em] mb-10 opacity-50">
+          <University className="w-3 h-3"/> IMTech Research Project
+        </div>
+        <h1 className="text-7xl md:text-9xl font-black tracking-tighter mb-12">Engineered<span className="opacity-20">.</span></h1>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-end">
+          <p className="text-2xl md:text-3xl font-medium leading-tight tracking-tight italic opacity-60">
+            A high-fidelity technical catalog designed to provide clinical clarity for the next generation of software engineers.
+          </p>
+          <div className="text-xs space-y-4 opacity-40 font-bold uppercase tracking-widest">
+            <div className="flex justify-between border-b pb-2"><span>Build Version</span><span>1.0.4-Stable</span></div>
+            <div className="flex justify-between border-b pb-2"><span>Data Nodes</span><span>1000+ Distributed</span></div>
+            <div className="flex justify-between border-b pb-2"><span>Origin</span><span>UoH, Hyderabad</span></div>
+          </div>
+        </div>
+      </header>
 
-      <section className="mb-24">
-        <h2 className="text-xs font-black uppercase tracking-[0.3em] text-indigo-500 mb-10">Developed By</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      {/* --- SECTION 2: OPERATIONAL LOGIC --- */}
+      <section className="mb-48">
+        <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-400 mb-20">Operational_Manual</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+          <div className="space-y-6">
+            <div className="p-4 border border-black dark:border-white inline-block rounded-2xl"><Search className="w-6 h-6"/></div>
+            <h3 className="text-2xl font-bold italic">Command Search</h3>
+            <p className="text-sm text-gray-500 leading-relaxed">Our search engine utilizes fuzzy matching. It prioritizes term titles but scans deep-dive explanations. Use <span className="underline italic">Arrow Keys</span> and <span className="underline italic">Enter</span> for keyboard-only navigation.</p>
+          </div>
+          <div className="space-y-6">
+            <div className="p-4 border border-black dark:border-white inline-block rounded-2xl"><Bookmark className="w-6 h-6"/></div>
+            <h3 className="text-2xl font-bold italic">Local Vault</h3>
+            <p className="text-sm text-gray-500 leading-relaxed">Bookmarks and Search History are persisted via <span className="underline italic">LocalStorage</span>. Your library is private, stored entirely on your device, and accessible offline.</p>
+          </div>
+          <div className="space-y-6">
+            <div className="p-4 border border-black dark:border-white inline-block rounded-2xl"><Sparkles className="w-6 h-6"/></div>
+            <h3 className="text-2xl font-bold italic">Intent Synthesis</h3>
+            <p className="text-sm text-gray-500 leading-relaxed">The 'Learning Path' engine analyzes natural language goals to synthesize a logical 6-step roadmap, connecting concepts across disparate domains.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* --- SECTION 3: TECHNICAL BLUEPRINT --- */}
+      <section className="mb-48 p-16 bg-black text-white dark:bg-white dark:text-black rounded-[4rem] shadow-2xl relative overflow-hidden">
+        <Terminal className="absolute -right-20 -bottom-20 w-80 h-80 opacity-5 pointer-events-none" />
+        <h2 className="text-[10px] font-black uppercase tracking-[0.4em] opacity-30 mb-12">The Tech Stack</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center md:text-left">
+          <div className="space-y-1"><div className="font-bold text-lg italic">React 18</div><div className="text-[9px] uppercase tracking-widest opacity-40">Dynamic UI Framework</div></div>
+          <div className="space-y-1"><div className="font-bold text-lg italic">Tailwind</div><div className="text-[9px] uppercase tracking-widest opacity-40">Atomic Styling System</div></div>
+          <div className="space-y-1"><div className="font-bold text-lg italic">Fuse.js</div><div className="text-[9px] uppercase tracking-widest opacity-40">Fuzzy Search Logic</div></div>
+          <div className="space-y-1"><div className="font-bold text-lg italic">Lucide</div><div className="text-[9px] uppercase tracking-widest opacity-40">Iconography Layer</div></div>
+        </div>
+      </section>
+
+      {/* --- SECTION 4: AUTHORS --- */}
+      <section className="mb-48">
+        <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-400 mb-20 text-center">Technical Authors</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {team.map(m => (
-            <div key={m.name} className="flex items-center p-6 bg-gray-50 dark:bg-zinc-900/50 rounded-2xl border border-gray-100 dark:border-zinc-800 transition-all hover:border-indigo-500">
-               <div className="w-12 h-12 bg-black dark:bg-white rounded-full flex items-center justify-center mr-4 shadow-sm">
-                  <User className="w-6 h-6 text-white dark:text-black" />
-               </div>
-               <div>
-                  <div className="font-bold text-lg dark:text-white">{m.name}</div>
-                  <div className="text-xs text-gray-400 uppercase font-semibold">{m.role}</div>
-               </div>
+            <div key={m.name} className="p-8 border border-black/5 dark:border-white/5 rounded-[2.5rem] text-center hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-500 group">
+               <div className="w-12 h-12 bg-gray-50 dark:bg-zinc-800 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-white/20"><User className="w-6 h-6" /></div>
+               <div className="font-black text-lg mb-1 tracking-tight italic">{m.name}</div>
+               <div className="text-[9px] uppercase font-black tracking-widest opacity-40 mb-4">{m.role}</div>
+               <p className="text-[11px] text-gray-400 font-medium leading-relaxed italic">"{m.desc}"</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="space-y-16">
-        <h2 className="text-xs font-black uppercase tracking-[0.3em] text-indigo-500">Platform Guide</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-           <div className="space-y-4">
-              <Search className="w-8 h-8 text-blue-500" />
-              <h3 className="font-bold">Neural Search</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">Search 1000+ terms instantly. Your 10 most recent searches are saved for quick re-entry.</p>
-           </div>
-           <div className="space-y-4">
-              <Bookmark className="w-8 h-8 text-yellow-500" />
-              <h3 className="font-bold">Offline Library</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">Save complex terms using bookmarks. They are stored locally on your device for fast access.</p>
-           </div>
-           <div className="space-y-4">
-              <Lightbulb className="w-8 h-8 text-indigo-500" />
-              <h3 className="font-bold">Learning Path</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">Use the Sparkles icon to tell the system what you want to learn. It generates a roadmap for you.</p>
-           </div>
-        </div>
-      </section>
-
-      <div className="mt-32 p-10 bg-black dark:bg-zinc-900 rounded-3xl text-center text-white">
-         <h2 className="text-2xl font-bold mb-4 flex items-center justify-center gap-2"><MessageSquare/> Have a suggestion?</h2>
-         <p className="text-zinc-400 mb-8 max-w-md mx-auto text-sm">Help us improve the dictionary. Suggest new terms or report errors via our Google Form.</p>
-         <a href="https://forms.gle/yFKUyDdgt8FL4y2M6" target="_blank" className="inline-block bg-white text-black px-8 py-3 rounded-full font-black text-sm hover:scale-105 transition-transform">Support & Suggestions</a>
+      {/* --- SECTION 5: FEEDBACK --- */}
+      <div className="py-24 border-y border-black/5 dark:border-white/5 text-center">
+         <h2 className="text-5xl md:text-7xl font-black mb-10 tracking-tighter">Report an issue<span className="opacity-20">?</span></h2>
+         <a 
+           href="https://forms.gle/yFKUyDdgt8FL4y2M6" 
+           target="_blank" 
+           className="inline-flex items-center gap-4 bg-black dark:bg-white text-white dark:text-black px-16 py-6 rounded-full font-black text-[10px] uppercase tracking-[0.4em] hover:scale-105 active:scale-95 transition-all shadow-2xl"
+         >
+           Access Form <ArrowRight className="w-4 h-4"/>
+         </a>
       </div>
     </div>
   );

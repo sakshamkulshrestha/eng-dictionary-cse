@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { List, Sun, Moon, Bookmark, Sparkles, HelpCircle } from 'lucide-react';
+import { List, Sun, Moon, Bookmark, Sparkles, Info } from 'lucide-react';
 import Logo from './components/Logo.jsx';
 import SearchBar from './components/SearchBar.jsx';
 import DomainCard from './components/DomainCard.jsx';
@@ -15,10 +15,8 @@ export default function App() {
   const [activeId, setActiveId] = useState(null);
   const [activeFilter, setActiveFilter] = useState(null);
   
-  // 5. Default to Light Mode (isDark: false)
+  // High-End Monochrome Setup
   const [isDark, setIsDark] = useState(false);
-
-  // 3 & 4. Persistence for Bookmarks and History
   const [bookmarks, setBookmarks] = useState(() => 
     JSON.parse(localStorage.getItem('bookmarks') || '[]')
   );
@@ -27,7 +25,12 @@ export default function App() {
   );
 
   useEffect(() => {
-    const dataFiles = ['/data/dsa.json', '/data/os.json', '/data/networks.json', '/data/dbms.json', '/data/coa.json', '/data/ai.json', '/data/se.json', '/data/cyber.json', '/data/cloud.json', '/data/toc.json'];
+    const dataFiles = [
+      '/data/dsa.json', '/data/os.json', '/data/networks.json',
+      '/data/dbms.json', '/data/coa.json', '/data/ai.json',
+      '/data/se.json', '/data/cyber.json', '/data/cloud.json', '/data/toc.json'
+    ];
+
     Promise.all(dataFiles.map(file => fetch(file).then(res => res.json())))
       .then(results => {
         setDictionaryData(results.flat());
@@ -36,7 +39,7 @@ export default function App() {
       .catch(() => setIsLoading(false));
   }, []);
 
-  // Sync states to LocalStorage
+  // Sync to Storage
   useEffect(() => localStorage.setItem('bookmarks', JSON.stringify(bookmarks)), [bookmarks]);
   useEffect(() => localStorage.setItem('history', JSON.stringify(history)), [history]);
 
@@ -45,13 +48,12 @@ export default function App() {
     else document.documentElement.classList.remove('dark');
   }, [isDark]);
 
-  const toggleBookmark = (entry) => {
-    setBookmarks(prev => prev.some(b => b.id === entry.id) 
-      ? prev.filter(b => b.id !== entry.id) : [entry, ...prev]);
-  };
-
+  // Logic: Max 5 items, move latest to top
   const addToHistory = (id) => {
-    setHistory(prev => [id, ...prev.filter(i => i !== id)].slice(0, 10));
+    setHistory(prev => {
+      const filtered = prev.filter(item => item !== id);
+      return [id, ...filtered].slice(0, 5);
+    });
   };
 
   const navigate = (page, id = null, filter = null) => {
@@ -62,58 +64,139 @@ export default function App() {
     setActiveFilter(filter);
   };
 
+  const toggleBookmark = (entry) => {
+    setBookmarks(prev => prev.some(b => b.id === entry.id) 
+      ? prev.filter(b => b.id !== entry.id) 
+      : [entry, ...prev]
+    );
+  };
+
   const domains = useMemo(() => {
     const counts = {};
     dictionaryData.forEach(d => counts[d.domain] = (counts[d.domain] || 0) + 1);
     return Object.keys(counts).map(name => ({ name, count: counts[name] }));
   }, [dictionaryData]);
 
-  if (isLoading) return <div className="flex h-screen items-center justify-center font-mono text-sm tracking-widest uppercase text-gray-500">Initializing...</div>;
+  if (isLoading) return (
+    <div className="flex h-screen items-center justify-center font-mono text-[10px] tracking-[0.5em] uppercase text-black dark:text-white">
+      System_Initialize
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black font-sans transition-colors duration-300">
-      <header className="sticky top-0 z-50 w-full bg-white/90 dark:bg-black/90 backdrop-blur-md border-b border-gray-200 dark:border-[#27272A]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex justify-between items-center h-16">
+    <div className="min-h-screen bg-white dark:bg-black font-sans transition-colors duration-500 text-black dark:text-white selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black">
+      
+      {/* --- STICKY HEADER --- */}
+      <header className="sticky top-0 z-50 w-full bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-black/5 dark:border-white/5">
+        <div className="max-w-7xl mx-auto px-8 flex justify-between items-center h-20">
           <Logo onClick={() => navigate('home')} />
-          <div className="hidden md:flex flex-1 mx-8 justify-center">
-            {view !== 'home' && <div className="w-full max-w-md"><SearchBar dictionaryData={dictionaryData} onSelectTerm={(id) => navigate('entry', id)} history={history} /></div>}
+          
+          <div className="hidden md:flex flex-1 mx-12 justify-center max-w-xl">
+            {view !== 'home' && (
+              <SearchBar 
+                dictionaryData={dictionaryData} 
+                onSelectTerm={(id) => navigate('entry', id)} 
+                history={history} 
+              />
+            )}
           </div>
-          <div className="flex items-center space-x-5">
-            <button onClick={() => navigate('learn')} className="text-gray-400 hover:text-indigo-500 transition-colors"><Sparkles className="w-5 h-5" /></button>
-            <button onClick={() => navigate('saved')} className={`transition-colors ${view === 'saved' ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-500'}`}><Bookmark className="w-5 h-5" /></button>
-            <button onClick={() => navigate('guide')} className="text-gray-400 hover:text-black dark:hover:text-white transition-colors"><HelpCircle className="w-5 h-5" /></button>
-            <button onClick={() => navigate('index')} className="text-gray-400 hover:text-black dark:hover:text-white transition-colors"><List className="w-5 h-5" /></button>
-            <button onClick={() => setIsDark(!isDark)} className="text-gray-400 hover:text-black dark:hover:text-white transition-colors">{isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}</button>
+
+          <div className="flex items-center gap-8">
+            <button onClick={() => navigate('learn')} className={`transition-all hover:scale-110 ${view === 'learn' ? 'opacity-100' : 'opacity-30'}`}>
+              <Sparkles className="w-5 h-5" />
+            </button>
+            <button onClick={() => navigate('saved')} className={`transition-all hover:scale-110 ${view === 'saved' ? 'opacity-100' : 'opacity-30'}`}>
+              <Bookmark className="w-5 h-5" />
+            </button>
+            <button onClick={() => navigate('guide')} className={`transition-all hover:scale-110 ${view === 'guide' ? 'opacity-100' : 'opacity-30'}`}>
+              <Info className="w-5 h-5" />
+            </button>
+            <button onClick={() => navigate('index', null, null)} className={`transition-all hover:scale-110 ${view === 'index' && !activeFilter ? 'opacity-100' : 'opacity-30'}`}>
+              <List className="w-5 h-5" />
+            </button>
+            <button onClick={() => setIsDark(!isDark)} className="opacity-20 hover:opacity-100 transition-opacity">
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
           </div>
         </div>
       </header>
       
-      <main className="min-h-[calc(100vh-64px)] pb-20">
+      <main className="pb-32">
         {view === 'home' && (
-          <div className="animate-fade-in">
-            <div className="pt-24 pb-20 px-4 text-center border-b border-gray-100 dark:border-[#111]">
-              <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-black dark:text-white mb-6">Engineered.</h1>
-              <p className="text-lg md:text-xl text-gray-500 dark:text-gray-400 font-light mb-12 tracking-wide">The minimalist computer science dictionary.</p>
-              <div className="flex justify-center w-full max-w-2xl mx-auto">
-                <SearchBar dictionaryData={dictionaryData} onSelectTerm={(id) => navigate('entry', id)} history={history} />
+          <div className="animate-fade-in max-w-6xl mx-auto px-8 py-32 text-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 border border-black/10 dark:border-white/10 rounded-full text-[9px] font-black uppercase tracking-[0.3em] mb-10 opacity-30">
+              IMTech Research Platform
+            </div>
+            
+            <h1 className="text-8xl md:text-9xl font-black tracking-tighter mb-10 leading-none">
+              Engineered<span className="text-gray-300">.</span>
+            </h1>
+            
+            <p className="text-xl text-gray-400 mb-16 tracking-tight font-medium max-w-2xl mx-auto">
+              Clinical clarity for the modern engineer. A curated technical reference.
+            </p>
+
+            <div className="max-w-2xl mx-auto mb-40">
+              <SearchBar 
+                dictionaryData={dictionaryData} 
+                onSelectTerm={(id) => navigate('entry', id)} 
+                history={history} 
+              />
+              <div className="mt-6 flex justify-center gap-8 text-[9px] font-black uppercase tracking-widest text-gray-300">
+                 <span className="flex items-center gap-2">↑↓ Navigate</span>
+                 <span className="flex items-center gap-2">↵ Select</span>
+                 <span className="flex items-center gap-2">ESC Close</span>
               </div>
             </div>
-            <div className="max-w-6xl mx-auto px-4 mt-16">
-              <h2 className="text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-8">Categories</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {domains.map((d) => (
-                  <DomainCard key={d.name} title={d.name} count={d.count} onClick={() => navigate('index', null, d.name)} />
-                ))}
-              </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-left">
+              {domains.map(d => (
+                <DomainCard 
+                  key={d.name} 
+                  title={d.name} 
+                  count={d.count} 
+                  onClick={() => navigate('index', null, d.name)} 
+                />
+              ))}
             </div>
           </div>
         )}
-        
-        {view === 'entry' && <EntryDetail entry={dictionaryData.find(i => i.id === activeId)} dictionaryData={dictionaryData} onNavigate={navigate} onToggleBookmark={toggleBookmark} isBookmarked={bookmarks.some(b => b.id === activeId)} />}
-        {view === 'index' && <IndexView dictionaryData={dictionaryData} activeFilter={activeFilter} navigate={navigate} />}
-        {view === 'saved' && <IndexView dictionaryData={bookmarks} title="Saved Bookmarks" navigate={navigate} />}
+
+        {view === 'entry' && (
+          <EntryDetail 
+            entry={dictionaryData.find(i => i.id === activeId)} 
+            dictionaryData={dictionaryData} 
+            onNavigate={navigate} 
+            onToggleBookmark={toggleBookmark} 
+            isBookmarked={bookmarks.some(b => b.id === activeId)} 
+          />
+        )}
+
+        {view === 'index' && (
+          <IndexView 
+            dictionaryData={dictionaryData} 
+            activeFilter={activeFilter} 
+            navigate={navigate} 
+            title={activeFilter || "Full Index"} 
+          />
+        )}
+
+        {view === 'saved' && (
+          <IndexView 
+            dictionaryData={bookmarks} 
+            title="Library" 
+            navigate={navigate} 
+          />
+        )}
+
         {view === 'guide' && <GuideView />}
-        {view === 'learn' && <PromptWindow dictionaryData={dictionaryData} onNavigate={navigate} />}
+        
+        {view === 'learn' && (
+          <PromptWindow 
+            dictionaryData={dictionaryData} 
+            onNavigate={navigate} 
+          />
+        )}
       </main>
     </div>
   );

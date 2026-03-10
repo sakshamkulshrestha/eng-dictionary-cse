@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import { ChevronRight, ArrowUpRight, Info, BookOpen, AlertCircle, Code, Layers, Bookmark, Check, Copy, Sparkles } from 'lucide-react';
+import { ChevronRight, ArrowUpRight, Info, Code, Layers, Bookmark, Check, Copy, AlertCircle } from 'lucide-react';
 
 export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggleBookmark, isBookmarked }) {
   const [copied, setCopied] = useState(false);
 
-  if (!entry) return <div className="text-center py-20 text-gray-500">Term not found.</div>;
+  if (!entry) return (
+    <div className="flex flex-col items-center justify-center py-40">
+      <div className="text-xs font-bold uppercase tracking-[0.3em] opacity-20">Entry_Missing</div>
+    </div>
+  );
 
-  const findTermId = (termName) => {
-    const found = dictionaryData.find(d => d.term.toLowerCase() === termName.toLowerCase());
-    return found ? found.id : null;
-  };
-
+  const findId = (name) => dictionaryData.find(d => d.term.toLowerCase() === name.toLowerCase())?.id;
+  
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -18,146 +19,149 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12 animate-fade-in">
+    <div className="max-w-5xl mx-auto px-8 py-16 animate-fade-in text-black dark:text-white">
       
-      {/* --- TOP HEADER --- */}
-      <div className="flex justify-between items-start mb-12">
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-500 bg-indigo-50 dark:bg-indigo-950 px-2 py-0.5 rounded-full">
-              {entry.domain}
-            </span>
-          </div>
-          <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-            {entry.term}
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-500 dark:text-gray-400 font-normal leading-relaxed max-w-2xl">
-            {entry.definition_short}
-          </p>
-        </div>
+      {/* --- BREADCRUMBS --- */}
+      <nav className="flex items-center gap-2 mb-10 text-[11px] font-bold uppercase tracking-widest opacity-30">
+        <span className="hover:opacity-100 cursor-pointer" onClick={() => onNavigate('home')}>Library</span>
+        <ChevronRight className="w-3 h-3" />
+        <span className="hover:opacity-100 cursor-pointer" onClick={() => onNavigate('index', null, entry.domain)}>{entry.domain}</span>
+      </nav>
 
-        {/* Simple iOS Style Bookmark */}
-        <button 
-          onClick={() => onToggleBookmark(entry)}
-          className={`p-4 rounded-full transition-all duration-300 ${
-            isBookmarked 
-            ? 'bg-yellow-400 text-white shadow-lg' 
-            : 'bg-gray-100 dark:bg-zinc-800 text-gray-400 hover:bg-gray-200'
-          }`}
-        >
-          <Bookmark className={`w-6 h-6 ${isBookmarked ? 'fill-current' : ''}`} />
-        </button>
-      </div>
-
-      {/* --- MAIN GRID --- */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        
-        <div className="lg:col-span-2 space-y-10">
-          
-          {/* THE CONCEPT (Simple & Clean) */}
-          <section className="p-8 bg-gray-50 dark:bg-zinc-900/50 rounded-[2.5rem] border border-gray-100 dark:border-zinc-800">
-            <div className="flex items-center gap-2 mb-4 text-gray-400">
-              <Info className="w-4 h-4"/>
-              <h2 className="text-xs font-bold uppercase tracking-widest">Simple Explanation</h2>
-            </div>
-            <p className="text-lg md:text-xl text-gray-800 dark:text-gray-200 leading-relaxed font-medium">
-              {entry.explanation}
+      {/* --- HERO HEADER --- */}
+      <header className="mb-20 space-y-6">
+        <div className="flex justify-between items-start">
+          <div className="space-y-4">
+            <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight">
+              {entry.term}
+            </h1>
+            <p className="text-xl md:text-2xl text-zinc-500 dark:text-zinc-400 font-medium leading-snug max-w-2xl">
+              {entry.definition_short}
             </p>
+          </div>
+          
+          <button 
+            onClick={() => onToggleBookmark(entry)} 
+            className={`p-4 rounded-full transition-all duration-500 active:scale-90 ${
+              isBookmarked 
+              ? 'bg-black text-white dark:bg-white dark:text-black shadow-xl' 
+              : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-400 hover:text-black dark:hover:text-white'
+            }`}
+          >
+            <Bookmark className={`w-6 h-6 ${isBookmarked ? 'fill-current' : ''}`} />
+          </button>
+        </div>
+      </header>
+
+      {/* --- MAIN CONTENT GRID --- */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
+        
+        {/* LEFT COLUMN: PRIMARY INFO */}
+        <div className="lg:col-span-2 space-y-16">
+          
+          {/* ABOUT SECTION */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-2 text-zinc-400">
+              <Info className="w-4 h-4"/>
+              <h2 className="text-xs font-bold uppercase tracking-widest">About</h2>
+            </div>
+            <div className="p-8 md:p-10 bg-zinc-50 dark:bg-zinc-900/50 rounded-[2rem] border border-zinc-100 dark:border-zinc-800">
+              <p className="text-lg md:text-xl text-zinc-800 dark:text-zinc-200 leading-relaxed font-medium">
+                {entry.explanation}
+              </p>
+            </div>
           </section>
 
-          {/* CODE / IMPLEMENTATION */}
+          {/* IMPLEMENTATION (CLEAN TERMINAL) */}
           {entry.syntax_or_example && (
-            <section className="space-y-4">
-              <div className="flex justify-between items-center px-4">
-                <div className="flex items-center gap-2 text-gray-400">
+            <section className="space-y-6">
+              <div className="flex justify-between items-center px-2">
+                <div className="flex items-center gap-2 text-zinc-400">
                   <Code className="w-4 h-4"/>
-                  <h2 className="text-xs font-bold uppercase tracking-widest">How it looks</h2>
+                  <h2 className="text-xs font-bold uppercase tracking-widest">Structure</h2>
                 </div>
                 <button 
-                  onClick={() => handleCopy(entry.syntax_or_example)}
-                  className="text-[10px] font-bold uppercase tracking-widest text-indigo-500 hover:bg-indigo-50 p-2 rounded-lg transition-colors"
+                  onClick={() => handleCopy(entry.syntax_or_example)} 
+                  className="text-[11px] font-bold uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity"
                 >
-                  {copied ? "Done!" : "Copy Code"}
+                  {copied ? "Copied" : "Copy Code"}
                 </button>
               </div>
-              
-              <div className="bg-zinc-900 dark:bg-black rounded-[2rem] p-8 overflow-hidden shadow-xl">
-                <pre className="text-indigo-300 font-mono text-sm leading-7 overflow-x-auto whitespace-pre">
+              <div className="bg-zinc-950 rounded-[2rem] p-8 md:p-10 overflow-hidden shadow-2xl border border-zinc-800/50">
+                <pre className="text-zinc-300 font-mono text-[14px] leading-8 whitespace-pre">
                   <code>{entry.syntax_or_example}</code>
                 </pre>
               </div>
             </section>
           )}
-
-          {/* HARDWARE DETAILS (Only shows if info exists) */}
-          {entry.working_principle && (
-            <section className="p-8 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-[2.5rem] border border-indigo-100 dark:border-indigo-900/20">
-               <h2 className="text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase mb-4 tracking-widest">How it works</h2>
-               <p className="text-gray-700 dark:text-gray-300 text-lg leading-relaxed">{entry.working_principle}</p>
-            </section>
-          )}
         </div>
 
-        {/* --- SIDEBAR (iOS Cards) --- */}
-        <div className="space-y-6">
+        {/* RIGHT COLUMN: INSIGHTS */}
+        <div className="space-y-12">
           
           {/* COMPARISONS */}
           {entry.comparisons?.length > 0 && (
-            <div className="p-6 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-[2rem] shadow-sm">
-              <h2 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6">Compare</h2>
-              <div className="space-y-6">
+            <section className="space-y-6">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 px-2">Differences</h2>
+              <div className="space-y-4">
                 {entry.comparisons.map((c, i) => {
-                  const targetId = findTermId(c.target);
+                  const targetId = findId(c.target);
                   return (
-                    <div key={i} className="group cursor-pointer" onClick={() => targetId && onNavigate('entry', targetId)}>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-bold text-sm text-gray-900 dark:text-white group-hover:text-indigo-500 transition-colors">
-                          vs. {c.target}
-                        </span>
-                        <ArrowUpRight className="w-3 h-3 text-gray-300"/>
+                    <div 
+                      key={i} 
+                      className="p-6 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[1.5rem] shadow-sm group cursor-pointer"
+                      onClick={() => targetId && onNavigate('entry', targetId)}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-bold text-sm group-hover:underline underline-offset-4 tracking-tight">vs. {c.target}</span>
+                        {targetId && <ArrowUpRight className="w-3 h-3 text-zinc-300 group-hover:text-black dark:group-hover:text-white transition-colors"/>}
                       </div>
-                      <p className="text-xs text-gray-500 leading-normal">{c.note}</p>
+                      <p className="text-xs text-zinc-500 leading-relaxed font-medium">{c.note}</p>
                     </div>
                   );
                 })}
               </div>
-            </div>
+            </section>
           )}
 
-          {/* MISTAKES (Soft Red) */}
+          {/* PITFALLS */}
           {entry.common_misconceptions?.length > 0 && (
-            <div className="p-6 bg-red-50 dark:bg-red-950/20 rounded-[2rem] border border-red-100 dark:border-red-900/20">
-              <h2 className="text-[10px] font-bold uppercase tracking-widest text-red-500 mb-4 flex items-center gap-2">
-                <AlertCircle className="w-3 h-3"/> Don't forget
-              </h2>
-              {entry.common_misconceptions.map((m, i) => (
-                <p key={i} className="text-xs font-medium text-red-700 dark:text-red-400 leading-relaxed mb-2 last:mb-0">
-                  • {m}
-                </p>
-              ))}
-            </div>
+            <section className="space-y-6">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 px-2">Common Mistakes</h2>
+              <div className="p-6 bg-zinc-50 dark:bg-zinc-900/30 rounded-[1.5rem] border border-dashed border-zinc-200 dark:border-zinc-800">
+                <ul className="space-y-4">
+                  {entry.common_misconceptions.map((m, i) => (
+                    <li key={i} className="flex gap-3 text-xs font-medium text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                      <AlertCircle className="w-3 h-3 text-zinc-400 flex-shrink-0 mt-0.5" />
+                      <span>{m}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
           )}
 
-          {/* RELATED TAGS */}
+          {/* DISCOVER MORE */}
           {entry.related_words?.length > 0 && (
-            <div className="p-2">
-              <h2 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4 px-2">Related</h2>
-              <div className="flex flex-wrap gap-2">
-                {entry.related_words.map((word, i) => {
-                  const wordId = findTermId(word);
+            <section className="space-y-6 pt-6 border-t border-zinc-100 dark:border-zinc-900">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 px-2">Related Topics</h2>
+              <div className="flex flex-wrap gap-2 px-1">
+                {entry.related_words.map((w, i) => {
+                  const wId = findId(w);
                   return (
-                    <button
-                      key={i}
-                      onClick={() => wordId && onNavigate('entry', wordId)}
-                      className="text-xs font-semibold px-4 py-2 rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-300 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all"
+                    <button 
+                      key={i} 
+                      onClick={() => wId && onNavigate('entry', wId)} 
+                      className="text-[11px] font-bold px-4 py-2 rounded-full border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all active:scale-95"
                     >
-                      {word}
+                      {w}
                     </button>
                   );
                 })}
               </div>
-            </div>
+            </section>
           )}
+
         </div>
       </div>
     </div>
