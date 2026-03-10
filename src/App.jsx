@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { List, Sun, Moon } from 'lucide-react';
+import { List, Sun, Moon, Bookmark, Sparkles, HelpCircle } from 'lucide-react';
 import Logo from './components/Logo.jsx';
 import SearchBar from './components/SearchBar.jsx';
 import DomainCard from './components/DomainCard.jsx';
 import EntryDetail from './components/EntryDetail.jsx';
 import IndexView from './components/IndexView.jsx';
+import GuideView from './components/GuideView.jsx';
+import PromptWindow from './components/PromptWindow.jsx';
 
 export default function App() {
   const [dictionaryData, setDictionaryData] = useState([]);
@@ -12,43 +14,48 @@ export default function App() {
   const [view, setView] = useState('home');
   const [activeId, setActiveId] = useState(null);
   const [activeFilter, setActiveFilter] = useState(null);
-  const [isDark, setIsDark] = useState(true); // Default to Dark/AMOLED
+  
+  // 5. Default to Light Mode (isDark: false)
+  const [isDark, setIsDark] = useState(false);
+
+  // 3 & 4. Persistence for Bookmarks and History
+  const [bookmarks, setBookmarks] = useState(() => 
+    JSON.parse(localStorage.getItem('bookmarks') || '[]')
+  );
+  const [history, setHistory] = useState(() => 
+    JSON.parse(localStorage.getItem('history') || '[]')
+  );
 
   useEffect(() => {
-    // List all 10 domain files
-    const dataFiles = [
-      '/data/dsa.json',
-      '/data/os.json',
-      '/data/networks.json',
-      '/data/dbms.json',
-      '/data/coa.json',
-      '/data/ai.json',
-      '/data/se.json',
-      '/data/cyber.json',
-      '/data/cloud.json',
-      '/data/toc.json'
-    ];
-
-    // Fetch them all at the exact same time
+    const dataFiles = ['/data/dsa.json', '/data/os.json', '/data/networks.json', '/data/dbms.json', '/data/coa.json', '/data/ai.json', '/data/se.json', '/data/cyber.json', '/data/cloud.json', '/data/toc.json'];
     Promise.all(dataFiles.map(file => fetch(file).then(res => res.json())))
       .then(results => {
-        // Combine them back into one master list for the UI
-        const combinedData = results.flat();
-        setDictionaryData(combinedData);
+        setDictionaryData(results.flat());
         setIsLoading(false);
       })
-      .catch(err => {
-        console.error("Error fetching files:", err);
-        setIsLoading(false);
-      });
+      .catch(() => setIsLoading(false));
   }, []);
+
+  // Sync states to LocalStorage
+  useEffect(() => localStorage.setItem('bookmarks', JSON.stringify(bookmarks)), [bookmarks]);
+  useEffect(() => localStorage.setItem('history', JSON.stringify(history)), [history]);
 
   useEffect(() => {
     if (isDark) document.documentElement.classList.add('dark');
     else document.documentElement.classList.remove('dark');
   }, [isDark]);
 
+  const toggleBookmark = (entry) => {
+    setBookmarks(prev => prev.some(b => b.id === entry.id) 
+      ? prev.filter(b => b.id !== entry.id) : [entry, ...prev]);
+  };
+
+  const addToHistory = (id) => {
+    setHistory(prev => [id, ...prev.filter(i => i !== id)].slice(0, 10));
+  };
+
   const navigate = (page, id = null, filter = null) => {
+    if (id) addToHistory(id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setView(page);
     setActiveId(id);
@@ -69,9 +76,12 @@ export default function App() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex justify-between items-center h-16">
           <Logo onClick={() => navigate('home')} />
           <div className="hidden md:flex flex-1 mx-8 justify-center">
-            {view !== 'home' && <div className="w-full max-w-md"><SearchBar dictionaryData={dictionaryData} onSelectTerm={(id) => navigate('entry', id)} /></div>}
+            {view !== 'home' && <div className="w-full max-w-md"><SearchBar dictionaryData={dictionaryData} onSelectTerm={(id) => navigate('entry', id)} history={history} /></div>}
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-5">
+            <button onClick={() => navigate('learn')} className="text-gray-400 hover:text-indigo-500 transition-colors"><Sparkles className="w-5 h-5" /></button>
+            <button onClick={() => navigate('saved')} className={`transition-colors ${view === 'saved' ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-500'}`}><Bookmark className="w-5 h-5" /></button>
+            <button onClick={() => navigate('guide')} className="text-gray-400 hover:text-black dark:hover:text-white transition-colors"><HelpCircle className="w-5 h-5" /></button>
             <button onClick={() => navigate('index')} className="text-gray-400 hover:text-black dark:hover:text-white transition-colors"><List className="w-5 h-5" /></button>
             <button onClick={() => setIsDark(!isDark)} className="text-gray-400 hover:text-black dark:hover:text-white transition-colors">{isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}</button>
           </div>
@@ -82,14 +92,10 @@ export default function App() {
         {view === 'home' && (
           <div className="animate-fade-in">
             <div className="pt-24 pb-20 px-4 text-center border-b border-gray-100 dark:border-[#111]">
-              <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-black dark:text-white mb-6">
-                Engineered.
-              </h1>
-              <p className="text-lg md:text-xl text-gray-500 dark:text-gray-400 font-light mb-12 tracking-wide">
-                The minimalist computer science dictionary.
-              </p>
+              <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-black dark:text-white mb-6">Engineered.</h1>
+              <p className="text-lg md:text-xl text-gray-500 dark:text-gray-400 font-light mb-12 tracking-wide">The minimalist computer science dictionary.</p>
               <div className="flex justify-center w-full max-w-2xl mx-auto">
-                <SearchBar dictionaryData={dictionaryData} onSelectTerm={(id) => navigate('entry', id)} />
+                <SearchBar dictionaryData={dictionaryData} onSelectTerm={(id) => navigate('entry', id)} history={history} />
               </div>
             </div>
             <div className="max-w-6xl mx-auto px-4 mt-16">
@@ -103,9 +109,11 @@ export default function App() {
           </div>
         )}
         
-        {/* Pass dictionaryData to EntryDetail for cross-linking */}
-        {view === 'entry' && <EntryDetail entry={dictionaryData.find(i => i.id === activeId)} dictionaryData={dictionaryData} onNavigate={navigate} />}
+        {view === 'entry' && <EntryDetail entry={dictionaryData.find(i => i.id === activeId)} dictionaryData={dictionaryData} onNavigate={navigate} onToggleBookmark={toggleBookmark} isBookmarked={bookmarks.some(b => b.id === activeId)} />}
         {view === 'index' && <IndexView dictionaryData={dictionaryData} activeFilter={activeFilter} navigate={navigate} />}
+        {view === 'saved' && <IndexView dictionaryData={bookmarks} title="Saved Bookmarks" navigate={navigate} />}
+        {view === 'guide' && <GuideView />}
+        {view === 'learn' && <PromptWindow dictionaryData={dictionaryData} onNavigate={navigate} />}
       </main>
     </div>
   );
