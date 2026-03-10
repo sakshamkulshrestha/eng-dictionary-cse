@@ -26,10 +26,10 @@ export default function PromptWindow({ dictionaryData, onNavigate }) {
           <Sparkles className="w-8 h-8 text-accent" />
         </div>
         <h1 className="text-6xl sm:text-[84px] font-extrabold tracking-[-0.04em] mb-4 leading-none animate-slide-up bg-clip-text text-transparent bg-gradient-to-b from-blue-500 to-purple-600 pb-3">
-          Synthesis
+          Smart AI Guide
         </h1>
         <p className="text-xl sm:text-[22px] text-[#8E8E93] font-medium max-w-2xl mx-auto leading-relaxed animate-slide-up delay-100">
-          Describe your objective to dynamically generate a clinical roadmap.
+          Tell us what you want to learn. We will find the best words to help you understand it.
         </p>
       </header>
 
@@ -38,7 +38,7 @@ export default function PromptWindow({ dictionaryData, onNavigate }) {
         <div className="apple-card group p-6 min-h-[170px] pb-16 flex flex-col focus-within:shadow-[0_24px_48px_rgb(0,0,0,0.06)] dark:focus-within:shadow-[0_24px_48px_rgb(0,0,0,0.4)]">
           <textarea 
             className="w-full bg-transparent border-none outline-none text-[19px] resize-none text-black dark:text-white placeholder-[#8E8E93] font-medium leading-relaxed flex-1"
-            placeholder="e.g. How does a CPU handle logic and memory synchronization?"
+            placeholder="e.g. How does a computer's memory work?"
             value={prompt}
             rows={3}
             onChange={(e) => setPrompt(e.target.value)}
@@ -63,7 +63,7 @@ export default function PromptWindow({ dictionaryData, onNavigate }) {
                <Compass className="w-4 h-4 text-gray-500 dark:text-gray-400"/>
              </div>
              <h2 className="text-[14px] font-bold text-gray-500 uppercase tracking-widest">
-               Curated Pathway
+               Suggested Words to Read
              </h2>
            </div>
            

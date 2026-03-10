@@ -86,7 +86,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
               <div className="pl-10 py-4">
                 <div className="flex items-center gap-2 mb-4">
                   <FileText className="w-5 h-5 text-accent uppercase"/>
-                  <span className="text-[13px] font-bold text-accent uppercase tracking-widest">Technical Precision</span>
+                  <span className="text-[13px] font-bold text-accent uppercase tracking-widest">Technical Details</span>
                 </div>
                 <p className="text-[22px] sm:text-[28px] leading-[1.6] text-gray-600 dark:text-[#EAEAF0] font-medium font-serif italic">
                   "{entry.technical_definition}"
@@ -100,7 +100,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
             {entry.related_words?.length > 0 && (
               <div>
                 <h2 className="text-[13px] font-bold text-gray-400 mb-5 uppercase tracking-widest flex items-center gap-2 pl-2">
-                  <Network className="w-4 h-4"/> Related Nodes
+                  <Network className="w-4 h-4"/> Related Words
                 </h2>
                 <div className="flex flex-wrap gap-3">
                   {entry.related_words.map((w, i) => {
@@ -155,7 +155,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
             {entry.common_misconceptions?.length > 0 && (
               <div className="apple-card flex flex-col group !bg-red-50 dark:!bg-red-950/20 !border-red-500/10 cursor-default animate-slide-up delay-250 p-8">
                 <h2 className="text-[13px] font-bold text-red-600 dark:text-red-400 mb-6 uppercase tracking-widest flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4"/> Misconceptions
+                  <AlertCircle className="w-4 h-4"/> Common Mistakes
                 </h2>
                 <ul className="space-y-5">
                   {entry.common_misconceptions.map((m, i) => (
@@ -174,7 +174,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
           <div className="apple-card group !bg-[#282A36] dark:!bg-[#151517] p-8 relative overflow-hidden mt-8 cursor-default animate-slide-up delay-300">
             <div className="flex justify-between items-center mb-6">
                <h2 className="text-[14px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                 <Terminal className="w-4 h-4"/> Implementation
+                 <Terminal className="w-4 h-4"/> Example Code
                </h2>
                <button 
                 onClick={() => handleCopy(entry.syntax_or_example)} 
@@ -196,7 +196,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
         {entry.related_words?.length > 0 && (
           <div>
             <h2 className="text-[13px] font-bold text-gray-400 mb-5 uppercase tracking-widest flex items-center gap-2 pl-2">
-              <Network className="w-4 h-4"/> Related Nodes
+              <Network className="w-4 h-4"/> Related Words
             </h2>
             <div className="flex flex-wrap gap-3">
               {entry.related_words.map((w, i) => {

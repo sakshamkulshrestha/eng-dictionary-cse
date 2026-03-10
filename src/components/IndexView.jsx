@@ -39,14 +39,14 @@ export default function IndexView({ dictionaryData, onNavigate, initialFilter = 
             <Tag className="w-5 h-5 text-accent" />
           </div>
           <span className="text-[14px] font-bold text-accent uppercase tracking-widest">
-            {activeFilter ? 'Collection View' : 'Directory Index'}
+            {activeFilter ? 'Category' : 'All Words'}
           </span>
         </div>
         <h1 className="text-6xl sm:text-[80px] font-extrabold tracking-tight mb-4 animate-slide-up delay-100 leading-none pb-2">
           {displayTitle}
         </h1>
         <p className="text-xl sm:text-[22px] text-[#8E8E93] max-w-2xl font-medium animate-slide-up delay-150">
-          {activeFilter ? `Explore terms related to ${getFullDomainName(activeFilter)}.` : 'Browse through the complete technical index.'}
+          {activeFilter ? `Explore words related to ${getFullDomainName(activeFilter)}.` : 'Browse all the words in the dictionary.'}
         </p>
       </header>
 
