@@ -6,6 +6,11 @@ export default function PromptWindow({ dictionaryData, onNavigate }) {
   const [prompt, setPrompt] = useState('');
   const [results, setResults] = useState([]);
 
+  const getFullDomainName = (domainName) => {
+    if (domainName === 'DBMS') return 'Database Management System';
+    return domainName;
+  };
+
   const fuse = new Fuse(dictionaryData, { 
     keys: [{ name: 'term', weight: 2 }, { name: 'explanation', weight: 1 }, { name: 'definition_short', weight: 1 }], 
     threshold: 0.4 
@@ -88,7 +93,7 @@ export default function PromptWindow({ dictionaryData, onNavigate }) {
                      </span>
                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/10 text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest transition-colors group-hover:bg-purple-500 group-hover:text-white">
                        <Hash className="w-3.5 h-3.5" />
-                       {item.domain}
+                       {getFullDomainName(item.domain)}
                      </span>
                    </div>
                    

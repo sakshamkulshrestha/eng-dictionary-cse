@@ -3,6 +3,10 @@ import { ChevronRight, Bookmark } from 'lucide-react';
 
 export default function DomainCard({ title, count, onClick, delay = 0 }) {
   const delayClass = delay > 0 ? `delay-${delay}` : '';
+  const getFullDomainName = (domainName) => {
+    if (domainName === 'DBMS') return 'Database Management System';
+    return domainName;
+  };
   
   return (
     <div 
@@ -20,7 +24,7 @@ export default function DomainCard({ title, count, onClick, delay = 0 }) {
           <Bookmark className="w-[22px] h-[22px] text-[var(--ios-blue)]" />
         </div>
         <h3 className="text-[24px] font-bold tracking-tight text-black dark:text-white mb-2 leading-tight">
-          {title}
+          {getFullDomainName(title)}
         </h3>
       </div>
       

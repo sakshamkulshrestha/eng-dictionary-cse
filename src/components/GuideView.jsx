@@ -12,25 +12,25 @@ export default function GuideView() {
             <University className="w-5 h-5 text-[var(--ios-blue)]" />
           </div>
           <span className="text-[13px] font-bold text-[var(--ios-blue)] uppercase tracking-widest">
-            UoH Project
+            About the App
           </span>
         </div>
         <h1 className="text-6xl sm:text-[84px] font-extrabold tracking-[-0.04em] mb-4 leading-none animate-slide-up bg-clip-text text-transparent bg-gradient-to-b from-black to-gray-600 dark:from-white dark:to-gray-400 pb-3">
-          The Mission
+          The Dictionary
         </h1>
         <p className="text-xl sm:text-[22px] text-[#8E8E93] font-medium leading-relaxed max-w-2xl animate-slide-up delay-100">
-          A clinical technical catalog designed to replace cluttered textbooks with architectural clarity. Built by IMTech students.
+          A beautifully designed, easy-to-use dictionary for computing terms. Learn and discover new topics without the clutter of traditional textbooks.
         </p>
       </header>
 
-      {/* Core Features */}
+      {/* What it is */}
       <div className="mb-16">
-        <h2 className="text-[13px] font-bold text-gray-500 mb-6 uppercase tracking-widest pl-2">Capabilities</h2>
+        <h2 className="text-[13px] font-bold text-gray-500 mb-6 uppercase tracking-widest pl-2">What It Is</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {[
-            { icon: <Search className="w-6 h-6 text-[var(--ios-blue)]"/>, bgColor: "bg-[var(--ios-blue)]/10", title: "Fuzzy Search", desc: "Optimized matching logic for high-speed indexing across nodes." },
-            { icon: <Bookmark className="w-6 h-6 text-orange-500"/>, bgColor: "bg-orange-500/10", title: "Private Vault", desc: "All user saves and history are persisted locally. Your data never leaves your device." },
-            { icon: <Sparkles className="w-6 h-6 text-purple-500"/>, bgColor: "bg-purple-500/10", title: "Synthesis", desc: "Intent-based roadmaps that bridge concepts across disparate domains." }
+            { icon: <BookOpen className="w-6 h-6 text-[var(--ios-blue)]"/>, bgColor: "bg-[var(--ios-blue)]/10", title: "Clear Definitions", desc: "Complex ideas explained simply. We focus on clarity so you can understand topics instantly." },
+            { icon: <Layers className="w-6 h-6 text-orange-500"/>, bgColor: "bg-orange-500/10", title: "Rich Content", desc: "Explore thousands of terms across different categories like Networking, Web Development, and more." },
+            { icon: <Sparkles className="w-6 h-6 text-purple-500"/>, bgColor: "bg-purple-500/10", title: "Beautiful Design", desc: "Designed with an elegant interface that feels native to your device, making learning a joy." }
           ].map((f, i) => {
             const delayClass = `delay-${((i % 3) * 50) + 150}`;
             return (
@@ -46,15 +46,15 @@ export default function GuideView() {
         </div>
       </div>
 
-      {/* Usage Instructions */}
+      {/* How to Use */}
       <div className="mb-16">
         <h2 className="text-[13px] font-bold text-gray-500 mb-6 uppercase tracking-widest pl-2">How to Use</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {[
-            { title: "Universal Search", desc: "Tap the Search Bar or press Command+K. Type any conceptual computing term. The algorithm will display live predictions.", step: "1" },
-            { title: "Read & Compare", desc: "In the Entry view, study the core concept. Tap related nodes to seamlessly traverse neighboring architecture.", step: "2" },
-            { title: "Save to Vault", desc: "Tap the Bookmark icon. Navigate to the Library tab to review saved terms natively in offline mode.", step: "3" },
-            { title: "AI Synthesis", desc: "Navigate to the Synthesis UI. Ask complex multi-domain questions to generate a custom roadmap.", step: "4" }
+            { title: "Find a term", desc: "Tap the Search Bar at the top of the Home page to quickly find what you're looking for.", step: "1" },
+            { title: "Learn & Compare", desc: "Read the simple explanation and see how it differs from similar topics right on the same page.", step: "2" },
+            { title: "Save for later", desc: "Tap the Bookmark icon on any page to save it. You can view all your saved items in the Saved tab.", step: "3" },
+            { title: "Explore Categories", desc: "Browse through different topics like Data Structures or Frontend directly from the Home page.", step: "4" }
           ].map((s, i) => {
             const delayClass = `delay-${((i % 4) * 50) + 100}`;
             return (
@@ -72,38 +72,17 @@ export default function GuideView() {
         </div>
       </div>
 
-      {/* Specs */}
-      <div className="mb-16">
-        <h2 className="text-[13px] font-bold text-gray-500 mb-6 uppercase tracking-widest pl-2">System Details</h2>
-        <div className="bg-white dark:bg-[#1C1C1E] rounded-3xl overflow-hidden shadow-sm dark:shadow-none border border-black/5 dark:border-white/10">
-          <ul className="divide-y divide-black/5 dark:divide-white/10">
-            {["React 18", "Tailwind CSS", "Fuse.js", "Lucide Icons"].map(t => (
-              <li key={t} className="px-5 py-4 flex justify-between items-center text-[16px] font-medium">
-                <span>{t}</span>
-                <span className="text-gray-400">Integrated Standard</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div className="px-2 flex justify-between items-center text-[15px] font-medium mt-20 mb-8">
-        <span className="text-gray-400 flex items-center gap-2"><Fingerprint className="w-4 h-4"/> No Auth Required</span>
-        <a href="https://forms.gle/yFKUyDdgt8FL4y2M6" target="_blank" className="text-[var(--ios-blue)] flex items-center gap-1 active:opacity-60 transition-opacity">
-          Submit Feedback <ChevronRight className="w-4 h-4" />
-        </a>
-      </div>
-      <div className="mt-20 pt-10 border-t border-black/5 dark:border-white/10 flex flex-col items-center">
+      <div className="mt-24 pt-10 border-t border-black/5 dark:border-white/10 flex flex-col items-center">
         <h3 className="text-[14px] font-bold text-gray-500 mb-3 uppercase tracking-widest text-center">
-          Engineered By
+          Who Made It
         </h3>
         <p className="text-[17px] font-bold text-black dark:text-white mb-6 text-center">
-          IMTech Students, <span className="text-[var(--ios-blue)]">University of Hyderabad</span>
+          Created with care by IMTech Students from the <span className="text-[var(--ios-blue)]">University of Hyderabad</span>.
         </p>
         
-        <div className="flex flex-wrap justify-center gap-3 max-w-2xl">
+        <div className="flex flex-wrap justify-center gap-4 max-w-2xl px-4">
           {developers.map(dev => (
-            <div key={dev} className="px-4 py-2 bg-[#F2F2F7] dark:bg-[#2C2C2E] rounded-full text-[14px] font-semibold text-black dark:text-white shadow-sm border border-black/5 dark:border-white/5">
+            <div key={dev} className="px-5 py-2.5 bg-white dark:bg-[#2C2C2E] rounded-full text-[15px] font-medium text-black dark:text-white shadow-[0_4px_12px_rgb(0,0,0,0.04)] dark:shadow-none border border-black/5 dark:border-white/5 transition-transform hover:-translate-y-0.5">
               {dev}
             </div>
           ))}

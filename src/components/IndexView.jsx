@@ -7,6 +7,12 @@ export default function IndexView({ dictionaryData, activeFilter, navigate, titl
     ? dictionaryData.filter(item => item.domain === activeFilter)
     : dictionaryData;
 
+  const getFullDomainName = (domainName) => {
+    if (domainName === 'DBMS') return 'Database Management System';
+    return domainName;
+  };
+
+  const displayTitle = activeFilter ? getFullDomainName(title) : title;
   const sortedData = [...filteredData].sort((a, b) => a.term.localeCompare(b.term));
 
   return (
@@ -23,10 +29,10 @@ export default function IndexView({ dictionaryData, activeFilter, navigate, titl
           </span>
         </div>
         <h1 className="text-6xl sm:text-[80px] font-extrabold tracking-tight mb-4 animate-slide-up delay-100 leading-none pb-2">
-          {title}
+          {displayTitle}
         </h1>
         <p className="text-xl sm:text-[22px] text-[#8E8E93] max-w-2xl font-medium animate-slide-up delay-150">
-          {activeFilter ? `Exploring nodes within the ${activeFilter} domain.` : 'Browse through the complete technical index.'}
+          {activeFilter ? `Explore terms related to ${getFullDomainName(activeFilter)}.` : 'Browse through the complete technical index.'}
         </p>
       </header>
 
@@ -49,10 +55,12 @@ export default function IndexView({ dictionaryData, activeFilter, navigate, titl
               </div>
               
               <div className="relative z-10">
-                <span className="inline-block px-3 py-1.5 rounded-full bg-[var(--ios-blue)]/10 text-[11px] font-bold text-[var(--ios-blue)] uppercase tracking-widest mb-4 transition-transform group-hover:scale-105 origin-left">
-                  {item.domain}
-                </span>
-                <h3 className="text-[24px] font-bold tracking-tight text-black dark:text-white mb-3 leading-tight pr-6 relative z-10">
+                {!activeFilter && (
+                  <span className="inline-block px-3 py-1.5 rounded-full bg-[var(--ios-blue)]/10 text-[11px] font-bold text-[var(--ios-blue)] uppercase tracking-widest mb-4 transition-transform group-hover:scale-105 origin-left">
+                    {item.domain}
+                  </span>
+                )}
+                <h3 className={`text-[24px] font-bold tracking-tight text-black dark:text-white ${!activeFilter ? 'mb-3' : 'mb-4'} leading-tight pr-6 relative z-10`}>
                   {item.term}
                 </h3>
               </div>

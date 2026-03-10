@@ -7,6 +7,11 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
 
   const findId = (name) => dictionaryData.find(d => d.term.toLowerCase() === name.toLowerCase())?.id;
   
+  const getFullDomainName = (domainName) => {
+    if (domainName === 'DBMS') return 'Database Management System';
+    return domainName;
+  };
+
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -18,16 +23,16 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
       {/* iOS Large Header with context action */}
       <header className="flex justify-between items-start mb-16 pl-2 sm:pl-0">
         <div className="max-w-3xl">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[var(--ios-blue)]/10 text-[13px] font-bold text-[var(--ios-blue)] uppercase tracking-widest">
+          <div className="flex items-center gap-3 mb-5">
+            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[var(--ios-blue)]/10 text-[13px] font-bold text-[var(--ios-blue)] uppercase tracking-widest transition-transform hover:scale-105 origin-left">
               <Hash className="w-3.5 h-3.5" />
-              {entry.domain}
+              {getFullDomainName(entry.domain)}
             </span>
           </div>
-          <h1 className="text-5xl sm:text-7xl font-bold tracking-tight mb-4 leading-tight">
+          <h1 className="text-6xl sm:text-[84px] font-extrabold tracking-tight mb-6 leading-[1.05] animate-slide-up pb-2 text-black dark:text-white">
             {entry.term}
           </h1>
-          <p className="text-xl text-gray-500 font-medium leading-relaxed">
+          <p className="text-[22px] sm:text-[26px] text-gray-500 dark:text-gray-400 font-medium leading-relaxed tracking-tight animate-slide-up delay-100 max-w-2xl">
             {entry.definition_short}
           </p>
         </div>
@@ -42,21 +47,22 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
       <div className="grid grid-cols-1 gap-6">
         {/* Concept */}
         <div className="apple-card group p-7 sm:p-10 cursor-default animate-slide-up delay-100">
-          <h2 className="text-[14px] font-bold text-gray-500 mb-5 uppercase tracking-widest flex items-center gap-2">
-            <Info className="w-4 h-4"/> Concept Overview
+          <h2 className="text-[14px] font-bold text-[var(--ios-blue)] mb-5 uppercase tracking-widest flex items-center gap-2">
+            <Info className="w-5 h-5"/> Concept Overview
           </h2>
-          <p className="text-[19px] sm:text-[21px] leading-relaxed text-black dark:text-white font-medium">
+          <p className="text-[21px] sm:text-[24px] leading-relaxed text-black dark:text-white font-medium tracking-tight">
             {entry.explanation}
           </p>
         </div>
 
         {/* Technical Definition */}
         {entry.technical_definition && (
-          <div className="apple-card group p-7 cursor-default animate-slide-up delay-150">
-            <h2 className="text-[14px] font-bold text-gray-500 mb-4 uppercase tracking-widest flex items-center gap-2">
-              <FileText className="w-4 h-4"/> Technical Definition
+          <div className="apple-card group p-7 sm:p-10 cursor-default animate-slide-up delay-150 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--ios-blue)] opacity-5 rounded-bl-full -mr-10 -mt-10 blur-xl pointer-events-none"></div>
+            <h2 className="text-[14px] font-bold text-gray-500 mb-5 uppercase tracking-widest flex items-center gap-2">
+              <FileText className="w-5 h-5 text-gray-400"/> Technical Details
             </h2>
-            <p className="text-[17px] leading-relaxed text-gray-500 dark:text-gray-400 font-medium italic">
+            <p className="text-[19px] leading-relaxed text-gray-600 dark:text-gray-300 font-medium italic border-l-4 border-[var(--ios-blue)]/30 pl-6 rounded-r-xl">
               "{entry.technical_definition}"
             </p>
           </div>
@@ -76,13 +82,13 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
                     <div 
                       key={i} 
                       onClick={() => targetId && onNavigate('entry', targetId)}
-                      className={`p-5 rounded-2xl border border-black/[0.05] dark:border-white/[0.05] bg-white dark:bg-[#2C2C2E] flex flex-col transition-all duration-300 ${targetId ? 'cursor-pointer hover:-translate-y-1 hover:shadow-[0_8px_24px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_24px_rgb(0,0,0,0.4)] active:scale-[0.97]' : ''}`}
+                      className={`p-6 rounded-3xl border border-black/[0.04] dark:border-white/[0.06] bg-[#F2F2F7] dark:bg-[#151517] flex flex-col transition-all duration-400 ${targetId ? 'cursor-pointer hover:-translate-y-1 hover:shadow-lg dark:hover:shadow-none hover:bg-white dark:hover:bg-[#2C2C2E] active:scale-[0.97]' : ''}`}
                     >
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-[18px] font-bold text-black dark:text-white">{c.target}</span>
-                        {targetId && <ChevronRight className="w-4 h-4 text-gray-400" />}
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-[20px] font-extrabold text-black dark:text-white tracking-tight">{c.target}</span>
+                        {targetId && <ChevronRight className="w-5 h-5 text-[#8E8E93]" />}
                       </div>
-                      <span className="text-[15px] font-medium text-gray-500 leading-relaxed">{c.note}</span>
+                      <span className="text-[16px] font-medium text-[#8E8E93] leading-relaxed">{c.note}</span>
                     </div>
                   );
                 })}
@@ -98,8 +104,8 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
               </h2>
               <ul className="space-y-4">
                 {entry.common_misconceptions.map((m, i) => (
-                  <li key={i} className="text-[16px] font-medium text-amber-900 dark:text-[#E8DAB2] flex items-start gap-3 leading-relaxed">
-                     <span className="text-amber-500 font-bold mt-0.5">•</span>
+                  <li key={i} className="text-[17px] font-medium text-amber-900 dark:text-[#E8DAB2] flex items-start gap-4 leading-relaxed">
+                     <span className="text-amber-500 font-black mt-0.5 text-xl leading-none">•</span>
                      <span>{m}</span>
                   </li>
                 ))}
@@ -141,7 +147,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
                   <button 
                     key={i} 
                     onClick={() => targetId && onNavigate('entry', targetId)} 
-                    className={`px-5 py-2.5 rounded-full text-[15px] font-bold transition-all duration-300 ${targetId ? 'bg-white dark:bg-[#2C2C2E] border border-black/[0.05] dark:border-white/[0.05] text-black dark:text-white hover:-translate-y-1 hover:shadow-md active:scale-95 shadow-sm cursor-pointer' : 'bg-transparent border border-black/10 dark:border-white/10 text-gray-500 cursor-default'}`}
+                    className={`px-5 py-2.5 rounded-full text-[15px] font-bold transition-all duration-300 shadow-sm ${targetId ? 'bg-[#F2F2F7] dark:bg-[#2C2C2E] border border-black/[0.03] dark:border-white/[0.05] text-black dark:text-white hover:-translate-y-1 hover:shadow-md active:scale-95 cursor-pointer' : 'bg-transparent border border-black/10 dark:border-white/10 text-gray-400 cursor-default'}`}
                   >
                     {w}
                   </button>
