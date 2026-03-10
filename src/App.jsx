@@ -44,6 +44,15 @@ export default function App() {
     setActiveFilter(filter);
   };
 
+  const toggleBookmark = (entry) => {
+    setBookmarks(prev => {
+      if (prev.find(b => b.id === entry.id)) {
+        return prev.filter(b => b.id !== entry.id);
+      }
+      return [entry, ...prev];
+    });
+  };
+
   const domains = useMemo(() => {
     const counts = {};
     dictionaryData.forEach(d => counts[d.domain] = (counts[d.domain] || 0) + 1);
@@ -53,14 +62,16 @@ export default function App() {
   if (isLoading) return <div className="h-screen flex items-center justify-center font-bold text-[10px] tracking-[0.5em] uppercase opacity-20 dark:text-white">Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black font-sans text-black dark:text-white transition-colors duration-700">
+    <div className="min-h-screen font-sans">
       
-      {/* --- Apple Navigation Bar --- */}
-      <header className="sticky top-0 z-50 w-full bg-white/70 dark:bg-black/70 backdrop-blur-3xl border-b border-zinc-100 dark:border-zinc-900 h-16">
-        <div className="max-w-7xl mx-auto px-6 h-full flex justify-between items-center">
-          <Logo onClick={() => navigate('home')} />
+      {/* --- Apple Premium Navigation Bar --- */}
+      <header className="sticky top-0 z-50 w-full apple-glass h-[64px] border-b border-black/5 dark:border-white/5">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-full flex justify-between items-center gap-4">
+          <div className="flex-shrink-0">
+            <Logo onClick={() => navigate('home')} />
+          </div>
           
-          <div className="hidden md:flex flex-1 mx-12 justify-center max-w-xl">
+          <div className="hidden md:flex flex-1 justify-center max-w-xl px-4">
             {view !== 'home' && (
               <SearchBar 
                 dictionaryData={dictionaryData} 
@@ -70,47 +81,47 @@ export default function App() {
             )}
           </div>
 
-          <div className="flex items-center gap-7">
-            <button onClick={() => navigate('learn')} className={`transition-all active:scale-90 ${view === 'learn' ? 'opacity-100' : 'opacity-30'}`}>
-              <Sparkles className="w-4 h-4" />
+          <div className="flex items-center gap-6 flex-shrink-0">
+            <button onClick={() => navigate('learn')} className={`transition-colors active:scale-95 ${view === 'learn' ? 'text-[var(--ios-blue)]' : 'text-[#8E8E93] hover:text-black dark:hover:text-white'}`}>
+              <Sparkles className="w-[20px] h-[20px]" strokeWidth={2} />
             </button>
-            <button onClick={() => navigate('saved')} className={`transition-all active:scale-90 ${view === 'saved' ? 'opacity-100' : 'opacity-30'}`}>
-              <Bookmark className="w-4 h-4" />
+            <button onClick={() => navigate('saved')} className={`transition-colors active:scale-95 ${view === 'saved' ? 'text-[var(--ios-blue)]' : 'text-[#8E8E93] hover:text-black dark:hover:text-white'}`}>
+              <Bookmark className="w-[20px] h-[20px]" strokeWidth={2} />
             </button>
-            <button onClick={() => navigate('guide')} className={`transition-all active:scale-90 ${view === 'guide' ? 'opacity-100' : 'opacity-30'}`}>
-              <Info className="w-4 h-4" />
+            <button onClick={() => navigate('guide')} className={`transition-colors active:scale-95 ${view === 'guide' ? 'text-[var(--ios-blue)]' : 'text-[#8E8E93] hover:text-black dark:hover:text-white'}`}>
+              <Info className="w-[20px] h-[20px]" strokeWidth={2} />
             </button>
-            <button onClick={() => navigate('index', null, null)} className={`transition-all active:scale-90 ${view === 'index' ? 'opacity-100' : 'opacity-30'}`}>
-              <List className="w-4 h-4" />
+            <button onClick={() => navigate('index', null, null)} className={`transition-colors active:scale-95 ${view === 'index' ? 'text-[var(--ios-blue)]' : 'text-[#8E8E93] hover:text-black dark:hover:text-white'}`}>
+              <List className="w-[20px] h-[20px]" strokeWidth={2} />
             </button>
-            <button onClick={() => setIsDark(!isDark)} className="opacity-20 hover:opacity-100 transition-opacity">
-              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            <button onClick={() => setIsDark(!isDark)} className="text-[#8E8E93] hover:text-black dark:hover:text-white transition-colors active:scale-95 ml-2">
+              {isDark ? <Sun className="w-[20px] h-[20px]" strokeWidth={2} /> : <Moon className="w-[20px] h-[20px]" strokeWidth={2} />}
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto">
+      <main className="max-w-5xl mx-auto pb-20">
         {view === 'home' && (
-          <div className="animate-fade-in px-8 py-40 flex flex-col items-center">
-            {/* Minimalist Hero Section */}
-            <div className="text-center mb-24 space-y-4">
-              <h1 className="text-7xl md:text-8xl font-black tracking-tight leading-none">
-                Engineered<span className="opacity-20">.</span>
+          <div className="animate-fade-in px-4 sm:px-6 py-16 sm:py-24 flex flex-col items-center text-center">
+            {/* Premium Home Intro */}
+            <div className="mb-10 flex flex-col items-center w-full max-w-2xl">
+              <h1 className="text-5xl sm:text-7xl font-bold tracking-tight mb-4 leading-tight">
+                Engineered
               </h1>
-              <p className="text-xl md:text-2xl text-zinc-400 font-medium tracking-tight">
+              <p className="text-xl sm:text-2xl font-medium text-gray-500 dark:text-gray-400">
                 High-fidelity technical documentation.
               </p>
             </div>
 
-            <div className="w-full max-w-2xl mb-48">
+            <div className="w-full max-w-2xl mb-20 shadow-[0_12px_40px_rgb(0,0,0,0.06)] dark:shadow-[0_12px_40px_rgb(0,0,0,0.3)] rounded-full">
               <SearchBar dictionaryData={dictionaryData} onSelectTerm={(id) => navigate('entry', id)} history={history} />
             </div>
 
-            {/* Categorical Grid */}
-            <div className="w-full space-y-12">
-              <h2 className="text-[10px] font-black uppercase tracking-[0.5em] opacity-30 text-center">Catalog_Domains</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Categorical Grid List */}
+            <div className="w-full text-left">
+              <h2 className="text-[13px] font-bold text-gray-500 mb-6 ml-2 uppercase tracking-widest">Catalog Domains</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {domains.map(d => (
                   <DomainCard 
                     key={d.name} 

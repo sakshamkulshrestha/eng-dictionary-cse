@@ -3,36 +3,40 @@
 @tailwind utilities;
 
 :root {
-  --apple-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --apple-spring: cubic-bezier(0.25, 0.8, 0.25, 1);
+  --ios-blue: #007AFF;
+  --ios-bg-light: #F2F2F7;
+  --ios-bg-dark: #000000;
+  --ios-card-light: #FFFFFF;
+  --ios-card-dark: #1C1C1E;
 }
 
 @layer base {
   html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto; /* iOS scroll is mostly native, no forced smooth CSS needed usually but we'll leave it out */
     -webkit-font-smoothing: antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   }
   body {
-    @apply bg-white dark:bg-black text-black dark:text-white transition-colors duration-500;
-  }
-  * {
-    transition: all 400ms var(--apple-spring);
+    @apply bg-[var(--ios-bg-light)] dark:bg-[var(--ios-bg-dark)] text-black dark:text-white transition-colors duration-300;
   }
 }
 
 @layer utilities {
   .apple-glass {
-    @apply backdrop-blur-3xl bg-white/70 dark:bg-black/70 border-b border-zinc-100 dark:border-zinc-900;
+    @apply backdrop-blur-xl bg-white/80 dark:bg-[#1d1d1f]/80 border-b border-black/5 dark:border-white/10;
+    @apply saturate-[1.8];
   }
   .apple-card {
-    @apply bg-zinc-50 dark:bg-zinc-900/40 rounded-[2.5rem] border border-zinc-100 dark:border-zinc-800 p-10;
-    @apply hover:border-black dark:hover:border-white active:scale-[0.98];
+    @apply bg-white dark:bg-[var(--ios-card-dark)] rounded-2xl shadow-sm dark:shadow-none border-t border-b sm:border border-gray-200 dark:border-white/10 p-4 sm:p-6;
+    @apply active:scale-[0.98] transition-transform duration-200;
   }
   .animate-fade-in {
-    animation: appleFade 0.6s var(--apple-spring) forwards;
+    animation: appleFade 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
   }
 }
 
 @keyframes appleFade {
-  from { opacity: 0; transform: translateY(15px); }
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Info, Code, Layers, Bookmark, AlertCircle, Terminal, ArrowUpRight } from 'lucide-react';
+import { Info, Code, Bookmark, AlertCircle, Terminal, ChevronRight, Hash, Network, Scale, FileText } from 'lucide-react';
 
 export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggleBookmark, isBookmarked }) {
   const [copied, setCopied] = useState(false);
   if (!entry) return null;
 
   const findId = (name) => dictionaryData.find(d => d.term.toLowerCase() === name.toLowerCase())?.id;
+  
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -13,75 +14,142 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-8 py-20 animate-fade-in">
-      {/* --- HEADER --- */}
-      <header className="flex justify-between items-end mb-20 pb-16 border-b border-zinc-100 dark:border-zinc-900">
-        <div className="space-y-6">
-          <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{entry.domain}</span>
-          <h1 className="text-7xl font-black tracking-tighter">{entry.term}</h1>
-          <p className="text-2xl text-zinc-500 dark:text-zinc-400 font-medium leading-tight max-w-2xl">{entry.definition_short}</p>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24 animate-fade-in pb-32">
+      {/* iOS Large Header with context action */}
+      <header className="flex justify-between items-start mb-16 pl-2 sm:pl-0">
+        <div className="max-w-3xl">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[var(--ios-blue)]/10 text-[13px] font-bold text-[var(--ios-blue)] uppercase tracking-widest">
+              <Hash className="w-3.5 h-3.5" />
+              {entry.domain}
+            </span>
+          </div>
+          <h1 className="text-5xl sm:text-7xl font-bold tracking-tight mb-4 leading-tight">
+            {entry.term}
+          </h1>
+          <p className="text-xl text-gray-500 font-medium leading-relaxed">
+            {entry.definition_short}
+          </p>
         </div>
-        <button onClick={() => onToggleBookmark(entry)} className={`p-6 rounded-full transition-all ${isBookmarked ? 'bg-black text-white dark:bg-white dark:text-black shadow-xl' : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-400'}`}>
-          <Bookmark className={`w-6 h-6 ${isBookmarked ? 'fill-current' : ''}`} />
+        <button 
+          onClick={() => onToggleBookmark(entry)} 
+          className={`w-14 h-14 rounded-full flex items-center justify-center hover:scale-110 active:scale-90 transition-all ml-4 shrink-0 shadow-sm ${isBookmarked ? 'bg-[var(--ios-blue)]/20 shadow-[0_8px_16px_rgba(0,122,255,0.2)]' : 'bg-[#E5E5EA] dark:bg-[#2C2C2E] hover:bg-gray-300 dark:hover:bg-[#3A3A3C]'}`}
+        >
+          <Bookmark className={`w-6 h-6 ${isBookmarked ? 'fill-[var(--ios-blue)] text-[var(--ios-blue)]' : 'text-gray-500 dark:text-gray-400'}`} strokeWidth={isBookmarked ? 1 : 2.5} />
         </button>
       </header>
 
-      {/* --- MAIN GRID --- */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-        <div className="lg:col-span-8 space-y-16">
-          {/* Concept Card */}
-          <section className="apple-card">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-8 flex items-center gap-2"><Info className="w-4 h-4"/> Concept</h2>
-            <p className="text-xl md:text-2xl font-medium leading-relaxed italic opacity-80">"{entry.explanation}"</p>
-          </section>
+      <div className="grid grid-cols-1 gap-6">
+        {/* Concept */}
+        <div className="group bg-[#F9F9FB] dark:bg-[#1C1C1E] rounded-[2rem] p-7 sm:p-10 shadow-sm hover:shadow-[0_24px_48px_rgb(0,0,0,0.06)] dark:hover:shadow-[0_24px_48px_rgb(0,0,0,0.4)] border border-black/[0.03] dark:border-white/[0.05] transition-all duration-400">
+          <h2 className="text-[14px] font-bold text-gray-500 mb-5 uppercase tracking-widest flex items-center gap-2">
+            <Info className="w-4 h-4"/> Concept Overview
+          </h2>
+          <p className="text-[19px] sm:text-[21px] leading-relaxed text-black dark:text-white font-medium">
+            {entry.explanation}
+          </p>
+        </div>
 
-          {/* Terminal Code Block */}
-          {entry.syntax_or_example && (
-            <section className="space-y-6 group">
-              <div className="flex justify-between px-4">
-                <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 flex items-center gap-2"><Code className="w-4 h-4"/> Implementation</h2>
-                <button onClick={() => handleCopy(entry.syntax_or_example)} className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{copied ? "Copied" : "Copy Code"}</button>
+        {/* Technical Definition */}
+        {entry.technical_definition && (
+          <div className="group bg-[#F9F9FB] dark:bg-[#1C1C1E] rounded-[2rem] p-7 shadow-sm hover:shadow-[0_24px_48px_rgb(0,0,0,0.06)] dark:hover:shadow-[0_24px_48px_rgb(0,0,0,0.4)] border border-black/[0.03] dark:border-white/[0.05] transition-all duration-400">
+            <h2 className="text-[14px] font-bold text-gray-500 mb-4 uppercase tracking-widest flex items-center gap-2">
+              <FileText className="w-4 h-4"/> Technical Definition
+            </h2>
+            <p className="text-[17px] leading-relaxed text-gray-500 dark:text-gray-400 font-medium italic">
+              "{entry.technical_definition}"
+            </p>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Differences */}
+          {entry.comparisons?.length > 0 && (
+            <div className="flex flex-col group bg-[#F9F9FB] dark:bg-[#1C1C1E] rounded-[2rem] p-7 shadow-sm hover:shadow-[0_24px_48px_rgb(0,0,0,0.06)] dark:hover:shadow-[0_24px_48px_rgb(0,0,0,0.4)] border border-black/[0.03] dark:border-white/[0.05] transition-all duration-400">
+              <h2 className="text-[14px] font-bold text-gray-500 mb-5 uppercase tracking-widest flex items-center gap-2">
+                <Scale className="w-4 h-4"/> Differences
+              </h2>
+              <div className="flex flex-col gap-3">
+                {entry.comparisons.map((c, i) => {
+                  const targetId = findId(c.target);
+                  return (
+                    <div 
+                      key={i} 
+                      onClick={() => targetId && onNavigate('entry', targetId)}
+                      className={`p-5 rounded-2xl border border-black/[0.05] dark:border-white/[0.05] bg-white dark:bg-[#2C2C2E] flex flex-col transition-all duration-300 ${targetId ? 'cursor-pointer hover:-translate-y-1 hover:shadow-[0_8px_24px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_24px_rgb(0,0,0,0.4)] active:scale-[0.97]' : ''}`}
+                    >
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-[18px] font-bold text-black dark:text-white">{c.target}</span>
+                        {targetId && <ChevronRight className="w-4 h-4 text-gray-400" />}
+                      </div>
+                      <span className="text-[15px] font-medium text-gray-500 leading-relaxed">{c.note}</span>
+                    </div>
+                  );
+                })}
               </div>
-              <div className="bg-black rounded-[2.5rem] p-10 shadow-2xl border border-white/5 relative">
-                <div className="flex gap-2 mb-8 opacity-30">
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-500" /><div className="w-2.5 h-2.5 rounded-full bg-yellow-500" /><div className="w-2.5 h-2.5 rounded-full bg-green-500" />
-                </div>
-                <pre className="text-zinc-300 font-mono text-[14px] leading-8"><code>{entry.syntax_or_example}</code></pre>
-              </div>
-            </section>
+            </div>
+          )}
+
+          {/* Misconceptions */}
+          {entry.common_misconceptions?.length > 0 && (
+            <div className="flex flex-col group bg-[#FFF9EB] dark:bg-[#2A2312] rounded-[2rem] p-7 shadow-sm hover:shadow-[0_24px_48px_rgb(0,0,0,0.06)] dark:hover:shadow-[0_24px_48px_rgb(0,0,0,0.4)] border border-amber-500/20 transition-all duration-400">
+              <h2 className="text-[14px] font-bold text-amber-600 dark:text-amber-500 mb-5 uppercase tracking-widest flex items-center gap-2">
+                <AlertCircle className="w-4 h-4"/> Misconceptions
+              </h2>
+              <ul className="space-y-4">
+                {entry.common_misconceptions.map((m, i) => (
+                  <li key={i} className="text-[16px] font-medium text-amber-900 dark:text-[#E8DAB2] flex items-start gap-3 leading-relaxed">
+                     <span className="text-amber-500 font-bold mt-0.5">•</span>
+                     <span>{m}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
 
-        {/* --- SIDEBAR --- */}
-        <div className="lg:col-span-4 space-y-12">
-          {entry.comparisons?.length > 0 && (
-            <section className="apple-card !p-8">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-8">Differences</h2>
-              {entry.comparisons.map((c, i) => (
-                <div key={i} className="mb-8 last:mb-0 group cursor-pointer" onClick={() => findId(c.target) && onNavigate('entry', findId(c.target))}>
-                  <div className="flex justify-between items-center font-bold text-sm mb-1">{c.target} <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100" /></div>
-                  <p className="text-xs text-zinc-500 leading-relaxed">{c.note}</p>
-                </div>
-              ))}
-            </section>
-          )}
+        {/* Code Block */}
+        {entry.syntax_or_example && (
+          <div className="group bg-[#282A36] dark:bg-[#151517] rounded-[2rem] p-7 shadow-sm hover:shadow-[0_24px_48px_rgb(0,0,0,0.15)] dark:hover:shadow-[0_24px_48px_rgb(0,0,0,0.6)] border border-black/10 dark:border-white/[0.05] transition-all duration-400 relative overflow-hidden mt-2">
+            <div className="flex justify-between items-center mb-6">
+               <h2 className="text-[14px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                 <Terminal className="w-4 h-4"/> Implementation
+               </h2>
+               <button 
+                onClick={() => handleCopy(entry.syntax_or_example)} 
+                className="px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-[13px] font-bold text-white transition-all active:scale-95 border border-white/10"
+               >
+                 {copied ? "Copied!" : "Copy Code"}
+               </button>
+            </div>
+            <pre className="text-gray-200 font-mono text-[15px] leading-relaxed overflow-x-auto pb-2 scrollbar-thin">
+              <code>{entry.syntax_or_example}</code>
+            </pre>
+          </div>
+        )}
 
-          {entry.common_misconceptions?.length > 0 && (
-            <section className="apple-card !p-8 !bg-zinc-50 dark:!bg-zinc-900/20">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-8 flex items-center gap-2"><AlertCircle className="w-4 h-4"/> Misconceptions</h2>
-              {entry.common_misconceptions.map((m, i) => <p key={i} className="text-xs font-medium text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4 last:mb-0 italic">"{m}"</p>)}
-            </section>
-          )}
-
-          <div className="pt-8 border-t border-zinc-100 dark:border-zinc-900">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-6">Related Nodes</h2>
-            <div className="flex flex-wrap gap-2">
-              {entry.related_words?.map((w, i) => (
-                <button key={i} onClick={() => findId(w) && onNavigate('entry', findId(w))} className="text-[10px] font-bold px-4 py-2 rounded-full border border-zinc-200 dark:border-zinc-800 hover:bg-black hover:text-white transition-all">{w}</button>
-              ))}
+        {/* Tags */}
+        {entry.related_words?.length > 0 && (
+          <div className="pt-8">
+            <h2 className="text-[13px] font-bold text-gray-500 mb-5 uppercase tracking-widest flex items-center gap-2 pl-2">
+              <Network className="w-4 h-4"/> Related Nodes
+            </h2>
+            <div className="flex flex-wrap gap-3">
+              {entry.related_words.map((w, i) => {
+                const targetId = findId(w);
+                return (
+                  <button 
+                    key={i} 
+                    onClick={() => targetId && onNavigate('entry', targetId)} 
+                    className={`px-5 py-2.5 rounded-full text-[15px] font-bold transition-all duration-300 ${targetId ? 'bg-white dark:bg-[#2C2C2E] border border-black/[0.05] dark:border-white/[0.05] text-black dark:text-white hover:-translate-y-1 hover:shadow-md active:scale-95 shadow-sm cursor-pointer' : 'bg-transparent border border-black/10 dark:border-white/10 text-gray-500 cursor-default'}`}
+                  >
+                    {w}
+                  </button>
+                );
+              })}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

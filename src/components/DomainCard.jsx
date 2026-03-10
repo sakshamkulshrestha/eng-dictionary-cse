@@ -1,24 +1,30 @@
 import React from 'react';
-import { ArrowUpRight } from 'lucide-react';
+import { ChevronRight, Bookmark } from 'lucide-react';
 
 export default function DomainCard({ title, count, onClick }) {
   return (
     <div 
       onClick={onClick} 
-      className="group p-10 bg-zinc-50 dark:bg-zinc-900/50 rounded-[2.5rem] border border-zinc-100 dark:border-zinc-800 cursor-pointer active-compress transition-all hover:border-black dark:hover:border-white"
+      className="group relative bg-[#F9F9FB] dark:bg-[#1C1C1E] p-7 rounded-[2rem] shadow-sm hover:shadow-[0_24px_48px_rgb(0,0,0,0.06)] dark:hover:shadow-[0_24px_48px_rgb(0,0,0,0.4)] border border-black/[0.03] dark:border-white/[0.05] cursor-pointer hover:-translate-y-1 transition-all duration-400 active:scale-[0.98] flex flex-col justify-between min-h-[160px] overflow-hidden"
     >
-      <div className="flex justify-between items-center mb-10 px-1">
-        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400">{count} Nodes</span>
-        {/*
-           Minimalist arrow that shifts slightly on mouse hover.
-        */}
-        <div className="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all bg-white dark:bg-black">
-          <ArrowUpRight className="w-4 h-4" />
+      <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-all duration-400 translate-x-4 group-hover:translate-x-0">
+        <div className="w-9 h-9 rounded-full bg-white dark:bg-zinc-800 shadow-sm flex items-center justify-center">
+          <ChevronRight className="w-5 h-5 text-gray-400 dark:text-gray-300" />
         </div>
       </div>
-      <h3 className="text-4xl font-extrabold tracking-tighter leading-none group-hover:opacity-60 transition-opacity">
-        {title}
-      </h3>
+      
+      <div>
+        <div className="w-10 h-10 rounded-full bg-[var(--ios-blue)]/10 flex items-center justify-center mb-4">
+          <Bookmark className="w-5 h-5 text-[var(--ios-blue)]" />
+        </div>
+        <h3 className="text-[22px] font-bold tracking-tight text-black dark:text-white mb-2 leading-tight">
+          {title}
+        </h3>
+      </div>
+      
+      <p className="text-[15px] font-medium text-gray-500 dark:text-gray-400">
+        {count} components
+      </p>
     </div>
   );
 }
