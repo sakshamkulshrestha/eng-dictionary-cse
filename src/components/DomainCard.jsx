@@ -7,7 +7,7 @@ export default function DomainCard({ title, count, onClick, delay = 0 }) {
   return (
     <div 
       onClick={onClick} 
-      className={`apple-card cursor-pointer group flex flex-col justify-between min-h-[160px] animate-slide-up hover:border-accent/40 hover:bg-accent-10/30 transition-all duration-500`}
+      className={`apple-card border border-accent/20 bg-accent/[0.02] dark:bg-accent/[0.01] cursor-pointer group flex flex-col justify-between min-h-[160px] animate-slide-up hover:border-accent/50 hover:bg-accent-10/40 transition-all duration-500 shadow-[0_4px_24px_rgba(var(--ios-blue-rgb),0.03)] hover:shadow-[0_8px_32px_rgba(var(--ios-blue-rgb),0.1)]`}
       style={{ animationDelay: `${delay}ms` }}
     >
       <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-all duration-500 -translate-x-2 group-hover:translate-x-0 z-10">

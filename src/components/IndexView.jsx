@@ -42,9 +42,12 @@ export default function IndexView({ dictionaryData, onNavigate, initialFilter = 
             {activeFilter ? 'Category' : 'All Words'}
           </span>
         </div>
-        <h1 className="text-6xl sm:text-[80px] font-extrabold tracking-tight mb-4 animate-slide-up delay-100 leading-none pb-2">
-          {displayTitle}
-        </h1>
+        <div className="relative inline-block w-full">
+          <div className="absolute left-1/4 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] bg-accent/20 dark:bg-accent/10 blur-[100px] rounded-full pointer-events-none"></div>
+          <h1 className="text-6xl sm:text-[80px] font-extrabold tracking-tight mb-4 animate-slide-up delay-100 leading-none pb-2 relative z-10 transition-transform duration-700 hover:scale-[1.02] origin-left">
+            {displayTitle}
+          </h1>
+        </div>
         <p className="text-xl sm:text-[22px] text-[#8E8E93] max-w-2xl font-medium animate-slide-up delay-150">
           {activeFilter ? `Explore words related to ${getFullDomainName(activeFilter)}.` : 'Browse all the words in the dictionary.'}
         </p>
@@ -60,7 +63,7 @@ export default function IndexView({ dictionaryData, onNavigate, initialFilter = 
             <div 
               key={item.id} 
               onClick={() => onNavigate('entry', item.id)}
-              className={`apple-card cursor-pointer group flex flex-col justify-between min-h-[190px] animate-slide-up hover:bg-accent-10/30 hover:border-accent/40 transition-all duration-300 ${delayClass}`}
+              className={`apple-card border border-accent/20 bg-accent/[0.02] dark:bg-accent/[0.01] cursor-pointer group flex flex-col justify-between min-h-[190px] animate-slide-up hover:bg-accent-10/40 hover:border-accent/50 transition-all duration-500 shadow-[0_4px_24px_rgba(var(--ios-blue-rgb),0.03)] hover:shadow-[0_8px_32px_rgba(var(--ios-blue-rgb),0.1)] ${delayClass}`}
             >
               <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-all duration-500 -translate-x-2 group-hover:translate-x-0 z-10">
                 <div className="w-9 h-9 rounded-full bg-accent shadow-lg shadow-accent/30 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
@@ -74,7 +77,7 @@ export default function IndexView({ dictionaryData, onNavigate, initialFilter = 
                     {item.domain}
                   </span>
                 )}
-                <h3 className={`text-[24px] font-bold tracking-tight text-black dark:text-white group-hover:text-accent transition-colors ${!activeFilter ? 'mb-3' : 'mb-4'} leading-tight pr-6 relative z-10 inline-block`}>
+                <h3 className={`text-[24px] font-bold tracking-tight text-black dark:text-white group-hover:text-accent transition-colors ${!activeFilter ? 'mb-3' : 'mb-4'} leading-tight pr-6 relative z-10 block`}>
                   <span className="bg-left-bottom bg-gradient-to-r from-accent/30 to-accent/30 bg-[length:0%_40%] bg-no-repeat group-hover:bg-[length:100%_40%] transition-all duration-500 ease-out pb-1">
                     {item.term}
                   </span>

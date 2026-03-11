@@ -25,9 +25,12 @@ export default function PromptWindow({ dictionaryData, onNavigate }) {
         <div className="inline-flex w-16 h-16 bg-accent-10 rounded-full items-center justify-center mb-6 shadow-sm">
           <Sparkles className="w-8 h-8 text-accent" />
         </div>
-        <h1 className="text-6xl sm:text-[84px] font-extrabold tracking-[-0.04em] mb-4 leading-none animate-slide-up bg-clip-text text-transparent bg-gradient-to-b from-blue-500 to-purple-600 pb-3">
-          Smart AI Guide
-        </h1>
+        <div className="relative inline-block w-full">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-accent/20 dark:bg-accent/10 blur-[130px] rounded-full pointer-events-none"></div>
+          <h1 className="text-6xl sm:text-[84px] font-extrabold tracking-[-0.04em] mb-4 leading-none animate-slide-up text-black dark:text-white pb-3 relative z-10 transition-transform duration-700 hover:scale-105">
+            Smart AI Guide
+          </h1>
+        </div>
         <p className="text-xl sm:text-[22px] text-[#8E8E93] font-medium max-w-2xl mx-auto leading-relaxed animate-slide-up delay-100">
           Tell us what you want to learn. We will find the best words to help you understand it.
         </p>
@@ -35,7 +38,7 @@ export default function PromptWindow({ dictionaryData, onNavigate }) {
 
       {/* Premium INPUT MODULE (Siri / Apple Intelligence Style) */}
       <div className="w-full max-w-3xl relative mb-20 px-2 sm:px-0 animate-slide-up delay-150">
-        <div className="apple-card group p-6 min-h-[170px] pb-16 flex flex-col focus-within:shadow-[0_24px_48px_rgb(0,0,0,0.06)] dark:focus-within:shadow-[0_24px_48px_rgb(0,0,0,0.4)]">
+        <div className="apple-card border border-accent/20 bg-accent/[0.02] dark:bg-accent/[0.01] shadow-[0_4px_24px_rgba(var(--ios-blue-rgb),0.03)] group p-6 min-h-[170px] pb-16 flex flex-col focus-within:shadow-[0_24px_48px_rgba(var(--ios-blue-rgb),0.1)] focus-within:border-accent/40 transition-all duration-300">
           <textarea 
             className="w-full bg-transparent border-none outline-none text-[19px] resize-none text-black dark:text-white placeholder-[#8E8E93] font-medium leading-relaxed flex-1"
             placeholder="e.g. How does a computer's memory work?"

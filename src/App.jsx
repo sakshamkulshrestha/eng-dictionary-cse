@@ -95,7 +95,7 @@ export default function App() {
     <div className="min-h-screen font-sans">
       
       {/* --- Apple Premium Navigation Bar --- */}
-      <nav className="sticky top-0 z-50 apple-glass border-b border-black/[0.05] dark:border-white/[0.05]">
+      <nav className="sticky top-0 z-50 apple-glass border-b border-accent/20 dark:border-accent/10">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-[60px] flex items-center justify-between">
           <Logo onClick={() => handleNavigate('home')} />
           
@@ -127,8 +127,9 @@ export default function App() {
         <Routes>
           <Route path="/" element={
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 pb-32">
-              <header className="mb-20 text-center max-w-3xl mx-auto">
-                <h1 className="text-7xl sm:text-[96px] font-black tracking-[-0.04em] mb-6 leading-none bg-clip-text text-transparent bg-gradient-to-b from-black to-gray-500 dark:from-white dark:to-gray-400 pb-2 animate-slide-up">
+              <header className="mb-20 text-center max-w-3xl mx-auto relative cursor-default">
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-accent/20 dark:bg-accent/10 blur-[100px] rounded-full pointer-events-none"></div>
+                <h1 className="text-7xl sm:text-[96px] font-black tracking-[-0.04em] mb-6 leading-none bg-clip-text text-transparent bg-gradient-to-b from-black to-gray-500 dark:from-white dark:to-gray-400 pb-2 animate-slide-up relative z-10 transition-transform duration-700 hover:scale-105">
                   Engineered
                 </h1>
                 <p className="text-xl sm:text-[22px] font-medium text-[#8E8E93] animate-slide-up delay-100">

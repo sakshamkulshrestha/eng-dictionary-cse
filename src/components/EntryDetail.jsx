@@ -61,11 +61,13 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
             </button>
           </div>
         </div>
-        
-        <h1 className="text-5xl sm:text-[68px] font-black tracking-[-0.04em] mb-6 leading-[0.95] text-black dark:text-white animate-slide-up">
-          {entry.term}
-        </h1>
-        <p className="text-[20px] sm:text-[24px] text-gray-500 dark:text-gray-400 font-medium leading-snug tracking-tight animate-slide-up delay-100">
+        <div className="relative mb-6">
+          <div className="absolute left-1/4 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-accent/20 dark:bg-accent/10 blur-[120px] rounded-full pointer-events-none"></div>
+          <h1 className="text-5xl sm:text-[68px] font-black tracking-[-0.04em] leading-[0.95] text-black dark:text-white animate-slide-up relative z-10 transition-transform duration-700 hover:scale-[1.02] origin-left">
+            {entry.term}
+          </h1>
+        </div>
+        <p className="text-[20px] sm:text-[24px] text-gray-500 dark:text-gray-400 font-medium leading-snug tracking-tight animate-slide-up delay-100 relative z-10">
           {entry.definition_short}
         </p>
       </header>
@@ -82,7 +84,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
           {/* Technical Pull Quote */}
           {entry.technical_definition && (
             <div className="animate-slide-up delay-200 my-16 relative">
-              <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-accent rounded-full opacity-50"></div>
+              <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-accent rounded-full opacity-100 shadow-[0_0_15px_rgba(var(--ios-blue-rgb),0.5)]"></div>
               <div className="pl-10 py-4">
                 <div className="flex items-center gap-2 mb-4">
                   <FileText className="w-5 h-5 text-accent uppercase"/>
@@ -137,7 +139,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
                       <div 
                         key={i} 
                         onClick={() => targetId && onNavigate('entry', targetId)}
-                        className={`p-6 rounded-3xl border border-black/[0.04] dark:border-white/[0.06] bg-[#EAEAF0] dark:bg-[#151517] flex flex-col transition-all duration-400 ${targetId ? 'cursor-pointer hover:-translate-y-1 hover:border-accent/40 hover:shadow-lg dark:hover:shadow-none hover:bg-white dark:hover:bg-[#2C2C2E] group/card active:scale-[0.97]' : ''}`}
+                        className={`p-6 rounded-3xl border border-accent/20 bg-accent/[0.02] dark:bg-accent/[0.01] flex flex-col transition-all duration-400 ${targetId ? 'cursor-pointer hover:-translate-y-1 hover:border-accent/50 hover:shadow-[0_8px_32px_rgba(var(--ios-blue-rgb),0.15)] shadow-[0_4px_24px_rgba(var(--ios-blue-rgb),0.03)] hover:bg-white dark:hover:bg-[#2C2C2E] group/card active:scale-[0.97]' : ''}`}
                       >
                         <div className="flex justify-between items-center mb-3">
                           <span className="text-[20px] font-extrabold text-black dark:text-white tracking-tight">{c.target}</span>

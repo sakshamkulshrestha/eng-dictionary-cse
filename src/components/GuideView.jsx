@@ -15,9 +15,12 @@ export default function GuideView() {
             User Guide
           </span>
         </div>
-        <h1 className="text-6xl sm:text-[84px] font-extrabold tracking-[-0.04em] mb-6 leading-none animate-slide-up bg-clip-text text-transparent bg-gradient-to-b from-black to-gray-600 dark:from-white dark:to-gray-400 pb-3">
-          How to Use This App
-        </h1>
+        <div className="relative mb-6">
+          <div className="absolute left-1/4 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-accent/20 dark:bg-accent/10 blur-[120px] rounded-full pointer-events-none"></div>
+          <h1 className="text-6xl sm:text-[84px] font-extrabold tracking-[-0.04em] leading-none animate-slide-up bg-clip-text text-transparent bg-gradient-to-b from-black to-gray-600 dark:from-white dark:to-gray-400 pb-3 relative z-10 transition-transform duration-700 hover:scale-[1.02] origin-left">
+            How to Use This App
+          </h1>
+        </div>
         <p className="text-xl sm:text-[22px] text-[#8E8E93] font-medium leading-relaxed max-w-3xl animate-slide-up delay-100">
           This app helps you learn technical words easily. Read this guide to see how it works and how to get the most out of it.
         </p>
@@ -32,7 +35,7 @@ export default function GuideView() {
             <span className="w-8 h-8 rounded-full bg-accent text-white flex items-center justify-center font-bold text-sm shadow-md shadow-accent/30">1</span>
             <h2 className="text-[22px] font-bold text-black dark:text-white tracking-tight">Our Goal</h2>
           </div>
-          <div className="apple-card flex flex-col items-start p-8 md:p-10 animate-slide-up delay-150 relative overflow-hidden group">
+          <div className="apple-card border border-accent/20 bg-accent/[0.02] dark:bg-accent/[0.01] shadow-[0_4px_24px_rgba(var(--ios-blue-rgb),0.03)] flex flex-col items-start p-8 md:p-10 animate-slide-up delay-150 relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-64 h-64 bg-accent opacity-[0.03] rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-1000"></div>
             <p className="text-[18px] text-gray-600 dark:text-gray-300 leading-relaxed font-medium mb-6 relative z-10">
               Traditional textbooks are often confusing. We built this app to explain complex computer words simply. Every word has a short summary, a simple explanation, and clear details.
@@ -56,7 +59,7 @@ export default function GuideView() {
               { icon: <Network className="w-6 h-6 text-accent"/>, title: "Related Words", desc: "Every word has a list of 'Related Words'. Clicking them helps you learn about connected topics easily." },
               { icon: <Sparkles className="w-6 h-6 text-accent"/>, title: "AI Assistant", desc: "Go to the AI tab and type what you want to learn. We will find the best words to help you understand it." }
             ].map((mech, i) => (
-              <div key={i} className={`apple-card p-8 group flex flex-col items-start animate-slide-up hover:bg-accent-10/20 hover:border-accent/30 transition-all duration-300`} style={{ animationDelay: `${(i * 50) + 150}ms` }}>
+              <div key={i} className={`apple-card border border-accent/20 bg-accent/[0.02] dark:bg-accent/[0.01] shadow-[0_4px_24px_rgba(var(--ios-blue-rgb),0.03)] hover:shadow-[0_8px_32px_rgba(var(--ios-blue-rgb),0.1)] p-8 group flex flex-col items-start animate-slide-up hover:bg-accent-10/40 hover:border-accent/50 transition-all duration-500`} style={{ animationDelay: `${(i * 50) + 150}ms` }}>
                 <div className="w-12 h-12 rounded-full bg-accent-10 flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-accent/20 transition-all duration-300">
                   {mech.icon}
                 </div>
@@ -73,7 +76,7 @@ export default function GuideView() {
             <span className="w-8 h-8 rounded-full bg-accent text-white flex items-center justify-center font-bold text-sm shadow-md shadow-accent/30">3</span>
             <h2 className="text-[22px] font-bold text-black dark:text-white tracking-tight">Tips for Best Use</h2>
           </div>
-          <div className="apple-card !bg-[#1C1C1E] !border-none group p-8 md:p-10 animate-slide-up delay-300">
+          <div className="apple-card border border-accent/20 bg-accent/[0.03] dark:bg-accent/[0.02] shadow-[0_4px_24px_rgba(var(--ios-blue-rgb),0.04)] group p-8 md:p-10 animate-slide-up delay-300">
             <h3 className="text-[20px] font-bold text-white mb-6 tracking-tight flex items-center gap-3">
               <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
               Helpful Tips
