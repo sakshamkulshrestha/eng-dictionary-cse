@@ -1,0 +1,549 @@
+[
+  {
+    "id": "db_001",
+    "term": "Database",
+    "domain": "Database Management Systems",
+    "definition_short": "An organized collection of data stored and accessed electronically.",
+    "explanation": "A Database is basically a highly advanced digital filing cabinet. Instead of keeping information in scattered text files or messy spreadsheets, a database stores data in a structured, easily searchable format.\n\nIt allows software applications to safely store user accounts, financial records, and product inventory. When you search for a video on YouTube or check your bank balance, a database is doing the heavy lifting to find that exact information instantly.",
+    "syntax_or_example": "CREATE DATABASE EngineeringApp;",
+    "comparisons": [
+      {
+        "target": "RDBMS",
+        "note": "A Database is the actual collection of data. An RDBMS is the software application used to manage that data."
+      }
+    ],
+    "misconceptions": [
+      "A database is just an Excel spreadsheet. (False: Databases handle massive amounts of data, support multiple simultaneous users, and enforce strict data rules)."
+    ],
+    "related_terms": [
+      "Relational Database",
+      "NoSQL Database",
+      "Table"
+    ]
+  },
+  {
+    "id": "db_002",
+    "term": "Relational Database",
+    "domain": "Database Management Systems",
+    "definition_short": "A database that organizes data into tables with predefined relationships.",
+    "explanation": "A Relational Database stores data in a strict grid of rows and columns, just like a spreadsheet. Every table holds a specific type of data (like 'Users' or 'Orders').\n\nThe true power comes from the 'relations'. You can mathematically link the 'Users' table to the 'Orders' table so the system perfectly tracks which user bought which item. This strict structure guarantees that data remains accurate and consistent.",
+    "syntax_or_example": "Usually managed using software like PostgreSQL or MySQL.",
+    "comparisons": [
+      {
+        "target": "NoSQL Database",
+        "note": "Relational Databases force data into strict tables and rows. NoSQL Databases allow flexible, unstructured data."
+      }
+    ],
+    "misconceptions": [
+      "They cannot handle large amounts of data. (False: With proper indexing, they easily handle millions of rows efficiently)."
+    ],
+    "related_terms": [
+      "SQL",
+      "Table",
+      "Primary Key",
+      "RDBMS"
+    ]
+  },
+  {
+    "id": "db_003",
+    "term": "NoSQL Database",
+    "domain": "Database Management Systems",
+    "definition_short": "A flexible database designed to handle unstructured or rapidly changing data.",
+    "explanation": "A NoSQL (Not Only SQL) Database breaks the rules of traditional tables. Instead of forcing data into strict rows and columns, it stores data as flexible documents (often similar to JSON files).\n\nIf one user has an 'age' field and another user does not, NoSQL doesn't care. This extreme flexibility makes NoSQL perfect for fast-moving startups, mobile apps, and massive data systems where the structure changes frequently.",
+    "syntax_or_example": "db.users.insertOne({ name: \"Kush\", age: 19 }); // MongoDB syntax",
+    "comparisons": [
+      {
+        "target": "Relational Database",
+        "note": "NoSQL prioritizes speed, flexibility, and easy scaling. Relational Databases prioritize strict data accuracy and complex connections."
+      }
+    ],
+    "misconceptions": [
+      "NoSQL means it cannot use SQL at all. (False: Many NoSQL databases now support SQL-like querying languages)."
+    ],
+    "related_terms": [
+      "Database",
+      "Sharding"
+    ]
+  },
+  {
+    "id": "db_004",
+    "term": "SQL",
+    "domain": "Database Management Systems",
+    "definition_short": "Structured Query Language: the standard programming language for relational databases.",
+    "explanation": "SQL is the language you use to talk to a Relational Database. It allows you to ask the database questions, add new data, update existing data, or delete records.\n\nIt is written in simple English-like sentences. You don't have to tell the computer exactly *how* to find the data; you just write a SQL command stating *what* you want, and the database engine figures out the fastest way to get it.",
+    "syntax_or_example": "SELECT name, age FROM Users WHERE age > 18;",
+    "comparisons": [
+      {
+        "target": "NoSQL Database",
+        "note": "SQL is designed strictly for Relational Databases. NoSQL Databases typically use their own custom querying languages."
+      }
+    ],
+    "misconceptions": [
+      "SQL can be used to build a website. (False: It is only used to manage data. You still need languages like JavaScript or Python to build the website)."
+    ],
+    "related_terms": [
+      "Relational Database",
+      "Query",
+      "CRUD"
+    ]
+  },
+  {
+    "id": "db_005",
+    "term": "Table",
+    "domain": "Database Management Systems",
+    "definition_short": "A structured grid in a database that holds a specific collection of data.",
+    "explanation": "A Table is the fundamental building block of a Relational Database. It acts exactly like a single sheet in an Excel workbook. It is designed to hold one specific category of information, such as 'Employees', 'Products', or 'Invoices'.\n\nA table defines the strict rules for the data it holds (the columns), and then stores the actual individual records (the rows).",
+    "syntax_or_example": "CREATE TABLE Users (\n  id INT,\n  name VARCHAR(50)\n);",
+    "comparisons": [
+      {
+        "target": "View",
+        "note": "A Table physically stores real data on the hard drive. A View is just a saved search result that looks like a table."
+      }
+    ],
+    "misconceptions": [
+      "Tables can hold any data anywhere. (False: Tables force strict data types. You cannot put text into a column meant for dates)."
+    ],
+    "related_terms": [
+      "Row",
+      "Column",
+      "Primary Key"
+    ]
+  },
+  {
+    "id": "db_006",
+    "term": "Row",
+    "domain": "Database Management Systems",
+    "definition_short": "A single, complete horizontal record of data within a table.",
+    "explanation": "A Row represents one single, complete item in a Table. If you have a 'Users' table, one single row contains all the information (name, email, age) for one specific user.\n\nEvery time somebody creates a new account on your website, a new row is inserted into the database. Rows are the actual pieces of data that your applications create, read, update, and delete.",
+    "syntax_or_example": "INSERT INTO Users (name, age) VALUES ('Kush', 19); // Creates a new row",
+    "comparisons": [
+      {
+        "target": "Column",
+        "note": "A Row holds the complete information for one single item. A Column holds one specific piece of information for ALL items."
+      }
+    ],
+    "misconceptions": [
+      "Rows are guaranteed to stay in the order you add them. (False: Databases store rows randomly for efficiency. You must use SQL to sort them)."
+    ],
+    "related_terms": [
+      "Table",
+      "Primary Key",
+      "Column"
+    ]
+  },
+  {
+    "id": "db_007",
+    "term": "Column",
+    "domain": "Database Management Systems",
+    "definition_short": "A vertical structure in a table that defines one specific attribute of the data.",
+    "explanation": "A Column represents a single specific trait that every row in the table must have. In a 'Users' table, you might have a 'Name' column, an 'Email' column, and an 'Age' column.\n\nColumns enforce the rules (Data Types). If you create an 'Age' column and set it to hold integers (numbers), the database will trigger an error if a user tries to type the word 'twenty' into that column.",
+    "syntax_or_example": "ALTER TABLE Users ADD COLUMN email VARCHAR(100);",
+    "comparisons": [
+      {
+        "target": "Row",
+        "note": "A Column sets the rules for a specific data trait. A Row actually fills those traits with real information."
+      }
+    ],
+    "misconceptions": [
+      "You can easily add new columns whenever you want on huge databases. (False: Adding a column to a table with 100 million rows can temporarily lock the entire database)."
+    ],
+    "related_terms": [
+      "Table",
+      "Row",
+      "Schema"
+    ]
+  },
+  {
+    "id": "db_008",
+    "term": "Primary Key",
+    "domain": "Database Management Systems",
+    "definition_short": "A specific column that uniquely identifies every single row in a table.",
+    "explanation": "A Primary Key is the ultimate ID badge for a database row. It is a strict rule applied to a column ensuring that no two rows can ever have the same value, and the value can never be blank (NULL).\n\nWithout a Primary Key, if you have two users named 'John Smith', the database cannot tell them apart. Usually, developers use an auto-incrementing number (1, 2, 3...) or a long random string (UUID) as the Primary Key.",
+    "syntax_or_example": "id INT PRIMARY KEY AUTO_INCREMENT",
+    "comparisons": [
+      {
+        "target": "Foreign Key",
+        "note": "A Primary Key identifies a record in its own table. A Foreign Key is a reference pointing to a Primary Key in a different table."
+      }
+    ],
+    "misconceptions": [
+      "Primary keys must be numbers. (False: They can be emails, usernames, or complex text strings, as long as they are 100% unique)."
+    ],
+    "related_terms": [
+      "Table",
+      "Foreign Key",
+      "Index"
+    ]
+  },
+  {
+    "id": "db_009",
+    "term": "Foreign Key",
+    "domain": "Database Management Systems",
+    "definition_short": "A column in one table that links directly to the Primary Key of another table.",
+    "explanation": "A Foreign Key is the glue that connects Relational Databases together. If you have a 'Users' table and an 'Orders' table, you need to know which user placed which order.\n\nYou do this by adding a 'user_id' column to the 'Orders' table. This 'user_id' is a Foreign Key. The database enforces a strict rule: you cannot create an order for a user_id that does not actually exist in the 'Users' table.",
+    "syntax_or_example": "user_id INT,\nFOREIGN KEY (user_id) REFERENCES Users(id)",
+    "comparisons": [
+      {
+        "target": "Primary Key",
+        "note": "The Primary Key is the original source of the ID. The Foreign Key is the copy of that ID used to build a bridge between tables."
+      }
+    ],
+    "misconceptions": [
+      "Foreign keys automatically fetch the related data. (False: They only enforce the connection rules. You must write a Join query to actually fetch the combined data)."
+    ],
+    "related_terms": [
+      "Primary Key",
+      "Table",
+      "Join"
+    ]
+  },
+  {
+    "id": "db_010",
+    "term": "Index",
+    "domain": "Database Management Systems",
+    "definition_short": "A hidden data structure that drastically speeds up data retrieval.",
+    "explanation": "An Index works exactly like the index at the back of a thick textbook. Instead of reading the entire database row by row to find a specific username (which is incredibly slow), the database looks at the Index.\n\nThe Index is a sorted, highly optimized list of values pointing directly to the exact location of the data on the hard drive. Searching with an index takes milliseconds instead of minutes.",
+    "syntax_or_example": "CREATE INDEX idx_username ON Users(username);",
+    "comparisons": [
+      {
+        "target": "Primary Key",
+        "note": "When you create a Primary Key, the database automatically creates a hidden Index for it so you can look up IDs instantly."
+      }
+    ],
+    "misconceptions": [
+      "You should put an index on every single column to make it fast. (False: Indexes take up extra hard drive space and slow down inserts/updates because the index must be constantly rebuilt)."
+    ],
+    "related_terms": [
+      "Table",
+      "Query Optimizer",
+      "Query"
+    ]
+  },
+  {
+    "id": "db_011",
+    "term": "Query",
+    "domain": "Database Management Systems",
+    "definition_short": "A specific request for data or information from a database.",
+    "explanation": "A Query is a question you ask the database. It is the piece of code sent from your application to the database engine to perform an action.\n\nQueries can be simple, like \"give me all users.\" They can also be incredibly complex, like \"give me the top 5 users who bought shoes in the last 30 days, sorted by the amount of money they spent.\" Queries are almost always written in SQL.",
+    "syntax_or_example": "SELECT * FROM Users WHERE status = 'active';",
+    "comparisons": [
+      {
+        "target": "Stored Procedure",
+        "note": "A Query is usually written and executed on the fly by the application. A Stored Procedure is a query that is saved permanently inside the database for reuse."
+      }
+    ],
+    "misconceptions": [
+      "Queries only read data. (False: Although commonly used for searching, insert, update, and delete commands are also considered queries)."
+    ],
+    "related_terms": [
+      "SQL",
+      "Join",
+      "CRUD"
+    ]
+  },
+  {
+    "id": "db_012",
+    "term": "Normalization",
+    "domain": "Database Management Systems",
+    "definition_short": "The process of organizing data to reduce repeating information and prevent errors.",
+    "explanation": "Normalization is a design rule for Relational Databases. If you store a user's full address on every single order they make, you are wasting space. If they move, you have to update thousands of orders.\n\nNormalization solves this by splitting the data. You put the address in a 'Users' table once, and just put the User ID on the 'Orders' table. This eliminates Data Redundancy and ensures data is only updated in one place.",
+    "syntax_or_example": "Splitting a giant 'Store_Data' table into separate 'Users', 'Products', and 'Orders' tables.",
+    "comparisons": [
+      {
+        "target": "Data Redundancy",
+        "note": "Normalization is the cure. Data Redundancy is the disease."
+      }
+    ],
+    "misconceptions": [
+      "Maximum normalization is always best. (False: Over-normalizing forces the database to combine dozens of tables on every search, which slows the system down)."
+    ],
+    "related_terms": [
+      "Table",
+      "Foreign Key",
+      "Data Redundancy"
+    ]
+  },
+  {
+    "id": "db_013",
+    "term": "ACID Properties",
+    "domain": "Database Management Systems",
+    "definition_short": "A set of four strict rules (Atomicity, Consistency, Isolation, Durability) that guarantee database reliability.",
+    "explanation": "ACID properties are the golden standard for database safety, especially for financial apps. \n\nAtomicity means a transaction is 'all or nothing'. Consistency means data rules cannot be broken. Isolation means simultaneous users don't interfere with each other. Durability means once data is saved, it survives even if someone instantly unplugs the server from the wall.",
+    "syntax_or_example": "Required for banking: You cannot deduct $50 from Account A without guaranteeing it reaches Account B.",
+    "comparisons": [
+      {
+        "target": "Transaction",
+        "note": "A Transaction is the actual work being done. ACID properties are the strict physics laws that the Transaction must obey."
+      }
+    ],
+    "misconceptions": [
+      "All databases use ACID. (False: Many NoSQL databases intentionally abandon ACID properties to achieve faster speeds)."
+    ],
+    "related_terms": [
+      "Transaction",
+      "Relational Database",
+      "Database Lock"
+    ]
+  },
+  {
+    "id": "db_014",
+    "term": "Transaction",
+    "domain": "Database Management Systems",
+    "definition_short": "A group of database operations treated as a single, all-or-nothing unit of work.",
+    "explanation": "A Transaction wraps multiple SQL commands into one safe package. Imagine transferring money: you must subtract $100 from Alice, and add $100 to Bob.\n\nIf the server crashes after subtracting Alice's money but before giving it to Bob, the money disappears. A Transaction prevents this. If any single step fails, the Transaction triggers a 'Rollback' and completely undoes all previous steps, as if nothing ever happened.",
+    "syntax_or_example": "BEGIN TRANSACTION;\nUPDATE Accounts SET bal = bal - 100 WHERE id = 1;\nUPDATE Accounts SET bal = bal + 100 WHERE id = 2;\nCOMMIT;",
+    "comparisons": [
+      {
+        "target": "Query",
+        "note": "A simple Query just does one thing. A Transaction bundles multiple Queries together to ensure they all succeed or all fail together."
+      }
+    ],
+    "misconceptions": [
+      "Transactions make databases faster. (False: They slow databases down by adding locks and safety checks, but they prevent data corruption)."
+    ],
+    "related_terms": [
+      "ACID Properties",
+      "CRUD",
+      "Database Lock"
+    ]
+  },
+  {
+    "id": "db_015",
+    "term": "Schema",
+    "domain": "Database Management Systems",
+    "definition_short": "The structural blueprint or architectural plan of the entire database.",
+    "explanation": "A Schema is the design of the database. It does not contain the actual user data; it contains the rules. \n\nThe schema defines exactly what tables exist, what columns are in those tables, what data types are allowed, and how the Foreign Keys connect everything together. Before a developer can write code, they must design the Schema.",
+    "syntax_or_example": "A visual diagram showing boxes (tables) connected by lines (relationships).",
+    "comparisons": [
+      {
+        "target": "Database",
+        "note": "The Schema is the empty blueprint of a house. The Database is the actual physical house filled with furniture (data)."
+      }
+    ],
+    "misconceptions": [
+      "Schemas cannot be changed after creation. (False: Developers run 'Migrations' to carefully alter the schema without deleting the existing data)."
+    ],
+    "related_terms": [
+      "Table",
+      "Column",
+      "Relational Database"
+    ]
+  },
+  {
+    "id": "db_016",
+    "term": "View",
+    "domain": "Database Management Systems",
+    "definition_short": "A virtual, read-only table created by saving the results of a complex SQL query.",
+    "explanation": "A View is a shortcut for a difficult search. If you constantly write a massive 20-line SQL query to combine data from five different tables to generate a daily sales report, you can save that query as a 'View'.\n\nTo the end user or software, the View looks and acts exactly like a normal Table. However, it takes up zero hard drive space because it dynamically generates the data every time you click it.",
+    "syntax_or_example": "CREATE VIEW ActiveUsers AS\nSELECT name FROM Users WHERE status = 'active';",
+    "comparisons": [
+      {
+        "target": "Table",
+        "note": "A Table physically stores data on a hard drive. A View is a ghost table that just projects the data stored in other tables."
+      }
+    ],
+    "misconceptions": [
+      "You can freely update data inside a view. (False: Because Views are often combinations of multiple tables, updating them directly is usually impossible)."
+    ],
+    "related_terms": [
+      "Table",
+      "Query",
+      "SQL"
+    ]
+  },
+  {
+    "id": "db_017",
+    "term": "Stored Procedure",
+    "domain": "Database Management Systems",
+    "definition_short": "A prepared, reusable block of SQL code saved directly on the database server.",
+    "explanation": "Instead of an application sending a massive block of SQL code over the internet to the database, the developer can save that code inside the database as a Stored Procedure.\n\nWhen the application needs the work done, it just sends a tiny command saying 'Run Procedure X'. This reduces network traffic, hides complex database logic from the application code, and provides a slight performance boost since the database pre-compiles the code.",
+    "syntax_or_example": "CALL ProcessDailyPayroll();",
+    "comparisons": [
+      {
+        "target": "Trigger",
+        "note": "A Stored Procedure sits quietly until the application explicitly calls it. A Trigger fires automatically when data changes."
+      }
+    ],
+    "misconceptions": [
+      "Stored procedures are modern best practices. (False: Many modern developers avoid them because they lock business logic inside the database instead of the main application code)."
+    ],
+    "related_terms": [
+      "SQL",
+      "Query",
+      "Trigger"
+    ]
+  },
+  {
+    "id": "db_018",
+    "term": "Trigger",
+    "domain": "Database Management Systems",
+    "definition_short": "Procedural code that automatically executes in response to a specific database event.",
+    "explanation": "A Trigger is an automatic tripwire inside the database. You can attach a Trigger to a specific Table and tell it to watch for actions like an INSERT, UPDATE, or DELETE.\n\nFor example, you can create a Trigger that says: 'Whenever a user is deleted from the Users table, automatically save a copy of their data into the Deleted_History table.' It guarantees the action happens without relying on the application to remember it.",
+    "syntax_or_example": "CREATE TRIGGER AfterUserDelete\nAFTER DELETE ON Users...",
+    "comparisons": [
+      {
+        "target": "Stored Procedure",
+        "note": "You have to manually trigger a Stored Procedure. A Trigger runs entirely on its own based on rules."
+      }
+    ],
+    "misconceptions": [
+      "Triggers are great for all logic. (False: Because they happen invisibly in the background, overusing triggers causes 'magic' bugs that are incredibly hard for developers to track down)."
+    ],
+    "related_terms": [
+      "Table",
+      "Transaction",
+      "Stored Procedure"
+    ]
+  },
+  {
+    "id": "db_019",
+    "term": "Sharding",
+    "domain": "Database Management Systems",
+    "definition_short": "A method of scaling a database by splitting it into smaller, independent pieces across multiple servers.",
+    "explanation": "When a database gets too massive (like Twitter or Facebook), a single computer server cannot hold all the data or handle all the traffic. \n\nSharding solves this by cutting the database into chunks. You might put all Users from A-M on Server 1, and Users from N-Z on Server 2. Each chunk is called a 'Shard'. It provides unlimited scaling, but makes programming much more difficult because data is now scattered across the world.",
+    "syntax_or_example": "Often handled natively by NoSQL databases like MongoDB.",
+    "comparisons": [
+      {
+        "target": "Normalization",
+        "note": "Normalization splits data into different Tables on the same computer. Sharding splits data into different Computers entirely."
+      }
+    ],
+    "misconceptions": [
+      "Sharding is just making backups. (False: Backups are exact copies. Shards are completely different slices of the data; if a shard dies, that specific data goes offline)."
+    ],
+    "related_terms": [
+      "Database",
+      "NoSQL Database"
+    ]
+  },
+  {
+    "id": "db_020",
+    "term": "Join",
+    "domain": "Database Management Systems",
+    "definition_short": "An SQL operation that combines columns from one or more tables based on a related column.",
+    "explanation": "Because Relational Databases split data up using Normalization, you must use a Join to stitch the data back together for the user.\n\nIf you want a list showing a user's name next to the items they bought, you use a Join command. It matches the 'id' in the Users table with the 'user_id' in the Orders table, temporarily combining them into one wide, easy-to-read result set.",
+    "syntax_or_example": "SELECT Users.name, Orders.item \nFROM Users \nJOIN Orders ON Users.id = Orders.user_id;",
+    "comparisons": [
+      {
+        "target": "View",
+        "note": "A Join is an action you type to combine tables. A View is a saved Join that you can look at anytime without retyping the code."
+      }
+    ],
+    "misconceptions": [
+      "Joins are always slow. (False: With a proper Index on the Foreign Key, Joins are calculated in milliseconds)."
+    ],
+    "related_terms": [
+      "Table",
+      "Foreign Key",
+      "Query"
+    ]
+  },
+  {
+    "id": "db_021",
+    "term": "CRUD",
+    "domain": "Database Management Systems",
+    "definition_short": "An acronym for Create, Read, Update, and Delete—the four basic functions of persistent storage.",
+    "explanation": "CRUD represents the four fundamental operations an application must be able to perform on a database to be considered fully functional.\n\nIn SQL, 'Create' is an INSERT command, 'Read' is a SELECT command, 'Update' is an UPDATE command, and 'Delete' is a DELETE command. Every time you build a new feature (like a commenting system), you must build the CRUD functions for it.",
+    "syntax_or_example": "INSERT, SELECT, UPDATE, DELETE",
+    "comparisons": [
+      {
+        "target": "SQL",
+        "note": "CRUD is the universal concept of managing data. SQL is the specific language used to perform CRUD in relational databases."
+      }
+    ],
+    "misconceptions": [
+      "CRUD is a programming language. (False: It is just a conceptual acronym used by developers to describe basic database features)."
+    ],
+    "related_terms": [
+      "SQL",
+      "Query",
+      "Transaction"
+    ]
+  },
+  {
+    "id": "db_022",
+    "term": "RDBMS",
+    "domain": "Database Management Systems",
+    "definition_short": "Relational Database Management System: the software used to create and manage relational databases.",
+    "explanation": "An RDBMS is the actual software engine you install on a server. It provides the tools to create tables, enforce security, run backups, and process SQL queries.\n\nWhile the 'Database' is the data itself, the RDBMS is the powerful program that guards the data. Popular open-source examples include PostgreSQL and MySQL, while enterprise examples include Oracle DB and Microsoft SQL Server.",
+    "syntax_or_example": "PostgreSQL, MySQL, SQLite.",
+    "comparisons": [
+      {
+        "target": "Database",
+        "note": "The Database is the collection of files holding the information. The RDBMS is the software application that reads those files."
+      }
+    ],
+    "misconceptions": [
+      "All RDBMS software uses the exact same SQL. (False: While they all use standard SQL, every RDBMS adds its own custom features and syntax variations)."
+    ],
+    "related_terms": [
+      "Relational Database",
+      "SQL",
+      "Schema"
+    ]
+  },
+  {
+    "id": "db_023",
+    "term": "Database Lock",
+    "domain": "Database Management Systems",
+    "definition_short": "A mechanism that prevents multiple users from modifying the same data at the same time.",
+    "explanation": "When thousands of users access a database simultaneously, chaos can happen. If two people try to buy the absolute last ticket to a concert at the exact same millisecond, the database must use a Lock.\n\nWhen User A starts buying the ticket, the database puts a 'Lock' on that specific row. User B is forced to wait. Once User A finishes, the lock is released, and User B is told the ticket is sold out. This ensures data integrity.",
+    "syntax_or_example": "SELECT * FROM Tickets WHERE id = 1 FOR UPDATE;",
+    "comparisons": [
+      {
+        "target": "Transaction",
+        "note": "A Transaction defines the boundaries of the work. The Database Lock is the tool the Transaction uses to keep intruders away while it works."
+      }
+    ],
+    "misconceptions": [
+      "Locks lock the entire database. (False: Good RDBMS engines use 'Row-Level Locking' to lock only the specific line of data being edited, leaving the rest free)."
+    ],
+    "related_terms": [
+      "Transaction",
+      "ACID Properties"
+    ]
+  },
+  {
+    "id": "db_024",
+    "term": "Data Redundancy",
+    "domain": "Database Management Systems",
+    "definition_short": "A condition created when the exact same piece of data is stored in two or more separate places.",
+    "explanation": "Data Redundancy is usually a major flaw in database design. If you store a customer's phone number on their profile, and also copy that phone number onto every single receipt they generate, you have data redundancy.\n\nIf the customer changes their phone number, the system has to update it in a thousand different places. If one update fails, the data is now corrupted and contradictory.",
+    "syntax_or_example": "Storing 'Department Name' next to every employee instead of using a 'Department ID'.",
+    "comparisons": [
+      {
+        "target": "Normalization",
+        "note": "Data Redundancy is the problem of scattered, duplicated data. Normalization is the strict design process used to eliminate it."
+      }
+    ],
+    "misconceptions": [
+      "Data redundancy is always bad. (False: Sometimes engineers intentionally add redundancy—called Denormalization—to make read speeds faster at the cost of storage space)."
+    ],
+    "related_terms": [
+      "Normalization",
+      "Database"
+    ]
+  },
+  {
+    "id": "db_025",
+    "term": "Query Optimizer",
+    "domain": "Database Management Systems",
+    "definition_short": "The internal AI-like brain of an RDBMS that determines the fastest way to execute a SQL command.",
+    "explanation": "When you send a SQL query to a database, you don't tell it how to search. The Query Optimizer takes your command, looks at all the tables, checks if any Indexes exist, and calculates dozens of different mathematical paths to find the data.\n\nIt assigns a 'cost' to each path based on CPU and disk usage, picks the cheapest, fastest path, and executes it. This allows developers to write simple code while the database handles the complex performance tuning.",
+    "syntax_or_example": "EXPLAIN SELECT * FROM Users; // Shows the Optimizer's chosen plan",
+    "comparisons": [
+      {
+        "target": "Index",
+        "note": "An Index is a tool that makes searching faster. The Query Optimizer is the brain that decides whether using that Index is actually a good idea."
+      }
+    ],
+    "misconceptions": [
+      "The optimizer always picks the best path. (False: If database statistics are out of date, the optimizer can choose a terrible path, causing massive slowdowns)."
+    ],
+    "related_terms": [
+      "Query",
+      "Index",
+      "RDBMS"
+    ]
+  }
+]

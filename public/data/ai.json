@@ -1,0 +1,563 @@
+[
+  {
+    "id": "ai_001",
+    "term": "Artificial Intelligence",
+    "domain": "Artificial Intelligence",
+    "definition_short": "The broad field of computer science focused on creating systems capable of human-like intelligence.",
+    "explanation": "Artificial Intelligence (AI) is the overarching concept of building machines that can mimic human cognitive functions. Instead of a computer just following rigid, pre-programmed rules, an AI system can solve problems, recognize patterns, and make decisions on its own.\n\nAI covers everything from simple chess-playing computer programs from the 1990s to modern self-driving cars. It acts as the umbrella category that houses more specific technologies, providing the ultimate goal of true machine autonomy.",
+    "syntax_or_example": "if enemy_distance < 10:\n    ai_bot.attack() # Simple rule-based AI",
+    "comparisons": [
+      {
+        "target": "Machine Learning",
+        "note": "Artificial Intelligence is the broad concept of smart machines. Machine Learning is a specific method used to achieve AI."
+      }
+    ],
+    "misconceptions": [
+      "AI is inherently self-aware or conscious. (False: Even the most advanced AI today is just highly complex mathematics and pattern matching)."
+    ],
+    "related_terms": [
+      "Machine Learning",
+      "Natural Language Processing",
+      "Computer Vision"
+    ]
+  },
+  {
+    "id": "ai_002",
+    "term": "Machine Learning",
+    "domain": "Artificial Intelligence",
+    "definition_short": "A subset of AI where computers learn from data without being explicitly programmed.",
+    "explanation": "Machine Learning (ML) changed how we build software. Instead of a human programmer writing a million 'if-then' statements to identify a picture of a cat, we give the computer an Algorithm and millions of cat pictures. The computer automatically 'learns' the mathematical pattern of a cat.\n\nOnce the model is trained on this historical data, it can process brand-new, unseen data to make highly accurate predictions. This powers Netflix recommendations and email spam filters.",
+    "syntax_or_example": "model.train(historical_data)\nprediction = model.predict(new_data)",
+    "comparisons": [
+      {
+        "target": "Deep Learning",
+        "note": "Machine Learning uses standard statistical algorithms. Deep Learning is a heavier, more complex version of ML using artificial brains."
+      }
+    ],
+    "misconceptions": [
+      "Machine learning models understand what they are doing. (False: They simply find mathematical correlations; they don't know what a 'cat' actually is)."
+    ],
+    "related_terms": [
+      "Artificial Intelligence",
+      "Algorithm",
+      "Training Data"
+    ]
+  },
+  {
+    "id": "ai_003",
+    "term": "Deep Learning",
+    "domain": "Artificial Intelligence",
+    "definition_short": "A highly advanced subset of machine learning based on artificial neural networks.",
+    "explanation": "Deep Learning is the heavyweight champion of AI. It utilizes massive, multi-layered structures called neural networks. The word 'deep' refers to the sheer number of layers the data must pass through before a decision is made.\n\nUnlike traditional machine learning, where humans have to manually point out important features in the data (like telling the computer to look for whiskers), Deep Learning automatically discovers these features entirely on its own if given enough data and computing power.",
+    "syntax_or_example": "model = DeepNeuralNetwork(layers=50)\nmodel.learn(massive_image_dataset)",
+    "comparisons": [
+      {
+        "target": "Machine Learning",
+        "note": "Deep Learning requires vastly more data and processing power (GPUs) than standard Machine Learning, but is much more accurate for complex tasks."
+      }
+    ],
+    "misconceptions": [
+      "Deep Learning works perfectly on small datasets. (False: Deep Learning is useless on small data; it strictly requires massive amounts of information to find patterns)."
+    ],
+    "related_terms": [
+      "Neural Network",
+      "Artificial Intelligence",
+      "Backpropagation"
+    ]
+  },
+  {
+    "id": "ai_004",
+    "term": "Neural Network",
+    "domain": "Artificial Intelligence",
+    "definition_short": "A computing system inspired by the biological web of neurons in the human brain.",
+    "explanation": "A Neural Network is the architectural engine behind Deep Learning. It consists of layers of artificial 'neurons' (nodes). Data enters the input layer, gets multiplied by weights in the hidden middle layers, and produces an answer at the output layer.\n\nEach connection between neurons acts like a synapse in a human brain. As the network trains, it strengthens some connections and weakens others until it can accurately recognize complex patterns like human speech or faces.",
+    "syntax_or_example": "input_layer -> hidden_layer_1 -> hidden_layer_2 -> output_layer",
+    "comparisons": [
+      {
+        "target": "Algorithm",
+        "note": "An Algorithm is a strict step-by-step recipe. A Neural Network is a web of math equations that adjusts its own recipe."
+      }
+    ],
+    "misconceptions": [
+      "Neural Networks work exactly like human brains. (False: They are very loosely inspired by biology, but they are ultimately just giant calculus matrices)."
+    ],
+    "related_terms": [
+      "Deep Learning",
+      "Activation Function",
+      "Parameter"
+    ]
+  },
+  {
+    "id": "ai_005",
+    "term": "Supervised Learning",
+    "domain": "Artificial Intelligence",
+    "definition_short": "A training process where the AI is taught using data that already contains the correct answers.",
+    "explanation": "In Supervised Learning, you act as a teacher holding an answer key. You show the AI an image and explicitly tell it, 'This is a dog.' You do this millions of times. The AI uses your answers to learn the pattern.\n\nBecause the data is strictly labeled by humans beforehand, the AI learns exactly what to look for. It is the most common and accurate form of AI training, heavily used in medical imaging and language translation.",
+    "syntax_or_example": "train_model(image=\"dog.jpg\", correct_label=\"Dog\")",
+    "comparisons": [
+      {
+        "target": "Unsupervised Learning",
+        "note": "Supervised Learning provides the AI with the correct answers during training. Unsupervised Learning forces the AI to find patterns blindly."
+      }
+    ],
+    "misconceptions": [
+      "It requires no human effort. (False: Humans must spend thousands of hours manually labeling the data before the AI can even begin learning)."
+    ],
+    "related_terms": [
+      "Training Data",
+      "Classification",
+      "Regression"
+    ]
+  },
+  {
+    "id": "ai_006",
+    "term": "Unsupervised Learning",
+    "domain": "Artificial Intelligence",
+    "definition_short": "A training process where the AI finds hidden patterns in data without an answer key.",
+    "explanation": "In Unsupervised Learning, the AI is completely on its own. You feed it a massive pile of data with no labels and no instructions. The AI's job is to naturally group the data by finding hidden similarities.\n\nFor example, if you feed it customer purchase histories, it will automatically group users into distinct shopping profiles without you ever telling it what those profiles should be. It is highly useful for market research and anomaly detection.",
+    "syntax_or_example": "clusters = model.group_similar_items(raw_customer_data)",
+    "comparisons": [
+      {
+        "target": "Supervised Learning",
+        "note": "Supervised Learning is like a student studying with flashcards. Unsupervised Learning is like an explorer mapping an unknown island."
+      }
+    ],
+    "misconceptions": [
+      "Unsupervised learning always produces useful results. (False: Because it operates blindly, it might group data based on completely useless coincidences)."
+    ],
+    "related_terms": [
+      "Machine Learning",
+      "Training Data",
+      "Algorithm"
+    ]
+  },
+  {
+    "id": "ai_007",
+    "term": "Reinforcement Learning",
+    "domain": "Artificial Intelligence",
+    "definition_short": "A training method where an AI learns by trial and error, using rewards and punishments.",
+    "explanation": "Reinforcement Learning is exactly how you train a dog. You put the AI inside an environment (like a video game). If it does something good (scores a point), it gets a mathematical reward. If it fails, it gets a punishment.\n\nOver millions of attempts, the AI learns to maximize its reward. It discovers entirely new strategies that humans never even considered. This is the technology used to build AI that masters complex games like Chess, Go, and robotic walking.",
+    "syntax_or_example": "if action == 'win_game':\n    ai.score += 10 # Reward",
+    "comparisons": [
+      {
+        "target": "Supervised Learning",
+        "note": "Supervised Learning learns from a static dataset. Reinforcement Learning learns actively by interacting with a dynamic environment."
+      }
+    ],
+    "misconceptions": [
+      "The AI learns quickly this way. (False: The AI is completely stupid at first and requires millions of failures before it understands the rules)."
+    ],
+    "related_terms": [
+      "Machine Learning",
+      "Algorithm",
+      "Artificial Intelligence"
+    ]
+  },
+  {
+    "id": "ai_008",
+    "term": "Natural Language Processing",
+    "domain": "Artificial Intelligence",
+    "definition_short": "The branch of AI that gives computers the ability to understand and generate human text.",
+    "explanation": "Natural Language Processing (NLP) bridges the gap between human communication and computer code. Computers only understand numbers, so NLP algorithms translate our words into massive arrays of numbers to process meaning, tone, and context.\n\nNLP is what allows Siri to understand your voice, Google Translate to convert Spanish to English, and chatbots to hold realistic conversations. It is one of the fastest-growing sectors in the tech world.",
+    "syntax_or_example": "sentiment = nlp.analyze(\"I love this product!\")\nprint(sentiment) # Output: POSITIVE",
+    "comparisons": [
+      {
+        "target": "Computer Vision",
+        "note": "NLP gives AI the ability to read and speak. Computer Vision gives AI the ability to see."
+      }
+    ],
+    "misconceptions": [
+      "NLP actually understands meaning. (False: It calculates the statistical probability of which words should logically appear next to each other)."
+    ],
+    "related_terms": [
+      "Artificial Intelligence",
+      "Large Language Model",
+      "Deep Learning"
+    ]
+  },
+  {
+    "id": "ai_009",
+    "term": "Computer Vision",
+    "domain": "Artificial Intelligence",
+    "definition_short": "The field of AI that enables computers to interpret and make decisions based on visual data.",
+    "explanation": "Computer Vision allows machines to extract meaning from digital images or videos. It converts a picture into a grid of numbers (pixels) and uses deep learning to identify edges, shapes, and eventually entire objects.\n\nThis technology is absolutely critical for modern automation. It is the core system allowing self-driving cars to recognize stop signs, Apple FaceID to unlock your phone, and medical software to detect tumors in X-rays.",
+    "syntax_or_example": "objects = camera_ai.detect_objects(video_frame)\nif \"Pedestrian\" in objects:\n    car.brake()",
+    "comparisons": [
+      {
+        "target": "Natural Language Processing",
+        "note": "Computer Vision focuses entirely on pixels and visual space, whereas NLP focuses on text and speech."
+      }
+    ],
+    "misconceptions": [
+      "Computer vision sees the whole picture instantly. (False: It scans images layer by layer, starting from simple lines to complex shapes)."
+    ],
+    "related_terms": [
+      "Artificial Intelligence",
+      "Deep Learning",
+      "Neural Network"
+    ]
+  },
+  {
+    "id": "ai_010",
+    "term": "Algorithm",
+    "domain": "Artificial Intelligence",
+    "definition_short": "A specific set of mathematical instructions or rules given to an AI to help it learn.",
+    "explanation": "An Algorithm is the core mathematical engine driving the AI. If the data is the fuel, the Algorithm is the engine. It dictates exactly how the AI should calculate probabilities and update its internal memory.\n\nDifferent algorithms are chosen for different tasks. A 'Decision Tree' algorithm is great for sorting data into categories, while a 'Linear Regression' algorithm is perfect for predicting future stock prices.",
+    "syntax_or_example": "def calculate_prediction(data, weight):\n    return data * weight",
+    "comparisons": [
+      {
+        "target": "Neural Network",
+        "note": "An Algorithm is a broad term for any set of math rules. A Neural Network is a highly specific, complex type of algorithm."
+      }
+    ],
+    "misconceptions": [
+      "Algorithms are inherently biased. (False: The math is neutral. Bias comes entirely from the flawed human data fed into the algorithm)."
+    ],
+    "related_terms": [
+      "Machine Learning",
+      "Artificial Intelligence"
+    ]
+  },
+  {
+    "id": "ai_011",
+    "term": "Training Data",
+    "domain": "Artificial Intelligence",
+    "definition_short": "The initial dataset used to teach an AI model how to recognize patterns.",
+    "explanation": "Training Data is the textbook the AI studies from. For an AI to be smart, it needs to look at hundreds of thousands of examples. If you want an AI to detect spam emails, you must provide it with a massive folder of real spam and a massive folder of real, safe emails.\n\nThe quality of this data is everything. If the training data is corrupted, biased, or too small, the resulting AI will be completely useless, no matter how good the algorithm is.",
+    "syntax_or_example": "model.study_and_learn(training_dataset)",
+    "comparisons": [
+      {
+        "target": "Testing Data",
+        "note": "Training Data is the textbook used to learn. Testing Data is the final exam used to see if it actually learned."
+      }
+    ],
+    "misconceptions": [
+      "More training data always makes the AI better. (False: If you feed it bad or redundant data, it will actually get worse)."
+    ],
+    "related_terms": [
+      "Machine Learning",
+      "Overfitting",
+      "Underfitting"
+    ]
+  },
+  {
+    "id": "ai_012",
+    "term": "Testing Data",
+    "domain": "Artificial Intelligence",
+    "definition_short": "A separate, hidden dataset used to evaluate how well the AI performs on unseen information.",
+    "explanation": "After an AI finishes studying its Training Data, engineers must test it. They use Testing Data—a batch of information the AI has absolutely never seen before.\n\nThis is critical because an AI might just memorize the training data instead of actually learning the underlying concepts. By testing it on brand-new data, engineers can guarantee the AI will perform safely in the real world.",
+    "syntax_or_example": "accuracy_score = model.take_exam(testing_dataset)",
+    "comparisons": [
+      {
+        "target": "Training Data",
+        "note": "The AI is allowed to see the Training Data millions of times. It is only allowed to see the Testing Data once at the very end."
+      }
+    ],
+    "misconceptions": [
+      "Testing data can be used to tweak the model. (False: If you change the model based on the testing data, it is no longer a blind test, ruining the experiment)."
+    ],
+    "related_terms": [
+      "Overfitting",
+      "Underfitting",
+      "Machine Learning"
+    ]
+  },
+  {
+    "id": "ai_013",
+    "term": "Overfitting",
+    "domain": "Artificial Intelligence",
+    "definition_short": "A critical flaw where an AI memorizes the training data perfectly but fails on new, real-world data.",
+    "explanation": "Overfitting happens when an AI studies too hard. Instead of learning general concepts, it memorizes the exact, highly specific details of the Training Data, including its flaws and noise.\n\nImagine a student who memorizes the exact answers to a practice test but doesn't understand the math. They score 100% on the practice test, but fail the real exam. Overfitting makes the AI look perfect in the lab, but utterly useless in reality.",
+    "syntax_or_example": "Training Accuracy: 99.9%\nTesting Accuracy: 42.0% // Classic sign of overfitting",
+    "comparisons": [
+      {
+        "target": "Underfitting",
+        "note": "Overfitting means the AI memorized too much specific detail. Underfitting means the AI failed to learn anything at all."
+      }
+    ],
+    "misconceptions": [
+      "Overfitting is easily visible during training. (False: It is invisible during training and only reveals itself when evaluated against Testing Data)."
+    ],
+    "related_terms": [
+      "Training Data",
+      "Testing Data",
+      "Epoch"
+    ]
+  },
+  {
+    "id": "ai_014",
+    "term": "Underfitting",
+    "domain": "Artificial Intelligence",
+    "definition_short": "A flaw where an AI is too simple to capture the underlying patterns in the data.",
+    "explanation": "Underfitting happens when the AI is not complex enough, or wasn't trained long enough, to understand the data. It is like trying to teach a toddler advanced calculus in five minutes; they won't grasp the concepts at all.\n\nAn underfitted model performs terribly on the Training Data and equally terribly on the Testing Data. It usually means the engineers need to choose a more powerful algorithm or provide vastly more data.",
+    "syntax_or_example": "Training Accuracy: 51.0%\nTesting Accuracy: 50.0% // The AI is just guessing blindly",
+    "comparisons": [
+      {
+        "target": "Overfitting",
+        "note": "Underfitting is caused by a model being too rigid and simple. Overfitting is caused by a model being too flexible and complex."
+      }
+    ],
+    "misconceptions": [
+      "Underfitting is harder to fix than overfitting. (False: It is usually easily fixed by just letting the AI train for a longer time or adding more layers)."
+    ],
+    "related_terms": [
+      "Training Data",
+      "Testing Data",
+      "Machine Learning"
+    ]
+  },
+  {
+    "id": "ai_015",
+    "term": "Epoch",
+    "domain": "Artificial Intelligence",
+    "definition_short": "One complete pass of the entire training dataset through the AI algorithm.",
+    "explanation": "An Epoch is a single lap in the training process. Since an AI cannot learn everything from looking at the data just once, it must review the same dataset over and over again.\n\nIf you set the training to 100 Epochs, the AI will review the entire textbook 100 times. With every Epoch, the AI tweaks its internal math to get slightly more accurate. However, if you run too many Epochs, the AI will memorize the data, leading to Overfitting.",
+    "syntax_or_example": "for current_epoch in range(1, 101):\n    model.train_one_lap(data)",
+    "comparisons": [
+      {
+        "target": "Learning Rate",
+        "note": "An Epoch is how many times the AI loops. The Learning Rate is how drastically it changes its mind during each loop."
+      }
+    ],
+    "misconceptions": [
+      "More epochs always equal a smarter AI. (False: After a certain number of epochs, the AI stops learning new concepts and just starts memorizing, causing Overfitting)."
+    ],
+    "related_terms": [
+      "Training Data",
+      "Overfitting",
+      "Gradient Descent"
+    ]
+  },
+  {
+    "id": "ai_016",
+    "term": "Gradient Descent",
+    "domain": "Artificial Intelligence",
+    "definition_short": "The mathematical optimization algorithm used to minimize errors and train neural networks.",
+    "explanation": "Gradient Descent is the compass the AI uses to find the right answers. Imagine standing blindfolded on a mountain and trying to reach the very bottom. You feel the slope with your foot, and take a step downhill. \n\nThe AI does the same thing with math. It calculates its error (how high up the mountain it is), calculates the slope of the error, and tweaks its internal numbers to step 'down' toward zero errors. It repeats this until it hits the bottom.",
+    "syntax_or_example": "new_weight = old_weight - (learning_rate * slope_of_error)",
+    "comparisons": [
+      {
+        "target": "Backpropagation",
+        "note": "Gradient Descent decides which direction to step. Backpropagation is the mechanism that actually delivers that decision backward through the entire network."
+      }
+    ],
+    "misconceptions": [
+      "It always finds the absolute perfect answer. (False: It can easily get stuck in a 'local minimum', which is a small dip on the mountainside rather than the true bottom)."
+    ],
+    "related_terms": [
+      "Loss Function",
+      "Learning Rate",
+      "Neural Network"
+    ]
+  },
+  {
+    "id": "ai_017",
+    "term": "Learning Rate",
+    "domain": "Artificial Intelligence",
+    "definition_short": "A setting that determines how aggressively an AI updates its memory during training.",
+    "explanation": "The Learning Rate dictates the size of the steps the AI takes while trying to learn. \n\nIf the learning rate is too high, the AI takes massive steps and might completely jump over the correct answer. If the learning rate is too low, the AI takes microscopic steps, meaning it will take months of computing time to finally learn the pattern. Finding the perfect 'Goldilocks' learning rate is one of the hardest parts of AI engineering.",
+    "syntax_or_example": "learning_rate = 0.001 # A standard, small step size",
+    "comparisons": [
+      {
+        "target": "Hyperparameter",
+        "note": "The Learning Rate is the most famous example of a Hyperparameter—a setting the human engineer must manually choose."
+      },
+      {
+        "target": "Parameter",
+        "note": "The Learning Rate is set by the human. A Parameter is calculated by the machine."
+      }
+    ],
+    "misconceptions": [
+      "The learning rate must stay exactly the same forever. (False: Advanced networks dynamically shrink the learning rate as they get closer to the final answer)."
+    ],
+    "related_terms": [
+      "Gradient Descent",
+      "Epoch",
+      "Neural Network"
+    ]
+  },
+  {
+    "id": "ai_018",
+    "term": "Loss Function",
+    "domain": "Artificial Intelligence",
+    "definition_short": "A mathematical formula that calculates exactly how 'wrong' the AI's current predictions are.",
+    "explanation": "The Loss Function is the AI's grading system. Whenever the AI looks at data and makes a guess, the Loss Function compares that guess to the real answer and spits out an 'error score' (the loss).\n\nIf the AI is completely wrong, the loss score is huge. If it is highly accurate, the loss score drops close to zero. The entire goal of AI training is to force this specific number as close to zero as mathematically possible.",
+    "syntax_or_example": "error_score = calculate_difference(ai_guess, actual_truth)",
+    "comparisons": [
+      {
+        "target": "Learning Rate",
+        "note": "The Loss Function calculates how badly the AI failed. The Learning Rate determines how aggressively it tries to fix that failure."
+      }
+    ],
+    "misconceptions": [
+      "A loss score of zero is the ultimate goal. (False: Hitting exactly zero usually means the AI has suffered from severe Overfitting)."
+    ],
+    "related_terms": [
+      "Gradient Descent",
+      "Neural Network",
+      "Backpropagation"
+    ]
+  },
+  {
+    "id": "ai_019",
+    "term": "Activation Function",
+    "domain": "Artificial Intelligence",
+    "definition_short": "A mathematical gate in a neural network that decides if a neuron should fire or not.",
+    "explanation": "Inside a Neural Network, data flows into a neuron as a raw number. The Activation Function sits at the exit of the neuron and acts as a filter. It looks at the number and decides what signal to pass on to the next layer.\n\nWithout Activation Functions, a massive Neural Network would act exactly like one single, boring math equation. By adding these functions (like ReLU or Sigmoid), the network gains the ability to learn highly complex, curved, non-linear patterns.",
+    "syntax_or_example": "def relu_activation(x):\n    return max(0, x) # If negative, return 0",
+    "comparisons": [
+      {
+        "target": "Loss Function",
+        "note": "An Activation Function decides how a single neuron fires. A Loss Function evaluates the final answer of the entire network."
+      }
+    ],
+    "misconceptions": [
+      "One activation function works for everything. (False: Different layers require different functions to properly mold the data)."
+    ],
+    "related_terms": [
+      "Neural Network",
+      "Deep Learning",
+      "Parameter"
+    ]
+  },
+  {
+    "id": "ai_020",
+    "term": "Backpropagation",
+    "domain": "Artificial Intelligence",
+    "definition_short": "The core mechanism that sends error corrections backward through a neural network.",
+    "explanation": "Backpropagation is how a Neural Network actually learns from its mistakes. The AI makes a guess, and the Loss Function grades it. If it failed, Backpropagation grabs that failure score and flows backward from the output, through the hidden layers, to the input.\n\nAs it moves backward, it points fingers. It calculates exactly which neurons were responsible for the bad guess, and slightly adjusts their internal numbers so they won't make the same mistake next time.",
+    "syntax_or_example": "network.send_data_forward()\nnetwork.send_errors_backward_and_fix()",
+    "comparisons": [
+      {
+        "target": "Activation Function",
+        "note": "Data flows forward through the Activation Functions. Error signals flow backward through Backpropagation."
+      },
+      {
+        "target": "Gradient Descent",
+        "note": "Gradient Descent provides the math to calculate the fix. Backpropagation is the delivery system that applies the fix to the network."
+      }
+    ],
+    "misconceptions": [
+      "It happens instantly. (False: Pushing massive calculus equations backward through thousands of layers requires immense GPU processing time)."
+    ],
+    "related_terms": [
+      "Neural Network",
+      "Loss Function",
+      "Parameter"
+    ]
+  },
+  {
+    "id": "ai_021",
+    "term": "Hyperparameter",
+    "domain": "Artificial Intelligence",
+    "definition_short": "The overarching settings of an AI model that are manually configured by human engineers.",
+    "explanation": "Hyperparameters are the control dials on the outside of the AI machine. They must be set by humans before the training even begins.\n\nExamples include how many Epochs the AI should run, how many layers the Neural Network should have, or what the Learning Rate is. Tweaking these knobs is more of an art than a science, and heavily dictates whether the AI succeeds or fails.",
+    "syntax_or_example": "ai_model = build_ai(layers=10, learning_rate=0.01)\n# layers and learning_rate are hyperparameters",
+    "comparisons": [
+      {
+        "target": "Parameter",
+        "note": "Hyperparameters are set manually by the human outside the model. Parameters are learned automatically by the machine inside the model."
+      }
+    ],
+    "misconceptions": [
+      "The AI can learn its own hyperparameters. (False: While scripts can test combinations automatically, the core algorithm cannot alter them internally during standard training)."
+    ],
+    "related_terms": [
+      "Learning Rate",
+      "Epoch",
+      "Machine Learning"
+    ]
+  },
+  {
+    "id": "ai_022",
+    "term": "Parameter",
+    "domain": "Artificial Intelligence",
+    "definition_short": "The internal variables (weights and biases) that the AI automatically learns and adjusts during training.",
+    "explanation": "Parameters are the internal gears and springs of the AI model. At the start of training, these numbers are completely random. \n\nAs the AI trains using Backpropagation, it constantly tweaks and tunes millions of these parameters to get better answers. When you 'save' an AI model to a hard drive, you are literally just saving a massive text file containing millions of perfectly tuned parameter numbers.",
+    "syntax_or_example": "internal_weight_parameter = 0.84732",
+    "comparisons": [
+      {
+        "target": "Hyperparameter",
+        "note": "Parameters are generated entirely by the computer. Hyperparameters are rules set by the human."
+      }
+    ],
+    "misconceptions": [
+      "You can manually read and understand parameters. (False: A large model has billions of parameters; they are a black box of math that no human can decipher by looking at them)."
+    ],
+    "related_terms": [
+      "Neural Network",
+      "Training Data",
+      "Backpropagation"
+    ]
+  },
+  {
+    "id": "ai_023",
+    "term": "Classification",
+    "domain": "Artificial Intelligence",
+    "definition_short": "A type of machine learning task focused on sorting data into distinct categories.",
+    "explanation": "Classification is used when the answer you want from the AI is a specific label or category. \n\nFor example, feeding an AI a picture of an X-ray and asking 'Is this a tumor: Yes or No?' is a binary classification task. Asking an AI to look at an email and label it as 'Spam', 'Important', or 'Promotional' is a multi-class classification task. The output is always a discrete category.",
+    "syntax_or_example": "category = ai.classify(medical_image)\nprint(category) # Output: \"Healthy\"",
+    "comparisons": [
+      {
+        "target": "Regression",
+        "note": "Classification predicts a category (like 'Red' or 'Blue'). Regression predicts a continuous number (like '85.4 degrees')."
+      }
+    ],
+    "misconceptions": [
+      "Classification models are 100% certain. (False: They actually output a probability percentage, like '90% sure this is a dog', which is then rounded to the category)."
+    ],
+    "related_terms": [
+      "Supervised Learning",
+      "Machine Learning",
+      "Algorithm"
+    ]
+  },
+  {
+    "id": "ai_024",
+    "term": "Regression",
+    "domain": "Artificial Intelligence",
+    "definition_short": "A type of machine learning task focused on predicting continuous numerical values.",
+    "explanation": "Regression is used when the answer you want from the AI is a specific number. \n\nIf you feed an AI historical data about a house (square footage, number of bedrooms, zip code) and ask it to predict the selling price, that is a regression task. The AI calculates the mathematical relationship between all the variables and outputs a precise value, like '$450,230'.",
+    "syntax_or_example": "price_prediction = ai.regress(house_features)\nprint(price_prediction) # Output: 450000.50",
+    "comparisons": [
+      {
+        "target": "Classification",
+        "note": "Regression spits out endless possible numbers. Classification spits out a few strict text labels."
+      }
+    ],
+    "misconceptions": [
+      "Regression is only used in finance. (False: It is used in physics, weather forecasting, and predicting the exact age of a person in a photo)."
+    ],
+    "related_terms": [
+      "Supervised Learning",
+      "Machine Learning",
+      "Loss Function"
+    ]
+  },
+  {
+    "id": "ai_025",
+    "term": "Large Language Model",
+    "domain": "Artificial Intelligence",
+    "definition_short": "A massive deep learning model trained on vast amounts of text to generate human-like language.",
+    "explanation": "A Large Language Model (LLM) is the breakthrough technology behind systems like ChatGPT. It is a specific type of Deep Learning architecture with billions of Parameters.\n\nIt is trained on almost the entire public internet. Its only real function is to look at a sequence of words and mathematically predict which single word should logically come next. Because the scale is so massive, this simple 'word prediction' creates the illusion of deep reasoning, creativity, and intelligence.",
+    "syntax_or_example": "response = llm.generate_text(\"The capital of France is \")\n# The LLM statistically predicts the word \"Paris\".",
+    "comparisons": [
+      {
+        "target": "Natural Language Processing",
+        "note": "NLP is the broad field of text AI. An LLM is the gigantic, modern tool currently dominating that field."
+      },
+      {
+        "target": "Algorithm",
+        "note": "While standard algorithms follow rigid rules, LLMs rely on massive probability webs to generate seemingly infinite unique responses."
+      }
+    ],
+    "misconceptions": [
+      "LLMs know facts and search a database. (False: They don't store facts. They only store statistical probabilities of words, which is why they confidently invent fake information, known as 'hallucinating')."
+    ],
+    "related_terms": [
+      "Deep Learning",
+      "Neural Network",
+      "Artificial Intelligence"
+    ]
+  }
+]

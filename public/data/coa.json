@@ -1,0 +1,558 @@
+[
+  {
+    "id": "arch_001",
+    "term": "CPU",
+    "domain": "Computer Architecture",
+    "definition_short": "Central Processing Unit: the primary brain of the computer that executes instructions.",
+    "explanation": "The CPU is the master chip that runs your entire computer. It fetches instructions from memory, decodes what they mean, and executes them. It does all the basic math, logic, and control operations.\n\nEverything you do on a computer, from moving a mouse to compiling C++ code, eventually passes through the CPU as binary 1s and 0s. Modern CPUs are incredibly fast but rely on other components to store the data they need to process.",
+    "syntax_or_example": "Intel Core i9, AMD Ryzen 7, Apple M3.",
+    "comparisons": [
+      {
+        "target": "GPU",
+        "note": "A CPU has a few extremely fast cores for sequential tasks. A GPU has thousands of slower cores for parallel tasks."
+      }
+    ],
+    "misconceptions": [
+      "The CPU stores your files. (False: The CPU only processes data; storage is handled by the SSD or HDD)."
+    ],
+    "related_terms": [
+      "ALU",
+      "CU",
+      "Register",
+      "Clock Speed",
+      "Multicore Processor"
+    ]
+  },
+  {
+    "id": "arch_002",
+    "term": "ALU",
+    "domain": "Computer Architecture",
+    "definition_short": "Arithmetic Logic Unit: the part of the CPU that performs math and logic operations.",
+    "explanation": "The ALU is the calculator inside the CPU. It handles all mathematical operations like addition, subtraction, multiplication, and division. It also handles logic operations like AND, OR, and NOT.\n\nWhenever your C++ code adds two numbers together or checks if an 'if' statement is true, the ALU is the specific piece of hardware doing the actual work.",
+    "syntax_or_example": "int sum = 5 + 10; // The ALU performs the addition.",
+    "comparisons": [
+      {
+        "target": "CU",
+        "note": "The CU gives the orders and directs traffic. The ALU acts as the worker that actually does the math."
+      }
+    ],
+    "misconceptions": [
+      "The ALU can work on its own. (False: It relies entirely on the CU to tell it what math to do and when to do it)."
+    ],
+    "related_terms": [
+      "CPU",
+      "Register",
+      "CU"
+    ]
+  },
+  {
+    "id": "arch_003",
+    "term": "CU",
+    "domain": "Computer Architecture",
+    "definition_short": "Control Unit: the part of the CPU that directs operation and traffic.",
+    "explanation": "The Control Unit is the traffic cop of the CPU. It doesn't do any math itself. Instead, it reads the instructions from memory, figures out what needs to be done, and sends electrical signals to other parts of the computer to do it.\n\nIf an instruction says 'Add two numbers', the CU tells the memory to send the numbers, tells the ALU to add them, and tells the memory to save the result.",
+    "syntax_or_example": "Fetches instruction -> Decodes it -> Tells ALU to execute.",
+    "comparisons": [
+      {
+        "target": "ALU",
+        "note": "The CU is the manager giving instructions. The ALU is the employee executing the math."
+      }
+    ],
+    "misconceptions": [
+      "The CU executes the code. (False: It only decodes the instructions and delegates the execution to the ALU or other components)."
+    ],
+    "related_terms": [
+      "CPU",
+      "ALU",
+      "Instruction Set Architecture"
+    ]
+  },
+  {
+    "id": "arch_004",
+    "term": "Register",
+    "domain": "Computer Architecture",
+    "definition_short": "An extremely fast, tiny memory location built directly inside the CPU.",
+    "explanation": "Registers are the absolute fastest type of memory in a computer, but they are also the smallest. A CPU uses them to hold the exact numbers it is working on at this very millisecond.\n\nIf the CPU wants to add 5 and 10, it must first load '5' into one register and '10' into another register before the ALU can add them. Registers are measured in bits, like a 64-bit register.",
+    "syntax_or_example": "asm(\"mov eax, 5\"); // Moves the number 5 into the EAX register",
+    "comparisons": [
+      {
+        "target": "Cache",
+        "note": "Registers hold the exact data being calculated right now. Cache holds data that will probably be needed in the next few milliseconds."
+      }
+    ],
+    "misconceptions": [
+      "You can buy more registers to upgrade your PC. (False: Registers are permanently etched into the CPU silicon chip at the factory)."
+    ],
+    "related_terms": [
+      "CPU",
+      "Cache",
+      "Memory Hierarchy"
+    ]
+  },
+  {
+    "id": "arch_005",
+    "term": "Cache",
+    "domain": "Computer Architecture",
+    "definition_short": "A small, high-speed memory layer sitting between the CPU and RAM.",
+    "explanation": "Cache (pronounced 'cash') is a staging area for data. Because the CPU is much faster than RAM, it often has to sit and wait for RAM to send data. \n\nTo fix this, the computer copies frequently used data from RAM into the Cache, which is physically closer to the CPU and much faster. When the CPU needs data, it checks the Cache first. If it's there, it saves a massive amount of time.",
+    "syntax_or_example": "L1, L2, and L3 cache sizes on modern processors.",
+    "comparisons": [
+      {
+        "target": "RAM",
+        "note": "Cache is extremely fast, very expensive, and very small. RAM is slower, cheaper, and much larger."
+      }
+    ],
+    "misconceptions": [
+      "Clearing your browser cache clears this CPU cache. (False: Browser cache is just temporary files on your hard drive. CPU cache is hardware-level memory)."
+    ],
+    "related_terms": [
+      "RAM",
+      "Register",
+      "Cache Hit",
+      "Cache Miss",
+      "Memory Hierarchy"
+    ]
+  },
+  {
+    "id": "arch_006",
+    "term": "RAM",
+    "domain": "Computer Architecture",
+    "definition_short": "Random Access Memory: the main, short-term working memory of the computer.",
+    "explanation": "RAM is the computer's workspace. When you open a video game or a C++ program, the computer copies the files from your slow hard drive into the fast RAM. The CPU then reads the instructions directly from the RAM.\n\nIt is called 'Random Access' because the CPU can jump to any part of the memory instantly without reading it in order. However, it requires constant electricity to hold data.",
+    "syntax_or_example": "int* arr = new int[1000]; // This allocates space dynamically in RAM.",
+    "comparisons": [
+      {
+        "target": "ROM",
+        "note": "RAM is volatile (forgets data when power is lost) and rewritable. ROM is non-volatile (remembers data permanently)."
+      },
+      {
+        "target": "Cache",
+        "note": "RAM is the main desk where you work. Cache is the small drawer right next to your hand for tools you use constantly."
+      }
+    ],
+    "misconceptions": [
+      "More RAM directly increases CPU speed. (False: It just allows you to open more programs at once without slowing down)."
+    ],
+    "related_terms": [
+      "Cache",
+      "Volatile Memory",
+      "ROM",
+      "Memory Hierarchy"
+    ]
+  },
+  {
+    "id": "arch_007",
+    "term": "ROM",
+    "domain": "Computer Architecture",
+    "definition_short": "Read-Only Memory: non-volatile memory that permanently stores essential system instructions.",
+    "explanation": "ROM is a special type of memory chip that retains its data even when the computer is turned off. Because it is non-volatile, it is used to store the absolute most critical software, like the computer's BIOS or UEFI.\n\nWhen you press the power button, the CPU is blind. It looks directly at the ROM chip for the very first instructions on how to start the computer and load the operating system.",
+    "syntax_or_example": "The BIOS chip on your motherboard is a form of ROM.",
+    "comparisons": [
+      {
+        "target": "RAM",
+        "note": "ROM permanently stores startup instructions and is rarely changed. RAM temporarily stores active programs and changes millions of times a second."
+      }
+    ],
+    "misconceptions": [
+      "ROM can never be rewritten. (False: Modern EEPROM chips allow the ROM to be 'flashed' or updated, which is how you update a BIOS)."
+    ],
+    "related_terms": [
+      "RAM",
+      "Non-Volatile Memory"
+    ]
+  },
+  {
+    "id": "arch_008",
+    "term": "Motherboard",
+    "domain": "Computer Architecture",
+    "definition_short": "The main printed circuit board that connects all computer components together.",
+    "explanation": "The Motherboard is the central nervous system of the computer. It provides the physical slots and electrical pathways for the CPU, RAM, GPU, and hard drives to communicate.\n\nWithout a motherboard, the CPU would have no way to send data to the memory or output video to the screen. It also distributes power from the power supply to all the attached components.",
+    "syntax_or_example": "ATX, Micro-ATX, and Mini-ITX are common motherboard sizes.",
+    "comparisons": [
+      {
+        "target": "Bus",
+        "note": "The Motherboard is the physical plastic and fiberglass board. The Bus refers to the actual copper wires acting as highways on that board."
+      }
+    ],
+    "misconceptions": [
+      "A more expensive motherboard makes games run faster. (False: It only provides better connectivity and power stability, not direct processing speed)."
+    ],
+    "related_terms": [
+      "CPU",
+      "RAM",
+      "Bus"
+    ]
+  },
+  {
+    "id": "arch_009",
+    "term": "GPU",
+    "domain": "Computer Architecture",
+    "definition_short": "Graphics Processing Unit: a specialized processor designed to handle parallel math operations.",
+    "explanation": "A GPU is a massive array of tiny, simple processors. While a CPU is great at doing one complex task very quickly, a GPU is great at doing thousands of simple tasks at the exact same time.\n\nOriginally designed to calculate the color of millions of pixels on a screen simultaneously for video games, GPUs are now the driving force behind Artificial Intelligence and deep learning because neural networks rely heavily on massive parallel math.",
+    "syntax_or_example": "NVIDIA RTX 4090, AMD Radeon RX 7900.",
+    "comparisons": [
+      {
+        "target": "CPU",
+        "note": "A CPU is like a high-speed sports car carrying one passenger. A GPU is like a massive bus carrying hundreds of passengers slightly slower."
+      }
+    ],
+    "misconceptions": [
+      "GPUs are only used for gaming. (False: They are strictly required for training modern AI, rendering 3D movies, and cryptocurrency mining)."
+    ],
+    "related_terms": [
+      "CPU",
+      "Multicore Processor"
+    ]
+  },
+  {
+    "id": "arch_010",
+    "term": "Bus",
+    "domain": "Computer Architecture",
+    "definition_short": "The communication system of electrical wires that transfers data between components.",
+    "explanation": "A Bus is the digital highway inside a computer. It is a bundle of microscopic copper wires that connect the CPU to the RAM, the Motherboard, and other devices.\n\nThere are different types of buses: the Data Bus carries the actual information, the Address Bus carries the memory location of where that information belongs, and the Control Bus carries the commands from the CU.",
+    "syntax_or_example": "PCIe (Peripheral Component Interconnect Express) is a high-speed bus.",
+    "comparisons": [
+      {
+        "target": "Motherboard",
+        "note": "The Motherboard is the physical platform. The Bus is the network of roads embedded into that platform."
+      }
+    ],
+    "misconceptions": [
+      "Buses only exist outside the CPU. (False: The CPU has an internal bus to connect its own Registers, ALU, and CU together)."
+    ],
+    "related_terms": [
+      "Motherboard",
+      "CPU",
+      "RAM",
+      "Von Neumann Architecture"
+    ]
+  },
+  {
+    "id": "arch_011",
+    "term": "Clock Speed",
+    "domain": "Computer Architecture",
+    "definition_short": "The rate at which a processor executes a cycle of instructions, measured in Hertz.",
+    "explanation": "Clock Speed is the heartbeat of the CPU. Inside the processor is a tiny quartz crystal that ticks. Every time it ticks, the CPU executes one basic step of an instruction.\n\nA clock speed of 4.0 GHz (Gigahertz) means the CPU ticks 4 billion times per second. Generally, a higher clock speed means a faster computer, but it also generates significantly more heat.",
+    "syntax_or_example": "A 3.5 GHz CPU performs 3.5 billion cycles per second.",
+    "comparisons": [
+      {
+        "target": "Pipelining",
+        "note": "Clock Speed makes the processor work faster. Paging/Pipelining makes the processor work smarter by overlapping tasks."
+      }
+    ],
+    "misconceptions": [
+      "Clock speed is the only measure of performance. (False: A 3 GHz CPU from today will easily destroy a 4 GHz CPU from 10 years ago due to better architecture and IPC)."
+    ],
+    "related_terms": [
+      "CPU",
+      "Pipelining"
+    ]
+  },
+  {
+    "id": "arch_012",
+    "term": "Pipelining",
+    "domain": "Computer Architecture",
+    "definition_short": "A technique where multiple instructions are overlapped during execution to increase CPU throughput.",
+    "explanation": "Pipelining works exactly like an assembly line in a car factory. Instead of building one entire car before starting the next, you break the job into stages.\n\nWhile instruction A is finishing its math, instruction B is being decoded, and instruction C is being fetched from memory. This overlapping allows the CPU to finish one instruction per clock tick, massively speeding up the system without increasing the Clock Speed.",
+    "syntax_or_example": "Stage 1: Fetch -> Stage 2: Decode -> Stage 3: Execute.",
+    "comparisons": [
+      {
+        "target": "Clock Speed",
+        "note": "Pipelining increases the *amount* of work done per second by overlapping. Clock Speed increases how *fast* those individual overlapping steps occur."
+      }
+    ],
+    "misconceptions": [
+      "Pipelining speeds up a single instruction. (False: A single instruction still takes the same total time; pipelining only speeds up the total time for a large group of instructions)."
+    ],
+    "related_terms": [
+      "Clock Speed",
+      "CPU",
+      "Instruction Set Architecture"
+    ]
+  },
+  {
+    "id": "arch_013",
+    "term": "CISC",
+    "domain": "Computer Architecture",
+    "definition_short": "Complex Instruction Set Computer: an architecture where single instructions can execute complex, multi-step tasks.",
+    "explanation": "CISC is a design philosophy for CPUs. In a CISC processor, the hardware is given a massive vocabulary of complex instructions. \n\nYou can give the CPU a single command like 'Multiply these two numbers in RAM and save the result'. The CPU handles all the background steps automatically. This makes the programmer's job easier and keeps file sizes small, but makes the physical CPU circuitry very complicated and power-hungry.",
+    "syntax_or_example": "The Intel x86 architecture (used in almost all desktop PCs) is a CISC design.",
+    "comparisons": [
+      {
+        "target": "RISC",
+        "note": "CISC uses a few complex, heavy instructions. RISC uses many simple, lightweight instructions."
+      }
+    ],
+    "misconceptions": [
+      "CISC is obsolete. (False: While smartphones use RISC, almost every desktop and laptop from Intel or AMD still uses CISC)."
+    ],
+    "related_terms": [
+      "RISC",
+      "Instruction Set Architecture"
+    ]
+  },
+  {
+    "id": "arch_014",
+    "term": "RISC",
+    "domain": "Computer Architecture",
+    "definition_short": "Reduced Instruction Set Computer: an architecture using a small, highly optimized set of simple instructions.",
+    "explanation": "RISC is the opposite of CISC. A RISC processor only knows a few very basic, incredibly fast commands. \n\nIf you want to multiply two numbers in memory, a RISC CPU forces the programmer to write three separate commands: 'Load number 1', 'Load number 2', 'Multiply'. While it requires more lines of code, the physical CPU is extremely simple, meaning it uses very little battery power and runs very cool.",
+    "syntax_or_example": "The ARM architecture (used in all iPhones and Androids) is a RISC design.",
+    "comparisons": [
+      {
+        "target": "CISC",
+        "note": "RISC breaks tasks down into multiple tiny steps. CISC tries to do the whole task in one massive step."
+      }
+    ],
+    "misconceptions": [
+      "RISC processors are slow because they are simple. (False: Because the instructions are so simple, RISC CPUs can execute them at blazing speeds, often matching or beating CISC)."
+    ],
+    "related_terms": [
+      "CISC",
+      "Instruction Set Architecture"
+    ]
+  },
+  {
+    "id": "arch_015",
+    "term": "Von Neumann Architecture",
+    "domain": "Computer Architecture",
+    "definition_short": "A fundamental computer design where both program instructions and data share the same memory space.",
+    "explanation": "Almost all modern computers are based on the Von Neumann Architecture, invented in 1945. Its core rule is that the code (the instructions) and the data (the variables) are stored together in the exact same RAM, and travel along the exact same Bus.\n\nThis makes computers incredibly flexible, as it is easy to load different programs into memory. However, it creates the 'Von Neumann Bottleneck'—the CPU is so fast it spends most of its time idling, waiting for the single bus to fetch data from memory.",
+    "syntax_or_example": "Your desktop PC stores both your compiled C++ .exe file and the text files it reads in the same RAM block.",
+    "comparisons": [
+      {
+        "target": "Harvard Architecture",
+        "note": "Von Neumann mixes instructions and data in one memory block. Harvard physically separates them into two different memory blocks."
+      }
+    ],
+    "misconceptions": [
+      "It is a specific piece of hardware. (False: It is a theoretical design concept that hardware manufacturers follow)."
+    ],
+    "related_terms": [
+      "Harvard Architecture",
+      "CPU",
+      "Bus"
+    ]
+  },
+  {
+    "id": "arch_016",
+    "term": "Harvard Architecture",
+    "domain": "Computer Architecture",
+    "definition_short": "A computer design that uses physically separate memory and buses for instructions and data.",
+    "explanation": "To solve the bottleneck of the Von Neumann design, the Harvard Architecture physically splits the memory. It has one RAM chip and bus dedicated purely to instructions, and a completely separate RAM chip and bus dedicated to data.\n\nBecause there are two lanes, the CPU can fetch the next instruction and read the required data at the exact same millisecond. It is highly efficient but more expensive and complex to build. It is mostly used in tiny microcontrollers.",
+    "syntax_or_example": "Used heavily in Arduino boards and inside the L1 Cache of modern CPUs.",
+    "comparisons": [
+      {
+        "target": "Von Neumann Architecture",
+        "note": "Harvard uses two separate roads for traffic to avoid jams. Von Neumann forces all traffic down one single road."
+      }
+    ],
+    "misconceptions": [
+      "Modern computers only use one architecture. (False: Most modern PCs use Von Neumann for main RAM, but use Harvard Architecture inside the CPU's internal Cache)."
+    ],
+    "related_terms": [
+      "Von Neumann Architecture",
+      "CPU",
+      "Cache"
+    ]
+  },
+  {
+    "id": "arch_017",
+    "term": "Instruction Set Architecture",
+    "domain": "Computer Architecture",
+    "definition_short": "The vocabulary of commands that a specific CPU is engineered to understand.",
+    "explanation": "The Instruction Set Architecture (ISA) is the bridge between software and hardware. It defines the exact binary codes that tell the CPU to add, subtract, load, or jump.\n\nIf you compile a C++ program for an Intel chip (x86 ISA), it will not run on an Apple chip (ARM ISA) because the Apple chip literally does not understand the vocabulary of the Intel chip. You must recompile the code to translate it into the new ISA.",
+    "syntax_or_example": "x86-64 (Intel/AMD), ARM (Apple/Mobile), RISC-V (Open Source).",
+    "comparisons": [
+      {
+        "target": "CPU",
+        "note": "The ISA is the rulebook and language dictionary. The CPU is the physical machine that reads that dictionary."
+      }
+    ],
+    "misconceptions": [
+      "ISAs dictate how the CPU must be built physically. (False: An ISA only dictates the input/output rules. Engineers can build the physical chip however they want as long as it respects the rules)."
+    ],
+    "related_terms": [
+      "CPU",
+      "CISC",
+      "RISC"
+    ]
+  },
+  {
+    "id": "arch_018",
+    "term": "Multicore Processor",
+    "domain": "Computer Architecture",
+    "definition_short": "A single physical CPU chip that contains multiple independent processing units (cores).",
+    "explanation": "To make computers faster without melting them with high clock speeds, engineers started putting multiple CPUs onto a single chip. These are called cores.\n\nA Quad-Core processor is essentially four separate brains. Core 1 can run your video game, Core 2 can handle Discord, Core 3 handles Spotify, and Core 4 manages the operating system. They share the same main memory but can execute tasks completely independently.",
+    "syntax_or_example": "Intel Core i7-13700K has 16 individual cores.",
+    "comparisons": [
+      {
+        "target": "GPU",
+        "note": "A Multicore CPU has 4 to 24 very smart cores. A GPU has thousands of very simple cores."
+      }
+    ],
+    "misconceptions": [
+      "A quad-core is exactly four times faster than a single-core. (False: It depends entirely on whether the software was programmed using Threads to split the work up)."
+    ],
+    "related_terms": [
+      "CPU",
+      "Thread",
+      "GPU"
+    ]
+  },
+  {
+    "id": "arch_019",
+    "term": "Memory Hierarchy",
+    "domain": "Computer Architecture",
+    "definition_short": "The architectural pyramid of computer storage based on speed, size, and cost.",
+    "explanation": "The Memory Hierarchy is a design principle based on physics and economics. Fast memory is wildly expensive and tiny. Slow memory is cheap and massive.\n\nThe pyramid looks like this (from fastest/smallest to slowest/largest): CPU Registers -> L1/L2/L3 Cache -> RAM -> SSD -> HDD. The computer tries to keep the data you are using right now at the top of the pyramid, and shoves unused data down to the bottom.",
+    "syntax_or_example": "Registers (Bytes) -> Cache (Megabytes) -> RAM (Gigabytes) -> SSD (Terabytes).",
+    "comparisons": [
+      {
+        "target": "RAM",
+        "note": "RAM is just one specific level in the middle of the Memory Hierarchy pyramid."
+      }
+    ],
+    "misconceptions": [
+      "We should just build hard drives out of Cache memory. (False: A 1 Terabyte drive made of CPU Cache would cost tens of millions of dollars)."
+    ],
+    "related_terms": [
+      "Register",
+      "Cache",
+      "RAM",
+      "SSD",
+      "HDD"
+    ]
+  },
+  {
+    "id": "arch_020",
+    "term": "Cache Hit",
+    "domain": "Computer Architecture",
+    "definition_short": "When the CPU successfully finds the data it needs stored in the fast Cache memory.",
+    "explanation": "When the CPU needs a piece of data (like a variable in your C++ code), it checks the high-speed Cache first before checking the slow RAM. \n\nIf the data is successfully found in the Cache, it is called a Cache Hit. The data is instantly sent to the CPU, keeping the processor running at maximum speed. Good code is written to maximize Cache Hits.",
+    "syntax_or_example": "Accessing arrays sequentially in C++ usually results in 99% Cache Hits.",
+    "comparisons": [
+      {
+        "target": "Cache Miss",
+        "note": "A Cache Hit is a victory (fast data retrieval). A Cache Miss is a failure (slow data retrieval)."
+      }
+    ],
+    "misconceptions": [
+      "Software programmers cannot control cache hits. (False: Organizing your data properly in memory can drastically increase cache hit rates, speeding up code heavily)."
+    ],
+    "related_terms": [
+      "Cache",
+      "Cache Miss"
+    ]
+  },
+  {
+    "id": "arch_021",
+    "term": "Cache Miss",
+    "domain": "Computer Architecture",
+    "definition_short": "When the CPU fails to find the data it needs in the Cache and must retrieve it from RAM.",
+    "explanation": "If the CPU checks the fast Cache for data and comes up empty, it suffers a Cache Miss. The CPU is now forced to pause all calculations and wait for the slow RAM to fetch and send the data.\n\nBecause CPUs operate so incredibly fast, a single Cache Miss can waste hundreds of clock cycles where the CPU just sits idle doing absolutely nothing. Minimizing cache misses is critical for high-performance software.",
+    "syntax_or_example": "Jumping randomly around a massive Linked List causes constant Cache Misses.",
+    "comparisons": [
+      {
+        "target": "Cache Hit",
+        "note": "A Cache Miss forces the CPU to wait for slow RAM. A Cache Hit feeds the CPU instantly."
+      }
+    ],
+    "misconceptions": [
+      "A cache miss crashes the program. (False: It doesn't cause errors, it just causes a severe microscopic delay in performance)."
+    ],
+    "related_terms": [
+      "Cache",
+      "Cache Hit",
+      "RAM"
+    ]
+  },
+  {
+    "id": "arch_022",
+    "term": "Volatile Memory",
+    "domain": "Computer Architecture",
+    "definition_short": "A type of memory that completely loses its data when the power is turned off.",
+    "explanation": "Volatile Memory relies on a constant flow of electricity to hold its 1s and 0s. The second you unplug the computer or suffer a power outage, the memory is instantly wiped clean.\n\nWhile this sounds like a flaw, volatile memory is used because it is thousands of times faster to read and write than permanent storage. It acts as the temporary workbench for the computer.",
+    "syntax_or_example": "Registers, Cache, and RAM are all volatile memory.",
+    "comparisons": [
+      {
+        "target": "Non-Volatile Memory",
+        "note": "Volatile memory is fast but forgets. Non-Volatile memory is slower but remembers permanently."
+      }
+    ],
+    "misconceptions": [
+      "Volatile memory degrades over time. (False: Volatile memory can be rewritten trillions of times without degrading, unlike SSDs)."
+    ],
+    "related_terms": [
+      "RAM",
+      "Non-Volatile Memory"
+    ]
+  },
+  {
+    "id": "arch_023",
+    "term": "Non-Volatile Memory",
+    "domain": "Computer Architecture",
+    "definition_short": "A type of memory that safely retains its data even when the power is turned off.",
+    "explanation": "Non-Volatile Memory uses special magnetic or electrical properties to trap data permanently. When you turn off your laptop, your photos, games, and operating system survive because they are stored here.\n\nBecause it must permanently trap the data, writing to non-volatile memory is a much slower and more physically demanding process than writing to volatile RAM.",
+    "syntax_or_example": "Flash drives, ROM, SSDs, and HDDs are all non-volatile memory.",
+    "comparisons": [
+      {
+        "target": "Volatile Memory",
+        "note": "Non-Volatile is for long-term storage (your hard drive). Volatile is for short-term working space (your RAM)."
+      }
+    ],
+    "misconceptions": [
+      "It lasts forever. (False: Flash-based non-volatile memory like SSDs slowly degrades every time you write new data to it and will eventually die)."
+    ],
+    "related_terms": [
+      "ROM",
+      "SSD",
+      "HDD",
+      "Volatile Memory"
+    ]
+  },
+  {
+    "id": "arch_024",
+    "term": "SSD",
+    "domain": "Computer Architecture",
+    "definition_short": "Solid State Drive: a fast, non-volatile storage device that uses flash memory.",
+    "explanation": "An SSD is the modern replacement for old spinning hard drives. It has absolutely no moving parts. Instead, it uses microscopic transistors to trap electrons and save data.\n\nBecause there is no physical mechanical arm that has to move around to find data, SSDs can load your operating system and video games nearly instantly. They are virtually immune to being dropped or shaken.",
+    "syntax_or_example": "NVMe M.2 drives are currently the fastest form of consumer SSDs.",
+    "comparisons": [
+      {
+        "target": "HDD",
+        "note": "An SSD is completely silent, ultra-fast, and uses microchips. An HDD is loud, slow, and uses spinning magnetic plates."
+      }
+    ],
+    "misconceptions": [
+      "SSDs are immune to data loss. (False: While immune to drops, if an SSD suffers an electrical failure, the data is usually permanently destroyed and unrecoverable)."
+    ],
+    "related_terms": [
+      "HDD",
+      "Non-Volatile Memory",
+      "Memory Hierarchy"
+    ]
+  },
+  {
+    "id": "arch_025",
+    "term": "HDD",
+    "domain": "Computer Architecture",
+    "definition_short": "Hard Disk Drive: a traditional, non-volatile storage device that uses spinning magnetic disks.",
+    "explanation": "An HDD is a mechanical storage device. Inside the metal box are glass or aluminum platters that spin at 7,200 RPM. A microscopic mechanical arm flies over the spinning disks, using magnets to write 1s and 0s.\n\nBecause it relies on moving physical parts, it is very slow and fragile. However, the technology is extremely cheap to manufacture, making it the best choice for storing massive amounts of data, like terabytes of old movies or server backups.",
+    "syntax_or_example": "A 10-Terabyte Seagate Barracuda mechanical drive.",
+    "comparisons": [
+      {
+        "target": "SSD",
+        "note": "An HDD offers massive storage space for very cheap. An SSD offers blazing fast speed for a much higher price."
+      }
+    ],
+    "misconceptions": [
+      "Magnets will instantly erase your HDD. (False: Modern HDDs use extremely powerful magnets internally; a normal fridge magnet won't do anything to it)."
+    ],
+    "related_terms": [
+      "SSD",
+      "Non-Volatile Memory",
+      "Memory Hierarchy"
+    ]
+  }
+]

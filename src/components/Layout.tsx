@@ -455,8 +455,12 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' } = {}) {
 
   const generateSuggestions = useCallback(async () => {
     if (concepts.length === 0) return;
+    const apiKey = (import.meta as any).env?.VITE_NVIDIA_API_KEY || (import.meta as any).env?.VITE_GROQ_API_KEY || '';
+    if (!apiKey) {
+      console.warn('AI suggestions disabled: Missing API key (VITE_NVIDIA_API_KEY or VITE_GROQ_API_KEY).');
+      return;
+    }
     try {
-      const apiKey = (import.meta as any).env?.VITE_NVIDIA_API_KEY || (import.meta as any).env?.VITE_GROQ_API_KEY || '';
       const recentHistory = history.slice(0, 5).join(', ');
       const bookmarkedTerms = concepts.filter(c => bookmarks.includes(c.id)).map(c => c.term).join(', ');
 
@@ -512,7 +516,10 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' } = {}) {
           const allData = await Promise.all(
             files.map(async (file) => {
               const res = await fetch(`/data/${file}`);
-              if (!res.ok) return [];
+              if (!res.ok) {
+                console.warn(`Failed to fetch data from /data/${file}: ${res.status}`);
+                return [];
+              }
               const json = await res.json();
               return json.map((item: any) => ({
                 ...item,
