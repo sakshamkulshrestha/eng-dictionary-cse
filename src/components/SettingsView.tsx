@@ -52,12 +52,12 @@ export default function SettingsView({
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-16 text-[var(--text)] pb-32 animate-fade-in perspective-1000">
-      <header className="mb-12 pl-2">
-        <h1 className="text-5xl sm:text-[64px] font-extrabold tracking-[-0.04em] mb-4 leading-none animate-slide-up bg-clip-text text-transparent bg-gradient-to-b from-black to-gray-600 dark:from-white dark:to-gray-400 pb-2">
+    <div className="w-full max-w-4xl mx-auto p-10">
+      <header className="mb-20">
+        <h1 className="text-page-title mb-5">
           Settings
         </h1>
-        <p className="text-xl text-[#8E8E93] font-medium animate-slide-up delay-100">
+        <p className="text-lg text-muted font-bold uppercase tracking-widest">
           Customize your semantic experience.
         </p>
       </header>
@@ -65,157 +65,156 @@ export default function SettingsView({
       <div className="space-y-10">
 
         {/* Appearance Section */}
-        <div className="animate-slide-up delay-150">
-          <h2 className="text-[13px] font-bold text-muted mb-2.5 uppercase tracking-widest pl-4">Appearance</h2>
-          <div className="bg-card  rounded-[20px] overflow-hidden shadow-[0_2px_10px_rgb(0,0,0,0.02)] dark:shadow-none border border-[var(--border)] dark:border-[var(--border)]">
-
-            <div className="flex items-center justify-between p-4 px-5 border-b border-[var(--border)] dark:border-[var(--border)]">
-              <div className="flex items-center gap-4">
-                <div className="w-8 h-8 rounded-lg bg-card dark:bg-zinc-700 flex items-center justify-center">
-                  <Moon className="w-[18px] h-[18px] text-white" strokeWidth={2.5} />
+        <div className="space-y-10">
+          <h2 className="text-[10px] font-black text-muted uppercase tracking-[0.4em] pl-2">System Aesthetics</h2>
+          <div className="neo-card p-0">
+            <div className="flex items-center justify-between p-10 border-b border-[var(--border)]">
+              <div className="flex items-center gap-5">
+                <div className="w-10 h-10 bg-[var(--text)] flex items-center justify-center">
+                  <Moon className="w-5 h-5 text-[var(--bg)]" strokeWidth={3} />
                 </div>
-                <span className="text-[17px] font-medium">Dark Mode</span>
+                <div className="flex flex-col">
+                  <span className="text-[14px] font-black uppercase tracking-widest">Atmosphere Control</span>
+                  <span className="text-[10px] text-muted uppercase tracking-wider">Toggle Dark/Light Protocol</span>
+                </div>
               </div>
               <button
                 onClick={() => setIsDark(!isDark)}
-                className={`w-[50px] h-8 rounded-full transition-colors relative ${isDark ? 'bg-[var(--text)]' : 'bg-[var(--border)] dark:bg-[var(--active)]'}`}
+                className={`w-[60px] h-8 border-2 border-[var(--text)] transition-colors relative ${isDark ? 'bg-[var(--text)]' : 'bg-transparent'}`}
               >
-                <div className={`w-[27px] h-[27px] bg-card rounded-full shadow-sm absolute top-[2px] transition-transform duration-300 ${isDark ? 'translate-x-[21px]' : 'translate-x-[2px]'}`} />
+                <div className={`w-[20px] h-[20px] bg-[var(--bg)] absolute top-1 transition-transform duration-200 ${isDark ? 'translate-x-[32px]' : 'translate-x-1'}`} />
               </button>
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 px-5 border-b border-[var(--border)] dark:border-[var(--border)]">
-              <div className="flex items-center gap-4 mb-4 sm:mb-0">
-                <div className="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center">
-                  <Type className="w-[18px] h-[18px] text-white" strokeWidth={2.5} />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-10">
+              <div className="flex items-center gap-5 mb-5 sm:mb-0">
+                <div className="w-10 h-10 bg-[var(--neo-purple)] flex items-center justify-center">
+                  <Type className="w-5 h-5 text-[var(--pop-white)]" strokeWidth={3} />
                 </div>
-                <span className="text-[17px] font-medium">Typography Scale</span>
+                <div className="flex flex-col">
+                  <span className="text-[14px] font-black uppercase tracking-widest">Typographic Scale</span>
+                  <span className="text-[10px] text-muted uppercase tracking-wider">Adjust reading density</span>
+                </div>
               </div>
-              <div className="flex items-center bg-[var(--border)] dark:bg-[var(--active)] p-1 rounded-full">
+              <div className="flex items-center gap-1 border-2 border-[var(--text)] p-1">
                 <button
                   onClick={() => setFontSize('standard')}
-                  className={`px-4 py-1 rounded-full text-[14px] font-medium transition-all ${fontSize === 'standard' ? 'bg-card  shadow-sm text-[var(--text)]' : 'text-muted'}`}
+                  className={`px-6 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${fontSize === 'standard' ? 'bg-[var(--text)] text-[var(--bg)]' : 'text-muted hover:text-[var(--text)]'}`}
                 >
                   Standard
                 </button>
                 <button
                   onClick={() => setFontSize('large')}
-                  className={`px-4 py-1 rounded-full text-[14px] font-medium transition-all ${fontSize === 'large' ? 'bg-card  shadow-sm text-[var(--text)]' : 'text-muted'}`}
+                  className={`px-6 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${fontSize === 'large' ? 'bg-[var(--text)] text-[var(--bg)]' : 'text-muted hover:text-[var(--text)]'}`}
                 >
-                  Large
+                  Expanded
                 </button>
               </div>
             </div>
-
-            {/* Theme Accent selection removed by request */}
-
           </div>
         </div>
 
         {/* Accessibility Section */}
-        <div className="animate-slide-up delay-200">
-          <h2 className="text-[13px] font-bold text-muted mb-2.5 uppercase tracking-widest pl-4">Accessibility</h2>
-          <div className="bg-card  rounded-[20px] overflow-hidden shadow-[0_2px_10px_rgb(0,0,0,0.02)] dark:shadow-none border border-[var(--border)] dark:border-[var(--border)]">
-
-            <div className="flex items-center justify-between p-4 px-5">
-              <div className="flex items-center gap-4">
-                <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center">
-                  <MousePointer2 className="w-[18px] h-[18px] text-white" strokeWidth={2.5} />
+        <div className="space-y-10">
+          <h2 className="text-[10px] font-black text-muted uppercase tracking-[0.4em] pl-2">Tactical Accessibility</h2>
+          <div className="neo-card p-0">
+            <div className="flex items-center justify-between p-10 border-b border-[var(--border)]">
+              <div className="flex items-center gap-5">
+                <div className="w-10 h-10 bg-[var(--neo-gold)] flex items-center justify-center">
+                  <MousePointer2 className="w-5 h-5 text-[var(--bg)]" strokeWidth={3} />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[17px] font-medium">Reduce Motion</span>
-                  <span className="text-[13px] text-muted mt-0.5">Disables UI spring animations.</span>
+                  <span className="text-[14px] font-black uppercase tracking-widest">Kinetic Motion</span>
+                  <span className="text-[10px] text-muted uppercase tracking-wider">Protocol: Reduce UI Strains</span>
                 </div>
               </div>
               <button
                 onClick={() => setReduceMotion(!reduceMotion)}
-                className={`w-[50px] h-8 rounded-full transition-colors relative ${reduceMotion ? 'bg-[var(--text)]' : 'bg-[var(--border)] dark:bg-[var(--active)]'}`}
+                className={`w-[60px] h-8 border-2 border-[var(--text)] transition-colors relative ${reduceMotion ? 'bg-[var(--text)]' : 'bg-transparent'}`}
               >
-                <div className={`w-[27px] h-[27px] bg-card rounded-full shadow-sm absolute top-[2px] transition-transform duration-300 ${reduceMotion ? 'translate-x-[21px]' : 'translate-x-[2px]'}`} />
+                <div className={`w-[20px] h-[20px] bg-[var(--bg)] absolute top-1 transition-transform duration-200 ${reduceMotion ? 'translate-x-[32px]' : 'translate-x-1'}`} />
               </button>
             </div>
 
-            <div className="flex items-center justify-between p-4 px-5">
-              <div className="flex items-center gap-4">
-                <div className="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center">
-                  <Volume2 className="w-[18px] h-[18px] text-white" strokeWidth={2.5} />
+            <div className="flex items-center justify-between p-10">
+              <div className="flex items-center gap-5">
+                <div className="w-10 h-10 bg-[var(--neo-green)] flex items-center justify-center">
+                  <Volume2 className="w-5 h-5 text-[var(--bg)]" strokeWidth={3} />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[17px] font-medium">Auto-Speak</span>
-                  <span className="text-[13px] text-muted mt-0.5">Read dictionary definitions aloud.</span>
+                  <span className="text-[14px] font-black uppercase tracking-widest">Audio Synthesis</span>
+                  <span className="text-[10px] text-muted uppercase tracking-wider">Automated definition playback</span>
                 </div>
               </div>
               <button
                 onClick={() => setAutoSpeak(!autoSpeak)}
-                className={`w-[50px] h-8 rounded-full transition-colors relative ${autoSpeak ? 'bg-[var(--text)]' : 'bg-[var(--border)] dark:bg-[var(--active)]'}`}
+                className={`w-[60px] h-8 border-2 border-[var(--text)] transition-colors relative ${autoSpeak ? 'bg-[var(--text)]' : 'bg-transparent'}`}
               >
-                <div className={`w-[27px] h-[27px] bg-card rounded-full shadow-sm absolute top-[2px] transition-transform duration-300 ${autoSpeak ? 'translate-x-[21px]' : 'translate-x-[2px]'}`} />
+                <div className={`w-[20px] h-[20px] bg-[var(--bg)] absolute top-1 transition-transform duration-200 ${autoSpeak ? 'translate-x-[32px]' : 'translate-x-1'}`} />
               </button>
             </div>
-
           </div>
         </div>
 
         {/* Data Section */}
-        <div className="animate-slide-up delay-300">
-          <h2 className="text-[13px] font-bold text-muted mb-2.5 uppercase tracking-widest pl-4">Data Management</h2>
-          <div className="bg-card  rounded-[20px] overflow-hidden shadow-[0_2px_10px_rgb(0,0,0,0.02)] dark:shadow-none border border-[var(--border)] dark:border-[var(--border)]">
-
+        <div className="space-y-10">
+          <h2 className="text-[10px] font-black text-muted uppercase tracking-[0.4em] pl-2">Data Persistence Protocols</h2>
+          <div className="neo-card p-0">
             <button
-              onClick={() => confirmAction(onClearHistory, 'Are you sure you want to clear your search history?')}
-              className="w-full flex items-center justify-between p-4 px-5 border-b border-[var(--border)] dark:border-[var(--border)] active:bg-[var(--hover)] dark:active:bg-[var(--hover)] transition-colors text-left"
+              onClick={() => confirmAction(onClearHistory, 'Wipe search history?')}
+              className="w-full flex items-center justify-between p-10 border-b border-[var(--border)] hover:bg-[var(--hover)] transition-colors text-left group"
             >
-              <div className="flex items-center gap-4">
-                <div className="w-8 h-8 rounded-lg bg-gray-500 flex items-center justify-center">
-                  <MonitorSmartphone className="w-[18px] h-[18px] text-white" strokeWidth={2.5} />
+              <div className="flex items-center gap-5">
+                <div className="w-10 h-10 bg-[var(--text)] flex items-center justify-center">
+                  <MonitorSmartphone className="w-5 h-5 text-[var(--bg)]" strokeWidth={3} />
                 </div>
-                <span className="text-[17px] font-medium">Clear Search History</span>
+                <span className="text-[14px] font-black uppercase tracking-widest group-hover:pl-2 transition-all">Terminate Search Cache</span>
               </div>
-              <Trash2 className="w-[18px] h-[18px] text-muted" />
+              <Trash2 className="w-5 h-5 text-muted group-hover:text-[var(--neo-pink)] transition-colors" />
             </button>
 
             <button
               onClick={handleExport}
-              className="w-full flex items-center justify-between p-4 px-5 border-b border-[var(--border)] dark:border-[var(--border)] active:bg-[var(--hover)] dark:active:bg-[var(--hover)] transition-colors text-left"
+              className="w-full flex items-center justify-between p-10 border-b border-[var(--border)] hover:bg-[var(--hover)] transition-colors text-left group"
             >
-              <div className="flex items-center gap-4">
-                <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center">
-                  <Download className="w-[18px] h-[18px] text-white" strokeWidth={2.5} />
+              <div className="flex items-center gap-5">
+                <div className="w-10 h-10 bg-[var(--neo-purple)] flex items-center justify-center">
+                  <Download className="w-5 h-5 text-[var(--pop-white)]" strokeWidth={3} />
                 </div>
-                <span className="text-[17px] font-medium">Export Bookmarks</span>
+                <span className="text-[14px] font-black uppercase tracking-widest group-hover:pl-2 transition-all">Extract Local Bookmarks</span>
               </div>
             </button>
 
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="w-full flex items-center justify-between p-4 px-5 border-b border-[var(--border)] dark:border-[var(--border)] active:bg-[var(--hover)] dark:active:bg-[var(--hover)] transition-colors text-left"
+              className="w-full flex items-center justify-between p-10 border-b border-[var(--border)] hover:bg-[var(--hover)] transition-colors text-left group"
             >
-              <div className="flex items-center gap-4">
-                <div className="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center">
-                  <Upload className="w-[18px] h-[18px] text-white" strokeWidth={2.5} />
+              <div className="flex items-center gap-5">
+                <div className="w-10 h-10 bg-[var(--neo-green)] flex items-center justify-center">
+                  <Upload className="w-5 h-5 text-[var(--bg)]" strokeWidth={3} />
                 </div>
-                <span className="text-[17px] font-medium">Import Bookmarks</span>
+                <span className="text-[14px] font-black uppercase tracking-widest group-hover:pl-2 transition-all">Inject External Backup</span>
               </div>
               <input type="file" className="hidden" ref={fileInputRef} accept=".json" onChange={handleImport} />
             </button>
 
             <button
-              onClick={() => confirmAction(onClearBookmarks, 'Are you sure you want to clear all your saved bookmarks? This cannot be undone.')}
-              className="w-full flex items-center justify-between p-4 px-5 active:bg-[var(--hover)] dark:active:bg-[var(--hover)] transition-colors text-left"
+              onClick={() => confirmAction(onClearBookmarks, 'Wipe all saved intelligence?')}
+              className="w-full flex items-center justify-between p-10 hover:bg-[var(--neo-pink)]/10 transition-colors text-left group"
             >
-              <div className="flex items-center gap-4">
-                <div className="w-8 h-8 rounded-lg bg-red-500 flex items-center justify-center">
-                  <Trash2 className="w-[18px] h-[18px] text-white" strokeWidth={2.5} />
+              <div className="flex items-center gap-5">
+                <div className="w-10 h-10 bg-[var(--neo-pink)] flex items-center justify-center">
+                  <Trash2 className="w-5 h-5 text-[var(--pop-white)]" strokeWidth={3} />
                 </div>
-                <span className="text-[17px] font-medium text-red-500">Clear Saved Bookmarks</span>
+                <span className="text-[14px] font-black uppercase tracking-widest text-[var(--neo-pink)] group-hover:pl-2 transition-all">Global Memory Purge</span>
               </div>
             </button>
-
           </div>
-          <p className="px-4 mt-3 text-[13px] text-muted font-medium">
-            Dictionary data never leaves your device and runs entirely in local storage.
-          </p>
         </div>
+
+        <p className="px-4 mt-3 text-[13px] text-muted font-medium">
+          Dictionary data never leaves your device and runs entirely in local storage.
+        </p>
 
       </div>
     </div>

@@ -48,33 +48,27 @@ export default function BookmarksView({
   }, [roadmaps]);
 
   return (
-    <div className="fixed inset-0 z-[100] bg-bg overflow-y-auto w-full h-full animate-fade-in perspective-1000">
-      <button
-        onClick={onClose}
-        className="fixed top-6 right-6 lg:right-10 p-3 bg-[var(--hover)] dark:bg-[var(--active)] hover:bg-[var(--active)] dark:hover:bg-card/20 rounded-full transition-colors z-[110]"
-      >
-        <X className="w-6 h-6 text-[var(--text)]" />
-      </button>
+    <div className="w-full h-full animate-fade-in perspective-1000">
 
-      <div className="max-w-[1400px] w-full mx-auto px-4 sm:px-8 py-16 text-[var(--text)] pb-32">
-        <header className="mb-12">
-          <h1 className="text-page-title bg-[var(--text)]-gradient bg-clip-text text-transparent mb-4 pb-2">
+      <div className="max-w-[1400px] w-full mx-auto p-20 text-[var(--text)] pb-32">
+        <header className="mb-20">
+          <h1 className="text-page-title mb-5">
             Library
           </h1>
-          <p className="text-xl text-[#8E8E93] font-medium mb-8">
+          <p className="text-lg text-muted font-bold uppercase tracking-widest">
             Your saved knowledge components.
           </p>
 
-          <div className="flex bg-[var(--hover)] dark:bg-[var(--hover)] p-1 rounded-xl w-fit">
+          <div className="flex bg-[var(--hover)] p-0 w-fit border-2 border-[var(--text)]">
             <button
               onClick={() => setActiveTab('words')}
-              className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'words' ? 'bg-card  text-[var(--text)] shadow-sm' : 'text-[#8E8E93] hover:text-black dark:hover:text-white'}`}
+              className={`px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all ${activeTab === 'words' ? 'bg-[var(--text)] text-[var(--bg)]' : 'text-muted hover:text-[var(--text)]'}`}
             >
               Saved Words
             </button>
             <button
               onClick={() => setActiveTab('roadmaps')}
-              className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'roadmaps' ? 'bg-card  text-[var(--text)] shadow-sm' : 'text-[#8E8E93] hover:text-black dark:hover:text-white'}`}
+              className={`px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all ${activeTab === 'roadmaps' ? 'bg-[var(--text)] text-[var(--bg)]' : 'text-muted hover:text-[var(--text)]'}`}
             >
               Saved Roadmaps
             </button>
@@ -92,8 +86,8 @@ export default function BookmarksView({
               </div>
 
               {groupedBookmarks.sortedDomains.length === 0 ? (
-                <div className="py-12 bg-[var(--hover)] dark:bg-[var(--hover)] rounded-3xl text-center border border-[var(--border)] dark:border-[var(--border)]">
-                  <p className="text-[#8E8E93] font-medium">No saved words found.</p>
+                <div className="py-20 bg-[var(--hover)] text-center border-2 border-dashed border-[var(--border)]">
+                  <p className="text-muted font-black uppercase tracking-widest">Protocol: No intelligence saved.</p>
                 </div>
               ) : (
                 <div className="space-y-12">
@@ -106,18 +100,18 @@ export default function BookmarksView({
                         {groupedBookmarks.grouped[domain].map(c => (
                           <div
                             key={c.id}
-                            className="group relative flex flex-col p-5 bg-card  rounded-3xl border border-[var(--border)] dark:border-[var(--border)] shadow-[0_2px_10px_rgb(0,0,0,0.02)] transition-all hover:shadow-[0_8px_32px_rgba(var(--ios-blue-rgb),0.1)] hover:-translate-y-1 hover:border-[var(--text)]/30 cursor-pointer"
+                            className="group relative flex flex-col p-10 neo-card neo-card-interactive"
                             onClick={() => { onClose(); onNavigate(c.id); }}
                           >
                             <button
                               onClick={(e) => { e.stopPropagation(); onRemoveBookmark(c.id); }}
-                              className="absolute top-3 right-3 p-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-all scale-95 group-hover:scale-100"
+                              className="absolute top-3 right-3 p-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20 transition-all opacity-0 group-hover:opacity-100"
                               title="Remove bookmark"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
-                            <span className="text-lg font-bold truncate pr-8 mb-1">{c.term}</span>
-                            <span className="text-sm text-[#8E8E93] line-clamp-2">{c.definition_short}</span>
+                            <span className="text-xl font-bold uppercase tracking-tight mb-2">{c.term}</span>
+                            <span className="text-xs text-muted font-medium leading-relaxed line-clamp-2">{c.definition_short}</span>
                           </div>
                         ))}
                       </div>
@@ -145,7 +139,7 @@ export default function BookmarksView({
                   {sortedRoadmaps.map((r, i) => (
                     <div
                       key={r.id}
-                      className="group relative flex flex-col sm:flex-row sm:items-center justify-between p-6 bg-card  rounded-3xl border border-[var(--border)] dark:border-[var(--border)] shadow-[0_2px_10px_rgb(0,0,0,0.02)] transition-all hover:shadow-[0_8px_32px_rgba(var(--ios-blue-rgb),0.1)] hover:-translate-y-1 hover:border-[var(--text)]/30 cursor-pointer"
+                      className="group relative flex flex-col sm:flex-row sm:items-center justify-between p-10 neo-card neo-card-interactive"
                       onClick={() => { onClose(); onOpenRoadmap(r); }}
                     >
                       <div className="flex-1 min-w-0 pr-12 sm:pr-4 mb-3 sm:mb-0">
@@ -161,14 +155,14 @@ export default function BookmarksView({
 
                       <button
                         onClick={(e) => { e.stopPropagation(); onDeleteRoadmap(r.id); }}
-                        className="absolute top-4 right-4 p-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-full opacity-0 sm:group-hover:opacity-100 transition-all scale-95 group-hover:scale-100"
-                        title="Delete roadmap"
+                        className="absolute top-5 right-5 p-3 bg-[var(--neo-pink)] text-[var(--pop-white)] opacity-0 group-hover:opacity-100 transition-all transform-gpu"
+                        title="Extract roadmap"
                       >
-                        <Trash2 className="w-4.5 h-4.5" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
 
-                      <div className="hidden sm:flex shrink-0 w-10 h-10 rounded-full bg-[var(--hover)] dark:bg-[var(--hover)] items-center justify-center text-[var(--text)] group-hover:bg-[var(--active)] dark:group-hover:bg-[var(--active)] group-hover:text-[var(--text)] transition-colors">
-                        <Bookmark className="w-5 h-5" />
+                      <div className="hidden sm:flex shrink-0 w-12 h-12 bg-[var(--text)] items-center justify-center text-[var(--bg)] group-hover:bg-[var(--neo-green)] transition-colors">
+                        <Map className="w-5 h-5" />
                       </div>
                     </div>
                   ))}

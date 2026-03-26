@@ -96,8 +96,10 @@ export function useUserState() {
     // Apply theme class to body for tailwind dark mode if needed
     if (settings.theme === 'dark') {
       document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
     } else {
       document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
     }
 
     if (settings.accentColor) {

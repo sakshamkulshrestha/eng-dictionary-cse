@@ -1,9 +1,10 @@
 @import "tailwindcss";
 
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=Inter:wght@400;500;600;700;800&display=swap');
+
 @theme {
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-serif: 'Fraunces', ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
 
   /* Explicit Tailwind 4 Color utility mappings to CSS Variables */
   --color-bg: var(--bg);
@@ -14,65 +15,81 @@
   --color-hover: var(--hover);
   --color-active: var(--active);
   --color-search: var(--search);
+
+  /* NeoPOP Colors for tailwind utilities */
+  --color-neo-green: var(--neo-green);
+  --color-neo-gold: var(--neo-gold);
+  --color-neo-purple: var(--neo-purple);
+  --color-neo-orange: var(--neo-orange);
+  --color-neo-pink: var(--neo-pink);
 }
 
-:root,
-:root[data-theme="light"] {
-  --bg: #f7f7f7;
-  --card: #ffffff;
-  --text: #111111;
-  --muted: #6b6b6b;
-  --border: #e5e5e5;
-  --hover: #efefef;
-  --active: #eaeaea;
-  --search: #efefef;
+:root {
+  /* NeoPOP Core Palette */
+  --pop-black: #0D0D0D;
+  --pop-white: #FFFFFF;
+  --poli-purple: #6A35FF;
+  --orange-sunshine: #FF8744;
+  --pink-pong: #FF426F;
+  --manna-gold: #FFCB45;
+  --neo-paccha: #E5FE40;
 
-  /* Supplemental matching variables */
-  --glass: rgba(255, 255, 255, 0.75);
-  --glass-border: rgba(0, 0, 0, 0.04);
-  --code-bg: #f0f0f0;
+  /* Theme mappings (DEFAULT: DARK) */
+  --bg: var(--pop-black);
+  --card: #151515;
+  --text: var(--pop-white);
+  --muted: #8E8E93;
+  --border: #2A2A2A;
+  --hover: #1A1A1A;
+  --active: #222222;
+  --search: #1A1A1A;
 
-  --apple-spring-bouncy: cubic-bezier(0.175, 0.885, 0.32, 1.15);
-  --apple-spring-smooth: cubic-bezier(0.25, 1, 0.5, 1);
+  /* Semantic Neon Variables */
+  --neo-green: var(--neo-paccha);
+  --neo-gold: var(--manna-gold);
+  --neo-purple: var(--poli-purple);
+  --neo-orange: var(--orange-sunshine);
+  --neo-pink: var(--pink-pong);
+
+  /* Easing and Animation */
+  --spring-bouncy: cubic-bezier(0.175, 0.885, 0.32, 1.15);
+  --spring-smooth: cubic-bezier(0.25, 1, 0.5, 1);
+  --neo-ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-:root[data-theme="dark"] {
-  --bg: #000000;
-  --card: #0a0a0a;
-  --text: #ffffff;
-  --muted: #a1a1a1;
-  --border: #1f1f1f;
-  --hover: #111111;
-  --active: #1a1a1a;
-  --search: #1a1a1a;
+.light {
+  --bg: #FAF9F6;
+  --card: #F2F1EA;
+  --text: #0D0D0D;
+  --muted: #666666;
+  --border: #D1D1CB;
+  --hover: #E8E7DF;
+  --active: #DFDDD5;
+  --search: #E8E7DF;
 
-  /* Supplemental matching variables */
-  --glass: rgba(10, 10, 10, 0.75);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --code-bg: #111111;
+  /* Adjust NeoPOP for light mode contrast */
+  --neo-green: #B5BF00; 
+  --neo-gold: #D4A300;
+  --neo-purple: #5227CC;
+  --neo-orange: #CC5C00;
+  --neo-pink: #CC1F49;
 }
 
-@keyframes fade-in {
+/* Base resets for the strict grid / border-radius */
+*, *::before, *::after {
+  /* Enforce brutalist sharp corners globally */
+  border-radius: 0 !important;
+}
+
+/* Animations */
+@keyframes slide-up-fade {
   from {
     opacity: 0;
-    filter: blur(4px);
+    transform: translateY(20px);
   }
-
   to {
     opacity: 1;
-    filter: blur(0);
-  }
-}
-
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.98);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
@@ -83,288 +100,224 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-y: auto !important;
+    min-height: 100vh;
+    line-height: 1.5;
   }
 
   ::selection {
-    background: var(--text);
-    color: var(--bg);
+    background: var(--neo-green);
+    color: var(--pop-black);
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+  /* Serif enforced for Headings */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
     color: var(--text);
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+
+  /* Global Canvas Background */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(to right, var(--border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(circle at center, black, transparent 80%);
+    opacity: 0.1;
+    pointer-events: none;
+    z-index: -1;
   }
 }
 
+:root {
+  --grid-size: 5px;
+}
+
+.grid-5px { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--grid-size), 1fr)); gap: var(--grid-size); }
+.p-5 { padding: calc(var(--grid-size) * 1); }
+.p-10 { padding: calc(var(--grid-size) * 2); }
+.p-20 { padding: calc(var(--grid-size) * 4); }
+.m-5 { margin: calc(var(--grid-size) * 1); }
+.m-10 { margin: calc(var(--grid-size) * 2); }
+
 @layer components {
 
-  /* Animation Mixins */
-  .animate-fade-in {
-    animation: fade-in 0.7s var(--apple-spring-smooth) forwards;
+  /* --- NeoPOP Button Styles --- */
+  .neo-btn-primary {
+    @apply inline-flex items-center justify-center font-bold px-6 py-3 cursor-pointer relative overflow-hidden;
+    background-color: var(--pop-white);
+    color: var(--pop-black);
+    border: 1px solid var(--pop-white);
+    transition: transform 0.15s var(--neo-ease), box-shadow 0.15s var(--neo-ease), background-color 0.15s;
+    
+    /* NeoPOP 3D Shadow: Sharp bottom right (Dark Green/Yellow mix for pop), light top left inset for neon edge */
+    box-shadow: 
+      4px 4px 0px 0px var(--neo-green),
+      inset 2px 2px 0px rgba(255, 255, 255, 1);
   }
 
-  .animate-slide-up {
-    animation: slide-up 0.6s var(--apple-spring-bouncy) forwards;
+  .neo-btn-primary:hover {
+    box-shadow: 
+      6px 6px 0px 0px var(--neo-green),
+      inset 2px 2px 0px rgba(255, 255, 255, 1);
+    transform: translate(-2px, -2px);
   }
 
-  .delay-100 {
-    animation-delay: 0.10s;
+  .neo-btn-primary:active {
+    /* Push down effect */
+    box-shadow: 0px 0px 0px 0px transparent;
+    transform: translate(5px, 5px);
   }
 
-  .delay-150 {
-    animation-delay: 0.15s;
-  }
-
-  .delay-200 {
-    animation-delay: 0.20s;
-  }
-
-  .delay-250 {
-    animation-delay: 0.25s;
-  }
-
-  .delay-300 {
-    animation-delay: 0.30s;
-  }
-
-  /* Apple Glass Nav Bar */
-  .apple-glass-nav {
-    @apply sticky top-0 h-[60px] flex items-center justify-between w-full z-50 px-6;
-    background: var(--glass);
-    backdrop-filter: blur(40px) saturate(200%);
-    -webkit-backdrop-filter: blur(40px) saturate(200%);
-    border-bottom: 1px solid var(--glass-border);
-  }
-
-  /* Premium Card */
-  .apple-card {
-    @apply rounded-[24px] p-6 sm:p-8;
+  .neo-btn-secondary {
+    @apply inline-flex items-center justify-center font-bold px-6 py-3 cursor-pointer;
     background-color: var(--card);
-    border: 1px solid var(--border);
-    transition: transform 0.3s var(--apple-spring-bouncy),
-      box-shadow 0.3s var(--apple-spring-smooth),
-      scale 0.1s var(--apple-spring-bouncy);
-    position: relative;
-    overflow: hidden;
-  }
-
-  :root[data-theme="light"] .apple-card {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
-  }
-
-  .apple-card:hover {
-    transform: translateY(-2px) scale(1.005);
-  }
-
-  :root[data-theme="light"] .apple-card:hover {
-    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.08);
-  }
-
-  .apple-card:active {
-    transform: scale(0.97);
-  }
-
-  /* Primary Button (Monochrome) */
-  .apple-pill {
-    @apply px-5 py-2.5 rounded-full inline-flex items-center justify-center font-bold;
-    background-color: var(--text);
-    color: var(--bg);
-    transition: all 0.2s var(--apple-spring-smooth);
-    cursor: pointer;
-  }
-
-  .apple-pill:hover {
-    background-color: var(--hover);
     color: var(--text);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    transform: translateY(-4px);
     border: 1px solid var(--border);
+    transition: transform 0.15s var(--neo-ease), box-shadow 0.15s var(--neo-ease);
+    
+    box-shadow: 
+      5px 5px 0px 0px var(--neo-gold),
+      inset 1px 1px 0px rgba(255,255,255,0.05);
   }
 
-  .apple-pill:active,
-  .apple-press:active {
-    transform: scale(0.96) !important;
-    transition: transform 0.1s var(--apple-spring-bouncy);
-    background-color: var(--active);
+  .neo-btn-secondary:hover {
+    box-shadow: 
+      7px 7px 0px 0px var(--neo-gold),
+      inset 1px 1px 0px rgba(255,255,255,0.1);
+    transform: translate(-2px, -2px);
+    border-color: var(--neo-gold);
   }
 
-  /* Secondary Button */
-  .apple-icon-btn {
-    @apply w-10 h-10 px-3 py-2 rounded-xl flex items-center justify-center;
+  .neo-btn-ghost {
+    @apply inline-flex items-center justify-center font-bold px-4 py-2 cursor-pointer transition-all;
     background-color: transparent;
-    border: 1px solid var(--border);
     color: var(--text);
-    transition: all 0.2s var(--apple-spring-smooth);
+    border: 1px solid transparent;
+    transition: transform 0.15s var(--neo-ease), box-shadow 0.15s var(--neo-ease);
+  }
+
+  .neo-btn-ghost:hover {
+    background-color: var(--hover);
+    box-shadow: 4px 4px 0px 0px var(--neo-purple);
+    transform: translate(-2px, -2px);
+    border-color: var(--neo-purple);
+  }
+
+  .neo-btn-secondary:active,
+  .neo-btn-ghost:active,
+  .neo-btn-primary:active {
+    box-shadow: 0px 0px 0px 0px transparent !important;
+    transform: translate(4px, 4px) !important;
+  }
+
+  /* --- NeoPOP Card Container Styles --- */
+  .neo-card {
+    @apply p-8;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    position: relative;
+    /* Premium Multi-layered Pseudo-morphic Shadow */
+    box-shadow: 
+      5px 5px 0px 0px var(--pop-black),
+      10px 10px 0px 0px rgba(0,0,0,0.3),
+      inset 1px 1px 0px rgba(255, 255, 255, 0.05);
+    transition: transform 0.2s var(--neo-ease), box-shadow 0.2s var(--neo-ease);
+  }
+
+  .neo-card-interactive {
     cursor: pointer;
   }
 
-  .apple-icon-btn:hover {
-    background-color: var(--hover);
-    transform: translateY(-2px);
+  .neo-card-interactive:hover {
+    border-color: var(--text);
+    transform: translate(-5px, -5px);
+    /* Neon glow effect on hover via shadow spread */
+    box-shadow: 
+      5px 5px 0px 0px var(--neo-green),
+      10px 10px 0px 0px var(--pop-black),
+      15px 15px 0px 0px rgba(0,0,0,0.2),
+      inset 1px 1px 0px rgba(255, 255, 255, 0.1);
   }
 
-  .apple-icon-btn:active {
-    background-color: var(--active);
-    transform: scale(0.96);
+  .neo-card-interactive:active {
+    transform: translate(5px, 5px) !important;
+    box-shadow: 0px 0px 0px 0px transparent !important;
   }
 
-  /* Settings / Lists */
-  .settings-wrapper {
-    @apply rounded-[20px] overflow-hidden;
-    background-color: var(--card);
-    border: 1px solid var(--border);
+  /* --- Navbar & Layout Elements --- */
+  .neo-nav {
+    @apply sticky top-0 flex items-center justify-between w-full z-50 px-6 sm:px-12 py-4;
+    background: rgba(13, 13, 13, 0.85); /* pop black with opacity */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
   }
 
-  .settings-item {
-    @apply py-4 px-5 flex items-center justify-between border-b last:border-0 cursor-pointer;
-    border-color: var(--border);
-    transition: background-color 0.2s, font-weight 0.2s;
-  }
-
-  .settings-item:hover {
-    background-color: var(--hover);
-  }
-
-  .settings-item:active {
-    background-color: var(--active);
-  }
-
-  /* Markdown Rendering */
+  /* --- Markdown Overrides --- */
   .markdown-body {
-    font-size: 0.9rem;
-    line-height: 1.75;
+    font-size: 0.95rem;
+    line-height: 1.8;
   }
 
-  .markdown-body p {
-    margin-bottom: 0.875rem;
-  }
-
-  .markdown-body h1 {
-    font-size: 1.5rem;
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
+  .markdown-body h1, .markdown-body h2, .markdown-body h3 {
+    font-family: var(--font-serif);
     color: var(--text);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
     font-weight: 800;
   }
 
-  .markdown-body h2 {
-    font-size: 1.25rem;
-    margin-top: 1.25rem;
-    margin-bottom: 0.5rem;
-    color: var(--text);
-    font-weight: 700;
-  }
-
-  .markdown-body h3 {
-    font-size: 1rem;
-    margin-top: 1rem;
-    margin-bottom: 0.375rem;
-    color: var(--text);
-    font-weight: 600;
-  }
-
-  .markdown-body ul {
-    list-style-type: disc;
-    padding-left: 1.5rem;
-    margin-bottom: 0.875rem;
-  }
-
-  .markdown-body ol {
-    list-style-type: decimal;
-    padding-left: 1.5rem;
-    margin-bottom: 0.875rem;
-  }
-
-  .markdown-body li {
-    margin-bottom: 0.25rem;
-    color: var(--text);
-  }
-
-  .markdown-body strong {
-    font-weight: bold;
-    color: var(--text);
-  }
+  .markdown-body h1 { font-size: 2rem; }
+  .markdown-body h2 { font-size: 1.5rem; }
+  .markdown-body h3 { font-size: 1.25rem; }
 
   .markdown-body pre {
-    background: var(--code-bg);
+    background: #000;
     border: 1px solid var(--border);
-    padding: 1rem;
-    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: inset 2px 2px 0px rgba(255,255,255,0.02);
     overflow-x: auto;
-    margin-bottom: 1rem;
-    max-width: 100%;
-  }
-
-  .markdown-body pre code {
-    background: transparent;
-    border: none;
-    padding: 0;
-    color: var(--text);
+    margin-bottom: 1.5rem;
   }
 }
 
 @layer utilities {
   .text-hero {
-    @apply text-[72px] lg:text-[96px] font-black leading-none tracking-[calc(-0.04*1em)];
+    @apply text-[64px] sm:text-[80px] lg:text-[110px] font-black leading-[0.9] tracking-tight;
+    font-family: var(--font-serif);
   }
 
   .text-page-title {
-    @apply text-[48px] lg:text-[68px] font-black leading-none tracking-[calc(-0.04*1em)];
+    @apply text-[40px] sm:text-[56px] lg:text-[72px] font-black leading-none tracking-tight;
+    font-family: var(--font-serif);
   }
 
-  .text-card-title {
-    @apply text-[24px] font-bold tracking-tight;
-  }
-
-  .text-body-primary {
-    @apply text-[21px] lg:text-[24px] font-medium leading-[1.7];
-  }
-
-  .text-body-secondary {
-    @apply text-[20px] lg:text-[24px] font-medium leading-snug;
-  }
-
-  .text-list-label {
-    @apply text-[17px] font-medium;
-  }
-
-  .text-meta {
-    @apply text-[12px] lg:text-[14px] font-bold uppercase tracking-widest;
-  }
-
-  .text-border {
-    color: var(--border);
-  }
-
-  .bg-border {
-    background-color: var(--border);
-  }
-
-  /* Focus utilities */
   .focus-monochrome {
-    @apply focus:outline-none focus-visible:outline focus-visible:outline-1 focus-visible:outline-[var(--text)] focus-visible:outline-offset-2;
+    @apply focus:outline-none focus:ring-2 focus:ring-[var(--neo-green)] focus:ring-offset-2 focus:ring-offset-[var(--pop-black)];
   }
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar - Brutalist style */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--pop-black);
+  border-left: 1px solid var(--border);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 9999px;
+  background: var(--muted);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--muted);
+  background: var(--text);
 }
