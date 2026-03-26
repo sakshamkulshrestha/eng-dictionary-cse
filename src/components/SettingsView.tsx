@@ -1,221 +1,133 @@
-import React, { useRef } from 'react';
-import { Moon, Palette, Trash2, Smartphone, MonitorSmartphone, MousePointer2, Type, Volume2, Download, Upload } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Moon, Type, Volume2, ChevronLeft } from 'lucide-react';
+import MagneticButton from './primitives/MagneticButton';
+
+interface SettingsViewProps {
+  isDark: boolean;
+  setIsDark: (v: boolean) => void;
+  fontSize: string;
+  setFontSize: (v: string) => void;
+  autoSpeak: boolean;
+  setAutoSpeak: (v: boolean) => void;
+  reduceMotion?: boolean;
+  setReduceMotion?: (v: boolean) => void;
+  onClearHistory?: () => void;
+  onClearBookmarks?: () => void;
+  bookmarks?: string[];
+}
+
+const stagger = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.1 } }
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as any } }
+};
 
 export default function SettingsView({
-  isDark,
-  setIsDark,
-  accentColor,
-  setAccentColor,
-  reduceMotion,
-  setReduceMotion,
-  fontSize,
-  setFontSize,
-  autoSpeak,
-  setAutoSpeak,
-  onClearHistory,
-  onClearBookmarks,
-  bookmarks,
-  setBookmarks
-}: any) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const confirmAction = (action: any, message: string) => {
-    if (window.confirm(message)) {
-      action();
-    }
-  };
-
-  const handleExport = () => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(bookmarks));
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "dictionary_bookmarks.json");
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-  };
-
-  const handleImport = (e: any) => {
-    const fileReader = new FileReader();
-    fileReader.readAsText(e.target.files[0], "UTF-8");
-    fileReader.onload = (e: any) => {
-      try {
-        const imported = JSON.parse(e.target.result);
-        if (Array.isArray(imported)) {
-          setBookmarks(imported);
-          alert('Bookmarks imported successfully!');
-        }
-      } catch (err) {
-        alert('Invalid backup file.');
-      }
-    };
-  };
+  isDark, setIsDark,
+  fontSize, setFontSize,
+  autoSpeak, setAutoSpeak,
+}: SettingsViewProps) {
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-10">
-      <header className="mb-20">
-        <h1 className="text-page-title mb-5">
-          Settings
-        </h1>
-        <p className="text-lg text-muted font-bold uppercase tracking-widest">
-          Customize your semantic experience.
-        </p>
-      </header>
+    <div className="w-full h-full animate-fade-in">
+      <div className="max-w-2xl w-full mx-auto p-10 sm:p-20 text-[var(--text)] pb-32">
 
-      <div className="space-y-10">
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          animate="visible"
+          className="space-y-16"
+        >
+          <motion.header variants={fadeUp} className="mb-10">
+            <h1 className="text-page-title mb-3">Settings</h1>
+            <p className="text-muted text-sm font-medium">Configure your Lexicon experience.</p>
+          </motion.header>
 
-        {/* Appearance Section */}
-        <div className="space-y-10">
-          <h2 className="text-[10px] font-black text-muted uppercase tracking-[0.4em] pl-2">System Aesthetics</h2>
-          <div className="neo-card p-0">
-            <div className="flex items-center justify-between p-10 border-b border-[var(--border)]">
-              <div className="flex items-center gap-5">
-                <div className="w-10 h-10 bg-[var(--text)] flex items-center justify-center">
-                  <Moon className="w-5 h-5 text-[var(--bg)]" strokeWidth={3} />
+          {/* Appearance */}
+          <motion.div variants={fadeUp} className="space-y-6">
+            <h2 className="text-[10px] font-black text-muted uppercase tracking-[0.4em] pl-1">Appearance</h2>
+            <div className="neo-card p-0">
+              <div className="flex items-center justify-between p-8 border-b border-[var(--border)]">
+                <div className="flex items-center gap-5">
+                  <div className="w-10 h-10 bg-[var(--text)] flex items-center justify-center">
+                    <Moon className="w-5 h-5 text-[var(--bg)]" strokeWidth={2.5} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold">Dark Mode</span>
+                    <span className="text-[11px] text-muted">Switch between light and dark theme</span>
+                  </div>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-[14px] font-black uppercase tracking-widest">Atmosphere Control</span>
-                  <span className="text-[10px] text-muted uppercase tracking-wider">Toggle Dark/Light Protocol</span>
-                </div>
-              </div>
-              <button
-                onClick={() => setIsDark(!isDark)}
-                className={`w-[60px] h-8 border-2 border-[var(--text)] transition-colors relative ${isDark ? 'bg-[var(--text)]' : 'bg-transparent'}`}
-              >
-                <div className={`w-[20px] h-[20px] bg-[var(--bg)] absolute top-1 transition-transform duration-200 ${isDark ? 'translate-x-[32px]' : 'translate-x-1'}`} />
-              </button>
-            </div>
-
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-10">
-              <div className="flex items-center gap-5 mb-5 sm:mb-0">
-                <div className="w-10 h-10 bg-[var(--neo-purple)] flex items-center justify-center">
-                  <Type className="w-5 h-5 text-[var(--pop-white)]" strokeWidth={3} />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[14px] font-black uppercase tracking-widest">Typographic Scale</span>
-                  <span className="text-[10px] text-muted uppercase tracking-wider">Adjust reading density</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-1 border-2 border-[var(--text)] p-1">
                 <button
-                  onClick={() => setFontSize('standard')}
-                  className={`px-6 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${fontSize === 'standard' ? 'bg-[var(--text)] text-[var(--bg)]' : 'text-muted hover:text-[var(--text)]'}`}
+                  onClick={() => setIsDark(!isDark)}
+                  className={`w-14 h-8 border-2 border-[var(--text)] transition-colors relative ${isDark ? 'bg-[var(--text)]' : 'bg-transparent'}`}
                 >
-                  Standard
-                </button>
-                <button
-                  onClick={() => setFontSize('large')}
-                  className={`px-6 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${fontSize === 'large' ? 'bg-[var(--text)] text-[var(--bg)]' : 'text-muted hover:text-[var(--text)]'}`}
-                >
-                  Expanded
+                  <div className={`w-5 h-5 absolute top-[3px] transition-all duration-200 ${isDark ? 'translate-x-[30px] bg-[var(--bg)]' : 'translate-x-[3px] bg-[var(--text)]'}`} />
                 </button>
               </div>
+
+              <div className="flex items-center justify-between p-8">
+                <div className="flex items-center gap-5">
+                  <div className="w-10 h-10 bg-[var(--neo-purple)] flex items-center justify-center">
+                    <Type className="w-5 h-5 text-white" strokeWidth={2.5} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold">Text Size</span>
+                    <span className="text-[11px] text-muted">Adjust content reading density</span>
+                  </div>
+                </div>
+                <div className="flex items-center border-2 border-[var(--border)]">
+                  <button
+                    onClick={() => setFontSize('standard')}
+                    className={`px-5 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${fontSize === 'standard' ? 'bg-[var(--text)] text-[var(--bg)]' : 'text-muted hover:text-[var(--text)]'}`}
+                  >
+                    Standard
+                  </button>
+                  <button
+                    onClick={() => setFontSize('large')}
+                    className={`px-5 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${fontSize === 'large' ? 'bg-[var(--text)] text-[var(--bg)]' : 'text-muted hover:text-[var(--text)]'}`}
+                  >
+                    Large
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
 
-        {/* Accessibility Section */}
-        <div className="space-y-10">
-          <h2 className="text-[10px] font-black text-muted uppercase tracking-[0.4em] pl-2">Tactical Accessibility</h2>
-          <div className="neo-card p-0">
-            <div className="flex items-center justify-between p-10 border-b border-[var(--border)]">
-              <div className="flex items-center gap-5">
-                <div className="w-10 h-10 bg-[var(--neo-gold)] flex items-center justify-center">
-                  <MousePointer2 className="w-5 h-5 text-[var(--bg)]" strokeWidth={3} />
+          {/* Audio */}
+          <motion.div variants={fadeUp} className="space-y-6">
+            <h2 className="text-[10px] font-black text-muted uppercase tracking-[0.4em] pl-1">Audio</h2>
+            <div className="neo-card p-0">
+              <div className="flex items-center justify-between p-8">
+                <div className="flex items-center gap-5">
+                  <div className="w-10 h-10 bg-[var(--neo-green)] flex items-center justify-center">
+                    <Volume2 className="w-5 h-5 text-[var(--bg)]" strokeWidth={2.5} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold">Auto-Speak</span>
+                    <span className="text-[11px] text-muted">Read definitions aloud automatically</span>
+                  </div>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-[14px] font-black uppercase tracking-widest">Kinetic Motion</span>
-                  <span className="text-[10px] text-muted uppercase tracking-wider">Protocol: Reduce UI Strains</span>
-                </div>
+                <button
+                  onClick={() => setAutoSpeak(!autoSpeak)}
+                  className={`w-14 h-8 border-2 border-[var(--text)] transition-colors relative ${autoSpeak ? 'bg-[var(--text)]' : 'bg-transparent'}`}
+                >
+                  <div className={`w-5 h-5 absolute top-[3px] transition-all duration-200 ${autoSpeak ? 'translate-x-[30px] bg-[var(--bg)]' : 'translate-x-[3px] bg-[var(--text)]'}`} />
+                </button>
               </div>
-              <button
-                onClick={() => setReduceMotion(!reduceMotion)}
-                className={`w-[60px] h-8 border-2 border-[var(--text)] transition-colors relative ${reduceMotion ? 'bg-[var(--text)]' : 'bg-transparent'}`}
-              >
-                <div className={`w-[20px] h-[20px] bg-[var(--bg)] absolute top-1 transition-transform duration-200 ${reduceMotion ? 'translate-x-[32px]' : 'translate-x-1'}`} />
-              </button>
             </div>
+          </motion.div>
 
-            <div className="flex items-center justify-between p-10">
-              <div className="flex items-center gap-5">
-                <div className="w-10 h-10 bg-[var(--neo-green)] flex items-center justify-center">
-                  <Volume2 className="w-5 h-5 text-[var(--bg)]" strokeWidth={3} />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[14px] font-black uppercase tracking-widest">Audio Synthesis</span>
-                  <span className="text-[10px] text-muted uppercase tracking-wider">Automated definition playback</span>
-                </div>
-              </div>
-              <button
-                onClick={() => setAutoSpeak(!autoSpeak)}
-                className={`w-[60px] h-8 border-2 border-[var(--text)] transition-colors relative ${autoSpeak ? 'bg-[var(--text)]' : 'bg-transparent'}`}
-              >
-                <div className={`w-[20px] h-[20px] bg-[var(--bg)] absolute top-1 transition-transform duration-200 ${autoSpeak ? 'translate-x-[32px]' : 'translate-x-1'}`} />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Data Section */}
-        <div className="space-y-10">
-          <h2 className="text-[10px] font-black text-muted uppercase tracking-[0.4em] pl-2">Data Persistence Protocols</h2>
-          <div className="neo-card p-0">
-            <button
-              onClick={() => confirmAction(onClearHistory, 'Wipe search history?')}
-              className="w-full flex items-center justify-between p-10 border-b border-[var(--border)] hover:bg-[var(--hover)] transition-colors text-left group"
-            >
-              <div className="flex items-center gap-5">
-                <div className="w-10 h-10 bg-[var(--text)] flex items-center justify-center">
-                  <MonitorSmartphone className="w-5 h-5 text-[var(--bg)]" strokeWidth={3} />
-                </div>
-                <span className="text-[14px] font-black uppercase tracking-widest group-hover:pl-2 transition-all">Terminate Search Cache</span>
-              </div>
-              <Trash2 className="w-5 h-5 text-muted group-hover:text-[var(--neo-pink)] transition-colors" />
-            </button>
-
-            <button
-              onClick={handleExport}
-              className="w-full flex items-center justify-between p-10 border-b border-[var(--border)] hover:bg-[var(--hover)] transition-colors text-left group"
-            >
-              <div className="flex items-center gap-5">
-                <div className="w-10 h-10 bg-[var(--neo-purple)] flex items-center justify-center">
-                  <Download className="w-5 h-5 text-[var(--pop-white)]" strokeWidth={3} />
-                </div>
-                <span className="text-[14px] font-black uppercase tracking-widest group-hover:pl-2 transition-all">Extract Local Bookmarks</span>
-              </div>
-            </button>
-
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="w-full flex items-center justify-between p-10 border-b border-[var(--border)] hover:bg-[var(--hover)] transition-colors text-left group"
-            >
-              <div className="flex items-center gap-5">
-                <div className="w-10 h-10 bg-[var(--neo-green)] flex items-center justify-center">
-                  <Upload className="w-5 h-5 text-[var(--bg)]" strokeWidth={3} />
-                </div>
-                <span className="text-[14px] font-black uppercase tracking-widest group-hover:pl-2 transition-all">Inject External Backup</span>
-              </div>
-              <input type="file" className="hidden" ref={fileInputRef} accept=".json" onChange={handleImport} />
-            </button>
-
-            <button
-              onClick={() => confirmAction(onClearBookmarks, 'Wipe all saved intelligence?')}
-              className="w-full flex items-center justify-between p-10 hover:bg-[var(--neo-pink)]/10 transition-colors text-left group"
-            >
-              <div className="flex items-center gap-5">
-                <div className="w-10 h-10 bg-[var(--neo-pink)] flex items-center justify-center">
-                  <Trash2 className="w-5 h-5 text-[var(--pop-white)]" strokeWidth={3} />
-                </div>
-                <span className="text-[14px] font-black uppercase tracking-widest text-[var(--neo-pink)] group-hover:pl-2 transition-all">Global Memory Purge</span>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        <p className="px-4 mt-3 text-[13px] text-muted font-medium">
-          Dictionary data never leaves your device and runs entirely in local storage.
-        </p>
-
+          <motion.div variants={fadeUp}>
+            <p className="text-[11px] text-muted text-center">
+              All data is stored locally on your device. Nothing leaves your browser.
+            </p>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );

@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=Inter:wght@400;500;600;700;800&display=swap');
-
 @theme {
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-serif: 'Fraunces', ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
@@ -67,12 +65,12 @@
   --active: #DFDDD5;
   --search: #E8E7DF;
 
-  /* Adjust NeoPOP for light mode contrast */
-  --neo-green: #B5BF00; 
-  --neo-gold: #D4A300;
-  --neo-purple: #5227CC;
-  --neo-orange: #CC5C00;
-  --neo-pink: #CC1F49;
+  /* Adjust NeoPOP for light mode — darker, subdued accents */
+  --neo-green: #6B7A00;
+  --neo-gold: #9E7600;
+  --neo-purple: #4018A8;
+  --neo-orange: #A34500;
+  --neo-pink: #A8163D;
 }
 
 /* Base resets for the strict grid / border-radius */

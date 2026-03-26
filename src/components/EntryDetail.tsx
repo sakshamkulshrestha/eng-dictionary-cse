@@ -95,10 +95,11 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onToggl
             className="absolute left-1/4 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[var(--neo-purple)] opacity-[0.25] blur-[180px] pointer-events-none"
           />
           <AnimatedText 
+            key={entry.id}
             text={entry.term} 
             el="h1" 
-            className="text-[12vw] sm:text-[10vw] font-black leading-[0.85] tracking-tighter uppercase text-[var(--text)] relative z-10 break-words" 
-            animationType="chars" 
+            className="text-[12vw] sm:text-[10vw] font-black leading-[0.85] tracking-tighter uppercase text-[var(--text)] relative z-10" 
+            animationType="words" 
             delayOffset={0.1} 
           />
         </div>

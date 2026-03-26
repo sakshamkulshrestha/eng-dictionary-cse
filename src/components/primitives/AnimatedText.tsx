@@ -53,10 +53,10 @@ export default function AnimatedText({
   return (
     <Wrapper className={className}>
       <motion.span
+        key={text}
         variants={container}
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-50px" }}
+        animate="visible"
         className="inline-block"
       >
         {items.map((word, index) => (
@@ -64,7 +64,6 @@ export default function AnimatedText({
             key={index} 
             variants={item}
             className="inline-block"
-            // Adding margin to words, none to chars
             style={{ marginRight: animationType === 'words' && index !== items.length - 1 ? '0.25em' : '0' }}
           >
             {word === ' ' && animationType === 'chars' ? '\u00A0' : word}

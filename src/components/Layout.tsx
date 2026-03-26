@@ -12,6 +12,7 @@ import {
   BookMarked, Clock, Bot, Star
 } from 'lucide-react';
 import { Concept, Roadmap, RoadmapStep, UserSettings } from '../types';
+import { getFullDomainName } from '../utils/domains';
 import Fuse from 'fuse.js';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -25,7 +26,6 @@ import EntryDetail from './EntryDetail';
 import SettingsView from './SettingsView';
 import BookmarksView from './BookmarksView';
 import SkeletonLoader from './primitives/SkeletonLoader';
-import GamifiedReward from './primitives/GamifiedReward';
 import MagneticButton from './primitives/MagneticButton';
 import TiltCard from './primitives/TiltCard';
 import AnimatedText from './primitives/AnimatedText';
@@ -631,22 +631,31 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
       </AnimatePresence>
 
       {/* TOP NAVBAR */}
-      <nav className="neo-nav">
-        <div className="flex items-center gap-4">
+      <nav className="neo-nav backdrop-blur-xl bg-[var(--bg)]/90 border-b border-[var(--border)]">
+        <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 flex items-center justify-center bg-[var(--pop-white)] text-[var(--pop-black)] transition-transform group-hover:scale-95 group-active:scale-90">
-              <BookOpen className="w-5 h-5" strokeWidth={2.5} />
-            </div>
-            <div className="flex flex-col leading-none">
-              <span className="font-display font-bold text-sm tracking-wide text-[var(--text)]">THE LEXICON</span>
-              <span className="text-[9px] font-bold tracking-[0.18em] uppercase text-[var(--text)] opacity-80">lexicon</span>
-            </div>
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" className="transition-transform group-hover:scale-95 group-active:scale-90">
+              <rect width="36" height="36" fill="var(--text)"/>
+              <path d="M8 8h6v14h8v6H8V8z" fill="var(--bg)"/>
+            </svg>
+            <span className="font-display font-black text-sm tracking-widest uppercase text-[var(--text)] hidden sm:block">The Lexicon</span>
           </Link>
+          <div className="hidden sm:flex items-center gap-1 ml-4">
+            <button onClick={() => navigate('/')} className={`px-5 py-2 text-[10px] font-black uppercase tracking-[0.2em] transition-all ${location.pathname === '/' ? 'text-[var(--text)]' : 'text-muted hover:text-[var(--text)]'}`}>
+              Explore
+            </button>
+            <button onClick={() => navigate('/bookmarks')} className={`px-5 py-2 text-[10px] font-black uppercase tracking-[0.2em] transition-all ${view === 'bookmarks' ? 'text-[var(--text)]' : 'text-muted hover:text-[var(--text)]'}`}>
+              Library
+            </button>
+            <button onClick={() => navigate('/guide')} className={`px-5 py-2 text-[10px] font-black uppercase tracking-[0.2em] transition-all ${view === 'guide' ? 'text-[var(--text)]' : 'text-muted hover:text-[var(--text)]'}`}>
+              Guide
+            </button>
+          </div>
         </div>
 
-        <div className="flex-1 max-w-2xl mx-auto relative px-10">
+        <div className="flex-1 max-w-xl mx-auto relative px-6">
           <div className="relative group">
-            <Search className="absolute left-8 top-1/2 -translate-y-1/2 w-4 h-4 text-muted group-focus-within:text-[var(--neo-green)] transition-colors" />
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted group-focus-within:text-[var(--neo-green)] transition-colors" />
             <input
               ref={searchInputRef}
               type="text"
@@ -667,9 +676,14 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                   (document.querySelector('[data-search-result]') as HTMLElement)?.focus();
                 }
               }}
-              placeholder="SEARCH PROTOCOLS..."
-              className="w-full pl-16 pr-8 py-5 bg-[var(--hover)] border border-border text-xs font-mono uppercase tracking-[0.2em] transition-all focus:outline-none focus:border-[var(--neo-green)] placeholder:opacity-20 translate-z-0"
+              placeholder="Search concepts..."
+              className="w-full pl-14 pr-10 py-4 bg-[var(--hover)] border-2 border-[var(--border)] text-sm font-semibold tracking-wide transition-all focus:outline-none focus:border-[var(--text)] placeholder:text-muted placeholder:opacity-50"
             />
+            {searchQuery && (
+              <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[10px] font-black uppercase tracking-widest text-muted">
+                {searchResults.main.length} found
+              </span>
+            )}
           </div>
 
           <AnimatePresence>
@@ -678,14 +692,14 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                 <div
                   onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}
                   className="fixed top-14 left-0 right-0 bottom-0 z-[55]"
-                  style={{ background: 'rgba(0,0,0,0.35)' }}
+                  style={{ background: 'rgba(0,0,0,0.4)' }}
                 />
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
                   transition={{ duration: 0.15, ease: 'easeOut' }}
-                  className="absolute top-[calc(100%+10px)] left-10 right-10 z-[60] max-h-[70vh] overflow-y-auto custom-scrollbar neo-card p-0"
+                  className="absolute top-[calc(100%+8px)] left-6 right-6 z-[60] max-h-[70vh] overflow-y-auto custom-scrollbar neo-card p-0 backdrop-blur-xl shadow-2xl"
                 >
                   <div className="p-2">
                     {searchResults.main.length > 0 ? (
@@ -698,15 +712,15 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                             setIsSearchOpen(false);
                             setSearchQuery('');
                           }}
-                          className="w-full flex items-center justify-between p-8 hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all text-left border-b border-border last:border-none group/item"
+                          className="w-full flex items-center justify-between p-5 hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all text-left border-b border-border last:border-none group/item"
                         >
-                          <div className="flex items-center gap-5">
+                          <div className="flex items-center gap-4">
                             <div className="w-10 h-10 border-2 border-border flex items-center justify-center text-[var(--text)] group-hover/item:border-[var(--bg)] transition-all">
                               <Hash className="w-4 h-4" />
                             </div>
                             <div className="flex flex-col">
-                              <span className="text-[14px] font-black uppercase tracking-tight">{c.term}</span>
-                              <span className="text-[10px] font-bold uppercase tracking-widest opacity-50 group-hover/item:opacity-100">{c.category || c.domain}</span>
+                              <span className="text-sm font-bold uppercase tracking-tight">{c.term}</span>
+                              <span className="text-[10px] font-bold uppercase tracking-widest opacity-50 group-hover/item:opacity-100">{getFullDomainName(c.domain)}</span>
                             </div>
                           </div>
                           <ArrowRight className="w-4 h-4 opacity-0 group-hover/item:opacity-100 -translate-x-2 group-hover/item:translate-x-0 transition-all" />
@@ -714,7 +728,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                       ))
                     ) : (
                       <div className="p-12 text-center text-muted">
-                        No protocols found matching your query
+                        No results found
                       </div>
                     )}
                   </div>
@@ -725,17 +739,6 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
         </div>
 
         <div className="flex items-center gap-2">
-          <MagneticButton title="About & Guide" onClick={() => navigate('/guide')} variant="ghost" className="w-10 h-10 p-0">
-            <Info className="w-4 h-4" />
-          </MagneticButton>
-          <MagneticButton
-            title="Bookmarks"
-            onClick={() => navigate('/bookmarks')}
-            variant="ghost"
-            className={cn("w-10 h-10 p-0", view === 'bookmarks' && "bg-[var(--hover)]")}
-          >
-            <Bookmark className="w-4 h-4" />
-          </MagneticButton>
           <MagneticButton
             title="AI Assistant"
             onClick={() => setIsRightPanelOpen(!isRightPanelOpen)}
@@ -886,8 +889,8 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                       </div>
                       <AnimatedText 
                         text="Lexicon" 
-                        el="h1" 
-                        className="text-[16vw] sm:text-[12vw] leading-[0.85] font-black tracking-tighter uppercase text-[var(--pop-white)] text-center w-full" 
+                        el="h1"
+                        className="text-[16vw] sm:text-[12vw] leading-[0.85] font-black tracking-tighter uppercase text-[var(--text)] text-center w-full" 
                         animationType="chars" 
                         delayOffset={0.1}
                       />
@@ -951,7 +954,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                               >
                                 <div>
                                   <div className="flex items-center justify-between mb-8">
-                                    <div className="w-12 h-12 flex items-center justify-center border-2 border-[var(--pop-white)] text-[var(--pop-white)] bg-transparent transition-colors group-hover:bg-[var(--pop-white)] group-hover:text-[var(--pop-black)]">
+                                    <div className="w-12 h-12 flex items-center justify-center border-2 border-[var(--text)] text-[var(--text)] bg-transparent transition-colors group-hover:bg-[var(--text)] group-hover:text-[var(--bg)]">
                                       <Layers className="w-5 h-5" />
                                     </div>
                                     <span className="text-[11px] font-bold uppercase tracking-widest px-3 py-1.5 border border-[var(--border)] text-[var(--muted)] transition-colors group-hover:border-[var(--neo-green)] group-hover:text-[var(--neo-green)]">
@@ -1015,7 +1018,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto custom-scrollbar p-4">
+              <div className="flex-1 overflow-hidden p-4">
                 <AnimatePresence mode="wait">
 
                   {/* ── ASK TAB (context-aware chat) ── */}
@@ -1025,8 +1028,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      className="flex flex-col h-full"
-                      style={{ minHeight: '0' }}
+                      className="flex flex-col h-full min-h-0"
                     >
                       {/* Context hint */}
                       <div className="mb-10 p-10 neo-card bg-[var(--neo-green)]/5 border-[var(--neo-green)]/20 text-[transparent] bg-clip-text bg-gradient-to-r from-[var(--neo-green)] to-[var(--text)] font-bold text-[11px] uppercase tracking-[0.2em] leading-relaxed">
@@ -1056,7 +1058,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                             </div>
                             <div
                               className={cn(
-                                'max-w-[95%] p-8 text-[14px] leading-relaxed markdown-body neo-card',
+                                'max-w-[95%] p-8 text-[13px] leading-[1.8] markdown-body neo-card',
                                 msg.role === 'user' ? 'bg-[var(--text)] text-[var(--bg)] border-none' : 'bg-transparent border-border'
                               )}
                             >
@@ -1213,7 +1215,6 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
         </AnimatePresence>
       </div>
 
-      <GamifiedReward />
 
       <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </div>
