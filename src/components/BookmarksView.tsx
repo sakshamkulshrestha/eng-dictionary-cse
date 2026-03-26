@@ -101,7 +101,7 @@ export default function BookmarksView({
                           <div
                             key={c.id}
                             className="group relative flex flex-col p-10 neo-card neo-card-interactive"
-                            onClick={() => { onClose(); onNavigate(c.id); }}
+                            onClick={() => onNavigate(c.id)}
                           >
                             <button
                               onClick={(e) => { e.stopPropagation(); onRemoveBookmark(c.id); }}
@@ -140,7 +140,7 @@ export default function BookmarksView({
                     <div
                       key={r.id}
                       className="group relative flex flex-col sm:flex-row sm:items-center justify-between p-10 neo-card neo-card-interactive"
-                      onClick={() => { onClose(); onOpenRoadmap(r); }}
+                      onClick={() => onOpenRoadmap(r)}
                     >
                       <div className="flex-1 min-w-0 pr-12 sm:pr-4 mb-3 sm:mb-0">
                         <div className="flex items-center gap-2 mb-1">
