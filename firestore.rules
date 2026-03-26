@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: concepts
+    // Document ID: conceptId (string)
+    // Fields:
+    //   - id: string (required) - Unique identifier
+    //   - term: string (required) - Name of the term
+    //   - domain: string (required) - Engineering discipline
+    //   - definition_short: string (required) - One-sentence summary
+    //   - definition_detailed: string (required) - Full explanation
+    //   - analogy: string (required) - Real-world comparison
+    //   - examples: list (optional) - Use cases
+    //   - related_terms: list (optional) - Related concepts
+    //   - prerequisites: list (optional) - Required knowledge
+    //   - image_query: string (optional) - Image search query
+    //   - syntax_or_example: string (optional) - Code/syntax
+    //   - difficulty: string (required) - Beginner/Intermediate/Advanced
+    //   - category: string (required) - Core/Extended
+    //   - breadcrumbs: list (optional) - Navigation path
+    //   - comparisons: list (optional) - Comparison objects {target, note}
+    //   - common_misconceptions: list (optional) - Common errors
+    //
+    // Collection: users
+    // Document ID: userId (string)
+    // Fields:
+    //   - uid: string (required) - User ID
+    //   - email: string (required) - User email
+    //   - role: string (required) - user/admin
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "kushnotperfect@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidConcept(data) {
+      return data.keys().hasAll(['id', 'term', 'domain', 'definition_short', 'definition_detailed', 'analogy', 'difficulty', 'category']) &&
+             data.id is string && data.id.size() > 0 &&
+             data.term is string && data.term.size() > 0 && data.term.size() < 200 &&
+             data.domain is string && data.domain.size() > 0 &&
+             data.definition_short is string && data.definition_short.size() > 0 && data.definition_short.size() < 1000 &&
+             data.definition_detailed is string && data.definition_detailed.size() > 0 && data.definition_detailed.size() < 10000 &&
+             data.analogy is string && data.analogy.size() > 0 && data.analogy.size() < 2000 &&
+             data.difficulty in ['Beginner', 'Intermediate', 'Advanced'] &&
+             data.category in ['Core', 'Extended'];
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'role']) &&
+             data.uid == request.auth.uid &&
+             data.email is string &&
+             data.role in ['user', 'admin'];
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /concepts/{conceptId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin() && isValidConcept(request.resource.data);
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && isOwner(userId) && isValidUser(request.resource.data) && request.resource.data.role == 'user';
+      allow update: if isOwner(userId) && isValidUser(request.resource.data) && request.resource.data.role == resource.data.role;
+      allow delete: if isAdmin();
+    }
+  }
+}

@@ -10,7 +10,7 @@
     "comparisons": [
       { "target": "Data Structure", "note": "ADT is a theoretical design; Data Structure is the actual physical implementation in memory." }
     ],
-    "related_words": ["Encapsulation", "Class", "Interface"],
+    "related_terms": ["Encapsulation", "Class", "Interface"],
     "common_misconceptions": [
       "ADTs are specific pieces of code. (False: They are conceptual rules that guide how code is written)."
     ]
@@ -23,10 +23,17 @@
     "explanation": "An algorithm is like a recipe for baking a cake. It tells the computer exactly what to do first, second, and third to reach a result. Without algorithms, computers wouldn't know how to sort your emails or find a route on a map.",
     "technical_definition": "A finite sequence of well-defined, computer-implementable instructions, typically to solve a class of specific problems or to perform a computation.",
     "syntax_or_example": "// A simple algorithm to find the larger of two numbers\nint max(int a, int b) {\n    if (a > b) return a;\n    return b;\n}",
-    "comparisons": [
-      { "target": "Program", "note": "An algorithm is the logic; a program is that logic written in a specific language like C++." }
+    "examples": [
+      "Finding the shortest path between two cities on a map using Dijkstra's algorithm.",
+      "Sorting a list of names alphabetically using QuickSort.",
+      "// Example: Linear Search Algorithm\nint search(int arr[], int n, int x) {\n    for (int i = 0; i < n; i++)\n        if (arr[i] == x) return i;\n    return -1;\n}"
     ],
-    "related_words": ["Pseudo-code", "Logic", "Efficiency"],
+    "comparisons": [
+      { "target": "Program", "note": "An algorithm is the logic; a program is that logic written in a specific language like C++." },
+      { "target": "Heuristic", "note": "An algorithm guarantees a correct result; a heuristic is a 'rule of thumb' that is faster but might not be perfect." },
+      { "target": "Pseudo-code", "note": "An algorithm is the concept; pseudo-code is the human-readable description of that algorithm." }
+    ],
+    "related_terms": ["Pseudo-code", "Logic", "Efficiency"],
     "common_misconceptions": [
       "Algorithms are only for math. (False: Every action a software performs, like rendering a button, uses an algorithm)."
     ]
@@ -39,10 +46,17 @@
     "explanation": "Think of an array like a row of lockers in a school. Each locker has a number (index) and holds one item. Because they are all next to each other, you can jump to locker #5 instantly.",
     "technical_definition": "A linear data structure consisting of a collection of elements, each identified by at least one array index or key, stored in contiguous memory.",
     "syntax_or_example": "int scores[5] = {90, 85, 88, 70, 95};\nint firstScore = scores[0];",
-    "comparisons": [
-      { "target": "Linked List", "note": "Arrays have fixed sizes but fast access; Linked Lists have dynamic sizes but slow access." }
+    "examples": [
+      "Storing a list of daily temperatures for a week.",
+      "Managing a fixed-size buffer for incoming network packets.",
+      "// Example: Initializing and accessing an array in C++\nint arr[3] = {10, 20, 30};\ncout << arr[1]; // Outputs 20"
     ],
-    "related_words": ["Index", "Element", "Contiguous Memory"],
+    "comparisons": [
+      { "target": "Linked List", "note": "Arrays have fixed sizes but fast access; Linked Lists have dynamic sizes but slow access." },
+      { "target": "Vector", "note": "A vector is a dynamic array that can grow; a standard array is fixed in size." },
+      { "target": "Stack", "note": "An array is a general-purpose container; a stack is a restricted version (LIFO)." }
+    ],
+    "related_terms": ["Index", "Element", "Contiguous Memory"],
     "common_misconceptions": [
       "Arrays can change size automatically. (False: Standard C++ arrays are fixed in size once created)."
     ],
@@ -59,7 +73,7 @@
     "comparisons": [
       { "target": "Big O Notation", "note": "Asymptotic Analysis is the process; Big O is the language used to write the result." }
     ],
-    "related_words": ["Growth Rate", "Efficiency", "Limit"],
+    "related_terms": ["Growth Rate", "Efficiency", "Limit"],
     "common_misconceptions": [
       "It gives an exact execution time. (False: It only describes the trend of the runtime)."
     ]
@@ -75,7 +89,7 @@
     "comparisons": [
       { "target": "Worst Case", "note": "Average Case is typical behavior; Worst Case is the absolute maximum time possible." }
     ],
-    "related_words": ["Expected Value", "Probability", "Big Theta"],
+    "related_terms": ["Expected Value", "Probability", "Big Theta"],
     "common_misconceptions": [
       "The average case is just (Best + Worst) / 2. (False: It depends on the probability of different input patterns)."
     ]
@@ -91,7 +105,7 @@
     "comparisons": [
       { "target": "Worst Case", "note": "Best Case is the lucky scenario; Worst Case is the unlucky scenario." }
     ],
-    "related_words": ["Big Omega", "Efficiency", "Lower Bound"],
+    "related_terms": ["Big Omega", "Efficiency", "Lower Bound"],
     "common_misconceptions": [
       "Best case is the most important metric. (False: Engineers usually ignore Best Case because we cannot rely on being lucky)."
     ]
@@ -105,9 +119,11 @@
     "technical_definition": "A formal notation that describes the asymptotic upper bound of a function, capturing the worst-case time or space complexity.",
     "syntax_or_example": "for(int i=0; i<n; i++) { \n   // Work is O(n)\n}",
     "comparisons": [
-      { "target": "Big Omega", "note": "Big O is the ceiling (upper limit); Big Omega is the floor (lower limit)." }
+      { "target": "Big Omega", "note": "Big O is the ceiling (upper limit); Big Omega is the floor (lower limit)." },
+      { "target": "Big Theta", "note": "Big O is an upper bound; Big Theta is a tight bound (both upper and lower)." },
+      { "target": "Little o", "note": "Big O is 'less than or equal to'; Little o is strictly 'less than'." }
     ],
-    "related_words": ["Time Complexity", "Upper Bound", "Efficiency"],
+    "related_terms": ["Time Complexity", "Upper Bound", "Efficiency"],
     "common_misconceptions": [
       "Big O is about exact speeds. (False: It only describes the growth trend)."
     ],
@@ -124,7 +140,7 @@
     "comparisons": [
       { "target": "Big O Notation", "note": "Big O is 'maximum time'; Big Omega is 'minimum time'." }
     ],
-    "related_words": ["Best Case", "Lower Bound", "Asymptotic Analysis"],
+    "related_terms": ["Best Case", "Lower Bound", "Asymptotic Analysis"],
     "common_misconceptions": [
       "Ω always refers to the Best Case. (False: It is a mathematical bound that can apply to any case, though commonly used for best case)."
     ]
@@ -3759,7 +3775,9 @@
     "A graph is the same as a chart. (False: In DSA, a graph refers to connections between points, not a bar chart or line graph)."
   ],
   "comparisons": [
-    { "target": "Tree", "note": "A Tree is a special type of graph that has no cycles and is fully connected." }
+    { "target": "Tree", "note": "A Tree is a special type of graph that has no cycles and is fully connected." },
+    { "target": "Linked List", "note": "A Linked List is a linear Graph; a Graph can have multiple paths and cycles." },
+    { "target": "Matrix", "note": "A Graph is the structure; an Adjacency Matrix is one way to represent it." }
   ],
   "related_words": ["Vertex", "Edge", "Adjacency Matrix", "Adjacency List"]
 },
@@ -4944,11 +4962,18 @@
     "real_world_example": "A train where each carriage is hooked to the one behind it. To get to the last carriage, you must walk through all the ones in the middle.",
     "technical_definition": "A collection of entities called nodes, where each node contains data and a reference (pointer) to the next node in the sequence.",
     "syntax_or_example": "\\nstruct Node { int data; Node* next; };",
+    "examples": [
+      "Implementing an 'Undo' history where each state points to the previous one.",
+      "Managing a playlist where songs can be easily added or removed from the middle.",
+      "// Example: Simple Linked List Node in C++\nstruct Node {\n    int data;\n    Node* next;\n    Node(int d) : data(d), next(nullptr) {}\n};"
+    ],
     "common_misconceptions": [
       "Linked lists are stored together in memory like arrays. (False: Nodes can be scattered anywhere in RAM; pointers keep them connected)."
     ],
     "comparisons": [
-      { "target": "Array", "note": "Arrays have a fixed size and are side-by-side; Linked Lists can grow easily and are scattered." }
+      { "target": "Array", "note": "Arrays have a fixed size and are side-by-side; Linked Lists can grow easily and are scattered." },
+      { "target": "Stack", "note": "Stacks can be implemented using Linked Lists to allow dynamic growth." },
+      { "target": "Queue", "note": "Queues can be implemented using Linked Lists for efficient front-removal." }
     ],
     "related_words": ["Node", "Pointer", "Dynamic Memory", "Head"]
   },
@@ -5454,11 +5479,18 @@
     "real_world_example": "A 'Pringles' can—the last chip put in the can is the first one you eat.",
     "technical_definition": "An abstract data type that serves as a collection of elements, with two principal operations: push (add) and pop (remove), occurring at only one end.",
     "syntax_or_example": "",
+    "examples": [
+      "The 'Undo' mechanism in text editors (Ctrl+Z).",
+      "Function call management in programming languages (The Call Stack).",
+      "// Example: Stack operations using STL in C++\n#include <stack>\nstd::stack<int> s;\ns.push(10);\ns.pop();"
+    ],
     "common_misconceptions": [
       "You can access the middle element. (False: You can only see or remove the 'Top' element. To see the middle, you must pop everything above it)."
     ],
     "comparisons": [
-      { "target": "Queue", "note": "Stack is 'Last-In, First-Out' (LIFO); Queue is 'First-In, First-Out' (FIFO)." }
+      { "target": "Queue", "note": "Stack is 'Last-In, First-Out' (LIFO); Queue is 'First-In, First-Out' (FIFO)." },
+      { "target": "Linked List", "note": "Stacks can be implemented using Linked Lists to avoid fixed-size limitations of arrays." },
+      { "target": "Recursion", "note": "Recursion uses the system's 'Call Stack' to manage function calls." }
     ],
     "related_words": ["Push", "Pop", "LIFO", "Top"]
   },
@@ -5794,11 +5826,18 @@
     "real_world_example": "A line at a billing counter or a printer queue where the first document sent is the first one printed.",
     "technical_definition": "An abstract data type that maintains a collection of elements with two primary operations: enqueue (addition to the rear) and dequeue (removal from the front).",
     "syntax_or_example": " \n queue.push(item); // Enqueue",
+    "examples": [
+      "Managing print jobs sent to a shared printer.",
+      "Handling requests in a web server (First-come, first-served).",
+      "// Example: Queue operations in C++\n#include <queue>\nstd::queue<string> q;\nq.push(\"Task 1\");\nq.pop();"
+    ],
     "common_misconceptions": [
       "You can remove from the middle. (False: In a standard queue, you can only access the front element)."
     ],
     "comparisons": [
-      { "target": "Stack", "note": "Stack is LIFO (Last-In First-Out); Queue is FIFO (First-In First-Out)." }
+      { "target": "Stack", "note": "Stack is LIFO (Last-In First-Out); Queue is FIFO (First-In First-Out)." },
+      { "target": "Priority Queue", "note": "Standard Queue is FIFO; Priority Queue is 'Highest Priority First'." },
+      { "target": "Circular Queue", "note": "Circular queues reuse space efficiently compared to simple linear queues." }
     ],
     "related_words": ["FIFO", "Enqueue", "Dequeue", "Front", "Rear"]
   },
@@ -6138,7 +6177,9 @@
       "Every node must have 2 children. (False: Nodes can have zero or one child too)."
     ],
     "comparisons": [
-      { "target": "Binary Search Tree", "note": "Binary Tree is the shape; Binary Search Tree adds a specific 'sorting' rule." }
+      { "target": "Binary Search Tree", "note": "Binary Tree is the shape; Binary Search Tree adds a specific 'sorting' rule." },
+      { "target": "AVL Tree", "note": "Binary Trees can be unbalanced; AVL Trees are self-balancing BSTs." },
+      { "target": "Heap", "note": "Binary Trees have no specific order; Heaps are complete trees with parent-child priority." }
     ],
     "related_words": ["Root", "Left Child", "Right Child", "Node"]
   },
@@ -7515,7 +7556,9 @@
       "Searching is always instant. (False: If many items go to the same locker (collision), it can slow down to O(n))."
     ],
     "comparisons": [
-      { "target": "Array", "note": "Arrays use numerical indices; Hash Tables use any data type (strings, objects) as a key." }
+      { "target": "Array", "note": "Arrays use numerical indices; Hash Tables use any data type (strings, objects) as a key." },
+      { "target": "Binary Search Tree", "note": "Hash Tables are O(1) on average; BSTs are O(log n) but keep data sorted." },
+      { "target": "Map", "note": "Hash Table is the implementation; Map is the abstract data type." }
     ],
     "related_words": ["Hash Function", "Collision", "O(1) Average"]
   },
