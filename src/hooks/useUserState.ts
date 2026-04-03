@@ -7,10 +7,7 @@ export function useUserState() {
   const [userProfile, setUserProfile] = useState<any>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
 
-  const [bookmarks, setBookmarks] = useState<string[]>(() => {
-    const saved = localStorage.getItem('bookmarks');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [bookmarks, setBookmarks] = useState<string[]>([]);
 
   const [history, setHistory] = useState<string[]>(() => {
     const saved = localStorage.getItem('searchHistory');
@@ -48,23 +45,34 @@ export function useUserState() {
       setUser(currentUser);
       if (currentUser) {
         try {
-          const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-          if (userDoc.exists()) {
-            setUserProfile(userDoc.data());
-          } else {
-            const newProfile = {
+          const token = await currentUser.getIdToken(true);
+          const res = await fetch('/api/auth', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          
+          if (res.ok) {
+            setUserProfile({
               uid: currentUser.uid,
               email: currentUser.email,
               role: currentUser.email === 'kushnotperfect@gmail.com' ? 'admin' : 'user'
-            };
-            await setDoc(doc(db, 'users', currentUser.uid), newProfile);
-            setUserProfile(newProfile);
+            });
+
+            // Fetch bookmarks
+            const bmRes = await fetch(`/api/bookmarks/${currentUser.uid}`, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            if (bmRes.ok) {
+              const bms = await bmRes.json();
+              setBookmarks(bms);
+            }
           }
         } catch (error) {
           console.error('Error fetching user profile:', error);
         }
       } else {
         setUserProfile(null);
+        setBookmarks([]);
       }
       setIsAuthReady(true);
       clearTimeout(timeoutId);
@@ -75,9 +83,7 @@ export function useUserState() {
     };
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-  }, [bookmarks]);
+
 
   useEffect(() => {
     localStorage.setItem('searchHistory', JSON.stringify(history));
@@ -159,10 +165,25 @@ export function useUserState() {
     }
   };
 
-  const toggleBookmark = (id: string) => {
-    setBookmarks(prev =>
-      prev.includes(id) ? prev.filter(b => b !== id) : [...prev, id]
-    );
+  const toggleBookmark = async (id: string) => {
+    const isBookmarked = bookmarks.includes(id);
+    setBookmarks(prev => isBookmarked ? prev.filter(b => b !== id) : [...prev, id]);
+
+    if (user) {
+      try {
+        const token = await user.getIdToken();
+        await fetch('/api/bookmark', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}` 
+          },
+          body: JSON.stringify({ term: id, action: isBookmarked ? 'remove' : 'add' })
+        });
+      } catch (error) {
+        console.error('Failed to sync bookmark:', error);
+      }
+    }
   };
 
   const addToHistory = (query: string) => {
