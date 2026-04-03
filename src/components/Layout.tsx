@@ -21,6 +21,7 @@ import { useUserState } from '../hooks/useUserState';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { LoginModal } from './LoginModal';
+import { ProfileModal } from './ProfileModal';
 import GuideView from './GuideView';
 import EntryDetail from './EntryDetail';
 import SettingsView from './SettingsView';
@@ -310,7 +311,9 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [autoSpeak, setAutoSpeak] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [roadmapQuery, setRoadmapQuery] = useState('');
@@ -514,59 +517,41 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
   }, [concepts, history, bookmarks, generateSuggestions]);
 
   useEffect(() => {
-    if (!isAuthReady) return;
-
-    const q = query(collection(db, 'concepts'), orderBy('term', 'asc'));
-    const unsubscribe = onSnapshot(q, async (snapshot) => {
-      if (snapshot.empty) {
-        try {
-          const files = [
-            'ai.json', 'cloud.json', 'coa.json', 'cyber.json', 'dbms.json',
-            'dsa.json', 'networks.json', 'os.json', 'se.json', 'toc.json'
-          ];
-          const allData = await Promise.all(
-            files.map(async (file) => {
-              const res = await fetch(`/data/${file}`);
-              if (!res.ok) {
-                console.warn(`Failed to fetch data from /data/${file}: ${res.status}`);
-                return [];
-              }
-              const json = await res.json();
-              return json.map((item: any) => ({
-                ...item,
-                logic_deep: item.logic_deep || item.explanation || '',
-                advanced_topics: item.advanced_topics || item.related_terms || [],
-                examples: item.examples || [],
-                related_terms: item.related_terms || [],
-                prerequisites: item.prerequisites || []
-              }));
-            })
-          );
-          setConcepts(allData.flat().sort((a, b) => a.term.localeCompare(b.term)));
-        } catch (error) {
-          console.error('Fallback fetch failed:', error);
+    let isMounted = true;
+    async function loadConcepts() {
+      setIsLoading(true);
+      try {
+        const res = await fetch('/api/terms');
+        if (!res.ok) {
+          console.warn(`Failed to fetch data from /api/terms: ${res.status}`);
+          if (isMounted) setConcepts([]);
+          return;
         }
-      } else {
-        const data = snapshot.docs.map(doc => {
-          const d = doc.data();
-          return {
-            ...d,
-            id: doc.id,
-            examples: d.examples || [],
-            related_terms: d.related_terms || [],
-            prerequisites: d.prerequisites || [],
-            advanced_topics: d.advanced_topics || d.related_terms || []
-          };
-        }) as Concept[];
-        setConcepts(data);
+        const allData = await res.json();
+        // Normalize the data format correctly
+        const normalizedData = allData.map((item: any) => ({
+          ...item,
+          logic_deep: item.logic_deep || item.explanation || '',
+          advanced_topics: item.advanced_topics || item.related_terms || [],
+          examples: item.examples || [],
+          related_terms: item.related_terms || [],
+          prerequisites: item.prerequisites || []
+        }));
+        if (isMounted) setConcepts(normalizedData.sort((a: any, b: any) => a.term.localeCompare(b.term)));
+      } catch (error) {
+        console.error('Fetch failed:', error);
+        if (isMounted) setConcepts([]);
+      } finally {
+        if (isMounted) setIsLoading(false);
       }
-      setIsLoading(false);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'concepts');
-      setIsLoading(false);
-    });
+    }
 
-    return () => unsubscribe();
+    // You can keep isAuthReady dependency if the app visually delays until auth check is complete
+    if (isAuthReady) {
+      loadConcepts();
+    }
+
+    return () => { isMounted = false; };
   }, [isAuthReady]);
 
   const { scrollYProgress } = useScroll({
@@ -609,7 +594,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
     <div className={cn("flex flex-col min-h-screen bg-bg relative overflow-x-hidden", settings.theme === 'light' && "light")}>
       <AnimatePresence>
         {isLoading && (
-          <motion.div 
+          <motion.div
             key="preloader"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, filter: 'blur(10px)', scale: 1.05 }}
@@ -617,8 +602,8 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
             className="absolute inset-0 z-[100] flex items-center justify-center bg-[var(--bg)]"
           >
             <div className="flex flex-col items-center gap-6">
-              <motion.div 
-                animate={{ rotate: 360, scale: [1, 1.1, 1] }} 
+              <motion.div
+                animate={{ rotate: 360, scale: [1, 1.1, 1] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
                 className="w-14 h-14 bg-[var(--text)]/5 border border-[var(--text)]/10 flex items-center justify-center neo-shadow"
               >
@@ -635,8 +620,8 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-3 group">
             <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" className="transition-transform group-hover:scale-95 group-active:scale-90">
-              <rect width="36" height="36" fill="var(--text)"/>
-              <path d="M8 8h6v14h8v6H8V8z" fill="var(--bg)"/>
+              <rect width="36" height="36" fill="var(--text)" />
+              <path d="M8 8h6v14h8v6H8V8z" fill="var(--bg)" />
             </svg>
             <span className="font-display font-black text-sm tracking-widest uppercase text-[var(--text)] hidden sm:block">The Lexicon</span>
           </Link>
@@ -752,11 +737,20 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
           </MagneticButton>
           <div className="h-5 w-px mx-1 bg-border" />
           {user ? (
-            <button onClick={() => signOut(auth)} className="flex items-center gap-2.5 px-6 py-2 bg-[var(--hover)] transition-all hover:bg-[var(--border)]">
-              <div className="w-8 h-8 flex items-center justify-center text-[10px] font-black text-[var(--bg)] bg-[var(--text)]">
-                {user.displayName?.[0] || 'U'}
+            <button 
+              onClick={() => setIsProfileOpen(true)} 
+              className="flex items-center gap-2.5 px-6 py-2 bg-[var(--hover)] transition-all hover:bg-[var(--border)] rounded-full group"
+            >
+              <div className="w-8 h-8 flex items-center justify-center overflow-hidden rounded-full border border-[var(--text)]/10">
+                {user.photoURL ? (
+                  <img src={user.photoURL} alt={user.displayName || 'U'} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-[10px] font-black text-[var(--bg)] bg-[var(--text)]">
+                    {user.displayName?.[0] || 'U'}
+                  </div>
+                )}
               </div>
-              <span className="text-xs font-semibold text-[var(--text)]">{user.displayName?.split(' ')[0]}</span>
+              <span className="text-xs font-semibold text-[var(--text)] group-hover:text-[var(--neo-green)] transition-colors">{user.displayName?.split(' ')[0]}</span>
             </button>
           ) : (
             <MagneticButton onClick={() => setIsLoginOpen(true)}>Sign In</MagneticButton>
@@ -793,7 +787,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                 </motion.div>
               ) : view === 'bookmarks' ? (
                 <motion.div
-                   key="bookmarks"
+                  key="bookmarks"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 1.05 }}
@@ -848,19 +842,19 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                     </motion.p>
                   </header>
 
-                  <motion.div 
+                  <motion.div
                     variants={staggerContainer}
                     initial="hidden"
                     animate="visible"
                     className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6"
                   >
                     {concepts.filter(c => c.domain === domainParam).map(c => (
-                        <motion.div
-                          key={c.id}
-                          variants={staggerItem}
-                          onClick={() => navigate(`/concept/${c.id}`)}
-                          className="neo-card neo-card-interactive p-10 transform-gpu"
-                        >
+                      <motion.div
+                        key={c.id}
+                        variants={staggerItem}
+                        onClick={() => navigate(`/concept/${c.id}`)}
+                        className="neo-card neo-card-interactive p-10 transform-gpu"
+                      >
                         <div className="flex items-center justify-between mb-6">
                           <div className="w-2 h-2 bg-[var(--text)]" />
                           <span className="text-[10px] font-bold uppercase tracking-widest text-muted">{c.category}</span>
@@ -878,7 +872,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                   animate={{ opacity: 1 }}
                   className="space-y-24"
                 >
-                  <motion.section 
+                  <motion.section
                     style={{ scale: heroScale, opacity: heroOpacity }}
                     className="relative text-center space-y-12 py-32 mb-16"
                   >
@@ -887,24 +881,24 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                         <Star className="w-3 h-3 fill-[var(--neo-green)]" />
                         Exclusive Protocol Access
                       </div>
-                      <AnimatedText 
-                        text="Lexicon" 
+                      <AnimatedText
+                        text="Lexicon"
                         el="h1"
-                        className="text-[16vw] sm:text-[12vw] leading-[0.85] font-black tracking-tighter uppercase text-[var(--text)] text-center w-full" 
-                        animationType="chars" 
+                        className="text-[16vw] sm:text-[12vw] leading-[0.85] font-black tracking-tighter uppercase text-[var(--text)] text-center w-full"
+                        animationType="chars"
                         delayOffset={0.1}
                       />
-                      <motion.h2 
-                        initial={{ opacity: 0, y: 15 }} 
-                        animate={{ opacity: 1, y: 0 }} 
+                      <motion.h2
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5, duration: 0.6 }}
                         className="text-2xl sm:text-4xl font-bold max-w-3xl mx-auto tracking-tight text-[var(--neo-green)] uppercase"
                       >
-                        Master the complex.<br/>Dominate the domain.
+                        Master the complex.<br />Dominate the domain.
                       </motion.h2>
-                      <motion.p 
-                        initial={{ opacity: 0 }} 
-                        animate={{ opacity: 1 }} 
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                         transition={{ delay: 0.8, duration: 0.6 }}
                         className="text-lg max-w-2xl mx-auto leading-relaxed text-[var(--muted)] font-medium"
                       >
@@ -912,8 +906,8 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                       </motion.p>
                     </div>
                     <motion.div
-                      initial={{ opacity: 0, scale: 0.95 }} 
-                      animate={{ opacity: 1, scale: 1 }} 
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 1, duration: 0.4 }}
                       className="pt-10 flex flex-col items-center gap-6"
                     >
@@ -1052,9 +1046,9 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                         {chatMessages.map((msg, i) => (
                           <div key={i} className={cn('flex flex-col gap-3', msg.role === 'user' ? 'items-end' : 'items-start')}>
                             <div className="flex items-center gap-2 px-2">
-                               <span className="text-[9px] font-black uppercase tracking-widest text-muted">
-                                 {msg.role === 'user' ? 'Operator' : 'Lexicon_AI'}
-                               </span>
+                              <span className="text-[9px] font-black uppercase tracking-widest text-muted">
+                                {msg.role === 'user' ? 'Operator' : 'Lexicon_AI'}
+                              </span>
                             </div>
                             <div
                               className={cn(
@@ -1087,11 +1081,11 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                           <div className="flex flex-col gap-3 items-start animate-pulse">
                             <span className="text-[9px] font-black uppercase tracking-widest text-[var(--neo-green)]">Synthesizing...</span>
                             <div className="p-8 neo-card border-[var(--neo-green)]/30 bg-[var(--neo-green)]/5 w-full">
-                               <div className="flex gap-2">
-                                 <div className="w-2 h-2 bg-[var(--neo-green)] animate-bounce" />
-                                 <div className="w-2 h-2 bg-[var(--neo-green)] animate-bounce [animation-delay:0.2s]" />
-                                 <div className="w-2 h-2 bg-[var(--neo-green)] animate-bounce [animation-delay:0.4s]" />
-                               </div>
+                              <div className="flex gap-2">
+                                <div className="w-2 h-2 bg-[var(--neo-green)] animate-bounce" />
+                                <div className="w-2 h-2 bg-[var(--neo-green)] animate-bounce [animation-delay:0.2s]" />
+                                <div className="w-2 h-2 bg-[var(--neo-green)] animate-bounce [animation-delay:0.4s]" />
+                              </div>
                             </div>
                           </div>
                         )}
@@ -1149,10 +1143,10 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                       {activeRoadmap && (
                         <div className="space-y-5 animate-slide-up">
                           <div className="flex items-center justify-between px-2">
-                             <h4 className="text-[10px] font-black uppercase tracking-[0.2em]">Active Path: {activeRoadmap.query}</h4>
-                             <button onClick={() => { saveRoadmap(activeRoadmap); setRightPanelMode('saved'); }} className="neo-btn-secondary px-4 py-2 text-[9px] uppercase tracking-widest">
-                               Save Path
-                             </button>
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em]">{activeRoadmap.query}</h4>
+                            <button onClick={() => { saveRoadmap(activeRoadmap); setRightPanelMode('saved'); }} className="neo-btn-secondary px-4 py-2 text-[9px] uppercase tracking-widest">
+                              Save Path
+                            </button>
                           </div>
                           <div className="space-y-5">
                             {activeRoadmap.steps.map((step, idx) => {
@@ -1217,6 +1211,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
 
 
       <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+      <ProfileModal isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} user={user} />
     </div>
   );
 }

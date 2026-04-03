@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import Database from 'better-sqlite3';
+import { MongoClient, ObjectId } from 'mongodb';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import fs from 'fs';
@@ -11,100 +11,24 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const PORT = Number(process.env.PORT) || 3000;
-const db = new Database(process.env.DATABASE_PATH || 'concepts.db');
+const MONGODB_URI = process.env.MONGODB_URI || '';
 
-// Initialize Database
-db.exec(`
-  CREATE TABLE IF NOT EXISTS concepts (
-    id TEXT PRIMARY KEY,
-    term TEXT NOT NULL,
-    domain TEXT NOT NULL,
-    definition_short TEXT NOT NULL,
-    definition_detailed TEXT NOT NULL,
-    analogy TEXT NOT NULL,
-    examples TEXT NOT NULL,
-    related_terms TEXT NOT NULL,
-    prerequisites TEXT NOT NULL,
-    image_query TEXT NOT NULL,
-    difficulty TEXT NOT NULL,
-    comparisons TEXT,
-    common_misconceptions TEXT
-  )
-`);
+let dbClient: MongoClient;
+let db: any;
 
-// Migration Logic: Seed from JSON if empty
-const count = db.prepare('SELECT count(*) as count FROM concepts').get() as { count: number };
-if (count.count === 0) {
-  console.log('Seeding database from data directories...');
-  try {
-    const dataDirs = [
-      path.join(__dirname, 'src/data'),
-      path.join(__dirname, 'data')
-    ];
-
-    const insert = db.prepare(`
-      INSERT INTO concepts (id, term, domain, definition_short, definition_detailed, analogy, examples, related_terms, prerequisites, image_query, difficulty, comparisons, common_misconceptions)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-    let totalMigrated = 0;
-
-    for (const dir of dataDirs) {
-      if (!fs.existsSync(dir)) continue;
-
-      const files = fs.readdirSync(dir).filter(f => f.endsWith('.json'));
-      for (const file of files) {
-        const filePath = path.join(dir, file);
-        const rawData = fs.readFileSync(filePath, 'utf-8');
-        const concepts = JSON.parse(rawData);
-
-        const transaction = db.transaction((data) => {
-          for (const c of data) {
-            // Unified mapping logic
-            const id = c.id || `gen_${Math.random().toString(36).substr(2, 9)}`;
-            const term = c.term || '';
-            const domain = c.domain || 'General';
-            const defShort = c.definition_short || '';
-            const defDetailed = c.definition_detailed || c.technical_definition || '';
-            const analogy = c.analogy || c.explanation || '';
-            const examples = Array.isArray(c.examples) ? c.examples : (c.syntax_or_example ? [c.syntax_or_example] : []);
-            const related = c.related_terms || c.related_words || [];
-            const prereqs = c.prerequisites || [];
-            const imgQuery = c.image_query || c.images || '';
-            const difficulty = c.difficulty || 'Intermediate';
-            const comparisons = c.comparisons || [];
-            const misconceptions = c.common_misconceptions || [];
-
-            insert.run(
-              id,
-              term,
-              domain,
-              defShort,
-              defDetailed,
-              analogy,
-              JSON.stringify(examples),
-              JSON.stringify(related),
-              JSON.stringify(prereqs),
-              imgQuery,
-              difficulty,
-              JSON.stringify(comparisons),
-              JSON.stringify(misconceptions)
-            );
-          }
-        });
-
-        transaction(concepts);
-        totalMigrated += concepts.length;
-        console.log(`Migrated ${concepts.length} concepts from ${file}`);
-      }
-    }
-    console.log(`Successfully migrated ${totalMigrated} concepts in total.`);
-  } catch (error) {
-    console.error('Error seeding database:', error);
+async function connectDB() {
+  if (!MONGODB_URI) {
+    console.error("❌ MONGODB_URI missing in environment vars");
+    return;
   }
+  dbClient = new MongoClient(MONGODB_URI);
+  await dbClient.connect();
+  db = dbClient.db("eng_dictionary");
+  console.log("✅ Connected to MongoDB");
 }
 
 async function startServer() {
+  await connectDB();
   const app = express();
   app.use(cors());
   app.use(express.json({ limit: '50mb' }));
@@ -202,17 +126,20 @@ async function startServer() {
   });
 
   // API Routes
-  app.get('/api/concepts', (req, res) => {
+  app.get('/api/terms', async (req, res) => {
     try {
-      const concepts = db.prepare('SELECT * FROM concepts').all();
-      // Parse JSON strings back to arrays
-      const parsedConcepts = concepts.map((c: any) => ({
+      const collectionsInfo = await db.listCollections().toArray();
+      const collections = collectionsInfo.filter((c: any) => c.name.endsWith('_terms'));
+
+      let allConcepts: any[] = [];
+      for (const col of collections) {
+        const data = await db.collection(col.name).find({}).toArray();
+        allConcepts = allConcepts.concat(data);
+      }
+
+      const parsedConcepts = allConcepts.map((c: any) => ({
         ...c,
-        examples: JSON.parse(c.examples),
-        related_terms: JSON.parse(c.related_terms),
-        prerequisites: JSON.parse(c.prerequisites),
-        comparisons: c.comparisons ? JSON.parse(c.comparisons) : [],
-        common_misconceptions: c.common_misconceptions ? JSON.parse(c.common_misconceptions) : []
+        id: c._id.toString()
       }));
       res.json(parsedConcepts);
     } catch (error) {
@@ -220,21 +147,56 @@ async function startServer() {
     }
   });
 
-  app.get('/api/concepts/:id', (req, res) => {
+  app.get('/api/terms/:id', async (req, res) => {
     try {
-      const concept = db.prepare('SELECT * FROM concepts WHERE id = ?').get(req.params.id) as any;
+      const id = req.params.id;
+      const collectionsInfo = await db.listCollections().toArray();
+      const collections = collectionsInfo.filter((c: any) => c.name.endsWith('_terms'));
+
+      let concept = null;
+      for (const col of collections) {
+        const query: any = { $or: [{ id: id }] };
+        if (ObjectId.isValid(id)) {
+          query.$or.push({ _id: new ObjectId(id) });
+        }
+        concept = await db.collection(col.name).findOne(query);
+        if (concept) break;
+      }
+
       if (!concept) return res.status(404).json({ error: 'Concept not found' });
 
       res.json({
         ...concept,
-        examples: JSON.parse(concept.examples),
-        related_terms: JSON.parse(concept.related_terms),
-        prerequisites: JSON.parse(concept.prerequisites),
-        comparisons: concept.comparisons ? JSON.parse(concept.comparisons) : [],
-        common_misconceptions: concept.common_misconceptions ? JSON.parse(concept.common_misconceptions) : []
+        id: concept._id.toString()
       });
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch concept' });
+    }
+  });
+
+  app.get('/api/search', async (req, res) => {
+    try {
+      const q = req.query.q as string;
+      if (!q) return res.json([]);
+
+      const collectionsInfo = await db.listCollections().toArray();
+      const collections = collectionsInfo.filter((c: any) => c.name.endsWith('_terms'));
+
+      let results: any[] = [];
+      for (const col of collections) {
+        const data = await db.collection(col.name).find({ term: { $regex: q, $options: "i" } }).limit(10).toArray();
+        results = results.concat(data);
+      }
+
+      const parsedResults = results.map((c: any) => ({
+        ...c,
+        id: c._id.toString()
+      }));
+
+      res.json(parsedResults);
+    } catch (error) {
+      console.error("Search failed:", error);
+      res.status(500).json({ error: 'Failed to search' });
     }
   });
 

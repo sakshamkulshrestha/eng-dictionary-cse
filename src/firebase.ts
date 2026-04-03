@@ -5,11 +5,7 @@ import {
   signInWithPopup, 
   signOut, 
   onAuthStateChanged, 
-  User,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendEmailVerification,
-  updateProfile
+  User
 } from 'firebase/auth';
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, orderBy, limit, getDocFromServer } from 'firebase/firestore';
 import firebaseConfig from '../firebase-applet-config.json';
@@ -88,10 +84,6 @@ export {
   signInWithPopup, 
   signOut, 
   onAuthStateChanged, 
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendEmailVerification,
-  updateProfile,
   collection, 
   doc, 
   getDoc, 
