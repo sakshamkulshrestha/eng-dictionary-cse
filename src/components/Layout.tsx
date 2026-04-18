@@ -18,6 +18,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useNavigate, useParams, useLocation, Link } from 'react-router-dom';
 import { useUserState } from '../hooks/useUserState';
+import { DictionaryApi } from '../utils/api';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import GuideView from './GuideView';
@@ -259,6 +260,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
 
   const [concepts, setConcepts] = useState<Concept[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
@@ -309,13 +311,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
     if (!roadmapQuery.trim()) return;
     setIsGeneratingRoadmap(true);
     try {
-      const res = await fetch('/api/generate-roadmap', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: roadmapQuery, concepts })
-      });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
+      const data = await DictionaryApi.generateRoadmap(roadmapQuery, concepts);
       const steps: RoadmapStep[] = data.steps || [];
       const newRoadmap: Roadmap = {
         id: crypto.randomUUID(),
@@ -346,14 +342,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
         contextBlock = `Context: Domain ${location.pathname.split('/domain/')[1]}.`;
       }
 
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMsg, contextBlock })
-      });
-
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
+      const data = await DictionaryApi.chat(userMsg, contextBlock);
       const rawText = data.text || '';
       const conceptMatches = [...rawText.matchAll(/\[CONCEPT:\s*([^\]]+)\]/g)].map(m => m[1].trim());
       const relatedTerms = conceptMatches.filter(t => concepts.find(c => c.term.toLowerCase() === t.toLowerCase()));
@@ -371,12 +360,13 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
   useEffect(() => {
     async function loadConcepts() {
       setIsLoading(true);
+      setFetchError(null);
       try {
-        const res = await fetch('/api/terms');
-        const allData = await res.json();
+        const allData = await DictionaryApi.getTerms();
         setConcepts(allData.sort((a: any, b: any) => a.term.localeCompare(b.term)));
-      } catch (error) {
+      } catch (error: any) {
         console.error('Fetch failed:', error);
+        setFetchError(error.message || 'Failed to sync with intelligence database.');
       } finally {
         setIsLoading(false);
       }
@@ -474,7 +464,16 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
         <main ref={scrollRef} className="flex-1 overflow-y-auto custom-scrollbar">
           <div className="max-w-5xl mx-auto px-12 py-16">
             <AnimatePresence mode="wait">
-              {view === 'settings' ? (
+              {fetchError ? (
+                <div key="error" className="py-20 text-center flex flex-col items-center justify-center space-y-6">
+                  <AlertCircle className="w-16 h-16 text-red-500 opacity-80" />
+                  <h2 className="text-2xl font-black text-[var(--text)] tracking-tight uppercase">Connection Failed</h2>
+                  <p className="text-[var(--muted)] font-medium max-w-md">{fetchError}</p>
+                  <MagneticButton onClick={() => window.location.reload()} className="px-6 py-3 uppercase tracking-widest text-xs font-bold mt-4">
+                    Re-establish Feed
+                  </MagneticButton>
+                </div>
+              ) : view === 'settings' ? (
                 <SettingsView key="settings" isDark={settings.theme === 'dark'} setIsDark={(d) => updateSettings({ theme: d ? 'dark' : 'light' })} fontSize={settings.fontSize} setFontSize={(s: any) => updateSettings({ fontSize: s })} reduceMotion={settings.reduceMotion} setReduceMotion={(r) => updateSettings({ reduceMotion: r })} autoSpeak={settings.autoSpeak} setAutoSpeak={(a) => updateSettings({ autoSpeak: a })} onClearHistory={clearHistory} onClearBookmarks={clearSystem} bookmarks={bookmarks} />
               ) : view === 'bookmarks' ? (
                 <BookmarksView key="bookmarks" bookmarks={bookmarks} roadmaps={roadmaps} concepts={concepts} onNavigate={(id) => navigate(`/concept/${id}`)} onClose={() => navigate(-1)} onRemoveBookmark={toggleBookmark} onDeleteRoadmap={deleteRoadmap} onOpenRoadmap={(r) => { setActiveRoadmap(r); setRightPanelMode('roadmap'); setIsRightPanelOpen(true); }} />

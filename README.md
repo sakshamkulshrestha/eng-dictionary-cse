@@ -1,6 +1,4 @@
 <div align="center">
-<img width="1200" height="475" alt="The Lexicon Banner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-
 # ⚡️ THE LEXICON: PROTOCOL INTELLIGENCE
 ### A High-Performance Knowledge Retrieval System for Software Engineering
 </div>

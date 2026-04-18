@@ -1,7 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import { MongoClient, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
+import { connectDB, getDB } from './db.js';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import fs from 'fs';
@@ -11,21 +12,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const PORT = Number(process.env.PORT) || 3000;
-const MONGODB_URI = process.env.MONGODB_URI || '';
-
-let dbClient: MongoClient;
-let db: any;
-
-async function connectDB() {
-  if (!MONGODB_URI) {
-    console.error("❌ MONGODB_URI missing in environment vars");
-    return;
-  }
-  dbClient = new MongoClient(MONGODB_URI);
-  await dbClient.connect();
-  db = dbClient.db("eng_dictionary");
-  console.log("✅ Connected to MongoDB");
-}
 
 async function startServer() {
   await connectDB();
@@ -128,6 +114,7 @@ async function startServer() {
   // API Routes
   app.get('/api/terms', async (req, res) => {
     try {
+      const db = getDB();
       const collectionsInfo = await db.listCollections().toArray();
       const collections = collectionsInfo.filter((c: any) => c.name.endsWith('_terms'));
 
@@ -137,9 +124,11 @@ async function startServer() {
         const dataWithSource = data.map((d: any) => ({ ...d, id: d._id.toString(), collection_source: col.name }));
         allConcepts = allConcepts.concat(dataWithSource);
       }
-
+      
+      console.log(`📡 GET /api/terms - Retrieved ${allConcepts.length} terms`);
       res.json(allConcepts);
     } catch (error) {
+      console.error("❌ Error fetching concepts:", error);
       res.status(500).json({ error: 'Failed to fetch concepts' });
     }
   });
@@ -147,6 +136,7 @@ async function startServer() {
   app.get('/api/terms/:id', async (req, res) => {
     try {
       const id = req.params.id;
+      const db = getDB();
       const collectionsInfo = await db.listCollections().toArray();
       const collections = collectionsInfo.filter((c: any) => c.name.endsWith('_terms'));
 
@@ -160,13 +150,18 @@ async function startServer() {
         if (concept) break;
       }
 
-      if (!concept) return res.status(404).json({ error: 'Concept not found' });
+      if (!concept) {
+        console.log(`⚠️ GET /api/terms/${id} - Concept not found`);
+        return res.status(404).json({ error: 'Concept not found' });
+      }
 
+      console.log(`📡 GET /api/terms/${id} - Retrieved concept: ${concept.term}`);
       res.json({
         ...concept,
         id: concept._id.toString()
       });
     } catch (error) {
+      console.error(`❌ Error fetching concept ${req.params.id}:`, error);
       res.status(500).json({ error: 'Failed to fetch concept' });
     }
   });
@@ -176,6 +171,7 @@ async function startServer() {
       const q = req.query.q as string;
       if (!q) return res.json([]);
 
+      const db = getDB();
       const collectionsInfo = await db.listCollections().toArray();
       const collections = collectionsInfo.filter((c: any) => c.name.endsWith('_terms'));
 
@@ -190,9 +186,10 @@ async function startServer() {
         id: c._id.toString()
       }));
 
+      console.log(`📡 GET /api/search?q=${q} - Found ${parsedResults.length} results`);
       res.json(parsedResults);
     } catch (error) {
-      console.error("Search failed:", error);
+      console.error("❌ Search failed:", error);
       res.status(500).json({ error: 'Failed to search' });
     }
   });
