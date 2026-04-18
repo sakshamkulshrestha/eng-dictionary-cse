@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { auth, db, onAuthStateChanged, doc, getDoc, setDoc, User } from '../firebase';
 import { UserSettings, Roadmap } from '../types';
 
 export function useUserState() {
-  const [user, setUser] = useState<User | null>(null);
-  const [userProfile, setUserProfile] = useState<any>(null);
-  const [isAuthReady, setIsAuthReady] = useState(false);
+  const [user] = useState<null>(null);
+  const [userProfile] = useState<any>(null);
+  const [isAuthReady] = useState(true);
 
   const [bookmarks, setBookmarks] = useState<string[]>([]);
 
@@ -33,55 +32,7 @@ export function useUserState() {
     };
   });
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (!isAuthReady) {
-        console.warn('Auth state check timed out, proceeding as guest.');
-        setIsAuthReady(true);
-      }
-    }, 5000);
 
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        try {
-          const token = await currentUser.getIdToken(true);
-          const res = await fetch('/api/auth', {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          
-          if (res.ok) {
-            setUserProfile({
-              uid: currentUser.uid,
-              email: currentUser.email,
-              role: currentUser.email === 'kushnotperfect@gmail.com' ? 'admin' : 'user'
-            });
-
-            // Fetch bookmarks
-            const bmRes = await fetch(`/api/bookmarks/${currentUser.uid}`, {
-              headers: { Authorization: `Bearer ${token}` }
-            });
-            if (bmRes.ok) {
-              const bms = await bmRes.json();
-              setBookmarks(bms);
-            }
-          }
-        } catch (error) {
-          console.error('Error fetching user profile:', error);
-        }
-      } else {
-        setUserProfile(null);
-        setBookmarks([]);
-      }
-      setIsAuthReady(true);
-      clearTimeout(timeoutId);
-    });
-    return () => {
-      unsubscribe();
-      clearTimeout(timeoutId);
-    };
-  }, []);
 
 
 
@@ -168,22 +119,6 @@ export function useUserState() {
   const toggleBookmark = async (id: string) => {
     const isBookmarked = bookmarks.includes(id);
     setBookmarks(prev => isBookmarked ? prev.filter(b => b !== id) : [...prev, id]);
-
-    if (user) {
-      try {
-        const token = await user.getIdToken();
-        await fetch('/api/bookmark', {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}` 
-          },
-          body: JSON.stringify({ term: id, action: isBookmarked ? 'remove' : 'add' })
-        });
-      } catch (error) {
-        console.error('Failed to sync bookmark:', error);
-      }
-    }
   };
 
   const addToHistory = (query: string) => {

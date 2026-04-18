@@ -6,11 +6,6 @@ import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import admin from 'firebase-admin';
-
-admin.initializeApp({
-  projectId: "gen-lang-client-0646334578"
-});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,75 +33,6 @@ async function startServer() {
   app.use(cors());
   app.use(express.json({ limit: '50mb' }));
   app.use(express.urlencoded({ limit: '50mb', extended: true }));
-
-  const verifyFirebaseToken = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const token = req.headers.authorization?.split('Bearer ')[1];
-    if (!token) {
-      return res.status(401).json({ error: 'Unauthorized: No token provided' });
-    }
-    try {
-      const decodedToken = await admin.auth().verifyIdToken(token);
-      (req as any).user = decodedToken;
-      next();
-    } catch (error) {
-      console.error('Token verification failed:', error);
-      return res.status(401).json({ error: 'Unauthorized: Invalid token' });
-    }
-  };
-
-  // Auth & Storage Routes
-  app.post('/api/auth', verifyFirebaseToken, async (req, res) => {
-    try {
-      const user = (req as any).user;
-      const { uid, email } = user;
-      await db.collection('users').updateOne(
-        { uid },
-        { $setOnInsert: { uid, email, bookmarks: [], roadmaps: [] } },
-        { upsert: true }
-      );
-      res.json({ success: true, uid });
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to authenticate user in DB' });
-    }
-  });
-
-  app.post('/api/bookmark', verifyFirebaseToken, async (req, res) => {
-    try {
-      const user = (req as any).user;
-      const { uid } = user;
-      const { term, action = 'add' } = req.body;
-      if (!term) return res.status(400).json({ error: 'Term is required' });
-
-      const updateOp = action === 'add' 
-        ? { $addToSet: { bookmarks: term } }
-        : { $pull: { bookmarks: term } };
-
-      await db.collection('users').updateOne(
-        { uid },
-        updateOp,
-        { upsert: true }
-      );
-      res.json({ success: true, term, action });
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to add bookmark' });
-    }
-  });
-
-  app.get('/api/bookmarks/:uid', verifyFirebaseToken, async (req, res) => {
-    try {
-      const user = (req as any).user;
-      const { uid } = req.params;
-      
-      if (user.uid !== uid) {
-        return res.status(403).json({ error: 'Forbidden' });
-      }
-
-      const userDoc = await db.collection('users').findOne({ uid });
-      res.json(userDoc?.bookmarks || []);
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch bookmarks' });
-    }
-  });
 
   // AI Generation Routes
   const nvidiaApiKey = process.env.NVIDIA_API_KEY || process.env.VITE_NVIDIA_API_KEY || '';
@@ -207,15 +133,12 @@ async function startServer() {
 
       let allConcepts: any[] = [];
       for (const col of collections) {
-        const data = await db.collection(col.name).find({}).toArray();
-        allConcepts = allConcepts.concat(data);
+        const data = await db.collection(col.name).find({}).limit(500).toArray();
+        const dataWithSource = data.map((d: any) => ({ ...d, id: d._id.toString(), collection_source: col.name }));
+        allConcepts = allConcepts.concat(dataWithSource);
       }
 
-      const parsedConcepts = allConcepts.map((c: any) => ({
-        ...c,
-        id: c._id.toString()
-      }));
-      res.json(parsedConcepts);
+      res.json(allConcepts);
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch concepts' });
     }

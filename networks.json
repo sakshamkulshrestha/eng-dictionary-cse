@@ -1,0 +1,402 @@
+[
+    {
+        "id": "net_001",
+        "term": "Computer Network",
+        "domain": "Computer Networks",
+        "one_line_definition": "A group of independent machines connected to share data and tasks.",
+        "technical_definition": "An interconnection of autonomous computers that use a single technology to facilitate information transfer among themselves [1].",
+        "explanation": "Networks focus on providing a communication path between clearly distinct and independent entities [1]. The primary architectural trade-off is between the flexibility of connecting heterogeneous hardware and the resulting management overhead [2, 3]. Performance is viewed through a resource budget lens where bandwidth is shared among competing nodes [4, 5]. By exposing the distribution of machines, the network allows users to explicitly manage where data resides and moves [1].",
+        "syntax_or_example": "ip addr show",
+        "real_world_analogy": "A group of people in a room talking to each other using a shared language.",
+        "computer_analogy": "Multiple processes running on different CPUs communicating via a message bus.",
+        "common_misconception": "A network and a distributed system are the same thing; in reality, a network exposes the machines while a distributed system hides them [1].",
+        "suggested_related_terms": [
+            "Distributed System",
+            "Middleware",
+            "Protocol"
+        ],
+        "prerequisites": [
+            "Autonomous Computer",
+            "Transmission Technology"
+        ],
+        "next_steps": [
+            "OSI Reference Model",
+            "Network Topology"
+        ],
+        "comparisons": [
+            {
+                "target_term": "Distributed System",
+                "key_difference": "Visibility of components; a network exposes them, while a distributed system presents a single coherent image [1].",
+                "winner_scenario": "Scenario where the user needs to know exactly which machine holds a specific file."
+            }
+        ]
+    },
+    {
+        "id": "net_002",
+        "term": "Distributed System",
+        "domain": "Computer Networks",
+        "one_line_definition": "A group of computers that acts like a single machine to the user.",
+        "technical_definition": "A collection of independent computers that appears to its users as a single, coherent system [1].",
+        "explanation": "This model relies on software to mask the underlying network complexity, often presenting a single paradigm like a document web [1]. It sacrifices individual node visibility to achieve a seamless user experience, requiring significant middleware overhead [1]. The latency of internal coordination is hidden from the end user to maintain the illusion of a single processor [1]. System efficiency is measured by how well it hides the 'seams' of the underlying network [1].",
+        "syntax_or_example": "World Wide Web (where everything looks like a single Web page) [1]",
+        "real_world_analogy": "A bank with many branches where you can access your account from any location as if it were one office [1].",
+        "computer_analogy": "A multi-core processor where the OS treats all cores as a single resource pool.",
+        "common_misconception": "Distributed systems are simpler than networks because they look like one machine; they are actually more complex because of the abstraction layer required [1].",
+        "suggested_related_terms": [
+            "Computer Network",
+            "Middleware",
+            "Client-Server Model"
+        ],
+        "prerequisites": [
+            "Computer Network",
+            "Operating System"
+        ],
+        "next_steps": [
+            "Parallel Computing",
+            "Cloud Computing"
+        ],
+        "comparisons": [
+            {
+                "target_term": "Computer Network",
+                "key_difference": "User perception; one system vs. many individual computers [1].",
+                "winner_scenario": "Scenario where the user wants to browse documents without knowing which server hosts them [1]."
+            }
+        ]
+    },
+    {
+        "id": "net_003",
+        "term": "Middleware",
+        "domain": "Computer Networks",
+        "one_line_definition": "The 'software glue' that connects different applications or machines.",
+        "technical_definition": "A layer of software on top of the operating system that is responsible for implementing the model of a distributed system [1].",
+        "explanation": "Middleware abstracts the networking details so applications can communicate using high-level paradigms [1]. It bridges the gap between hardware-specific protocols and application-level requirements, often adding significant processing latency to ensure reliability [1]. Architects must balance the convenience of this abstraction against the overhead of additional software layers [6, 7]. It is the key enabler for masking machine heterogeneity [1].",
+        "syntax_or_example": "Remote Procedure Call (RPC) libraries",
+        "real_world_analogy": "A universal translator at a global summit that allows leaders to speak to each other regardless of their native tongues.",
+        "computer_analogy": "A device driver that allows software to communicate with hardware without knowing the physical registers.",
+        "common_misconception": "Middleware is a physical device like a router; it is actually software running on hosts [1].",
+        "suggested_related_terms": [
+            "Distributed System",
+            "Application Layer",
+            "RPC"
+        ],
+        "prerequisites": [
+            "Operating System",
+            "Protocol Stack"
+        ],
+        "next_steps": [
+            "Object Broker",
+            "Service Oriented Architecture"
+        ],
+        "RULE_A": {
+            "full_code_snippet": "void middleware_send(data_t msg) { encrypt(msg); packetize(msg); socket_send(msg); }",
+            "syntax_explanation": "A simplified logic block where middleware wraps lower-level socket calls with security and formatting."
+        }
+    },
+    {
+        "id": "net_004",
+        "term": "Resource Sharing",
+        "domain": "Computer Networks",
+        "one_line_definition": "Allowing all network users to access programs, data, and equipment regardless of location.",
+        "technical_definition": "The primary goal of computer networks, ensuring that data and physical devices are accessible to any user as if they were local [8].",
+        "explanation": "The efficiency of a network is often defined by its ability to maximize the utilization of expensive or specialized resources [8]. By decoupling the user from the physical location of the resource, the architecture provides a larger 'virtual' budget of processing and storage [1]. Trade-offs include increased contention for shared links and the need for access control mechanisms [9, 10]. It turns isolated silos of data into a collaborative ecosystem [8].",
+        "syntax_or_example": "NFS mount command: mount -t nfs server:/shared /local",
+        "real_world_analogy": "A community library where many people share the same collection of books instead of buying them individually.",
+        "computer_analogy": "A shared memory region accessed by multiple concurrent threads.",
+        "common_misconception": "Resource sharing only refers to physical hardware like printers; it primarily refers to data and software in modern networks [8].",
+        "suggested_related_terms": [
+            "Client-Server Model",
+            "Distributed System",
+            "Packet Switching"
+        ],
+        "prerequisites": [
+            "Computer Network",
+            "Communication Link"
+        ],
+        "next_steps": [
+            "Concurrency Control",
+            "Access Control List"
+        ]
+    },
+    {
+        "id": "net_005",
+        "term": "Client-Server Model",
+        "domain": "Computer Networks",
+        "one_line_definition": "A relationship where one program requests a service and another fulfills it.",
+        "technical_definition": "A common network model where a client process sends a request over the network and waits for a reply from a server process [11].",
+        "explanation": "This architecture centralizes data management and security on the server while distributing processing tasks to clients [11]. The request-reply interaction minimizes the duration of connections, optimizing the use of network resources for bursty traffic [11]. However, it creates a single point of failure and potential bottleneck at the server [12]. The trade-off is simplicity in management vs. scalability constraints under heavy load [12].",
+        "syntax_or_example": "HTTP GET /index.html (The browser is the client, the web daemon is the server) [13]",
+        "real_world_analogy": "A diner where a customer (client) orders food and the chef (server) prepares and delivers it [14].",
+        "computer_analogy": "A function call where the caller passes arguments (request) and the function returns a value (reply).",
+        "common_misconception": "A server must be a powerful mainframe; a server is a software process and can run on any hardware [11].",
+        "suggested_related_terms": [
+            "Peer-to-Peer",
+            "Request-Reply Interaction",
+            "Middleware"
+        ],
+        "prerequisites": [
+            "Computer Network",
+            "Process Communication"
+        ],
+        "next_steps": [
+            "Three-way Handshake",
+            "Load Balancing"
+        ],
+        "comparisons": [
+            {
+                "target_term": "Peer-to-Peer",
+                "key_difference": "Hierarchy; Client-server has a fixed role, while P2P allows nodes to be both clients and servers [15].",
+                "winner_scenario": "Scenario requiring centralized database control and strict security [11]."
+            }
+        ]
+    },
+    {
+        "id": "net_006",
+        "term": "Protocol",
+        "domain": "Computer Networks",
+        "one_line_definition": "A set of rules that computers follow to communicate correctly.",
+        "technical_definition": "An agreement between communicating parties on how communication is to proceed, governing the format and meaning of frames, packets, or messages [15, 16].",
+        "explanation": "Protocols provide the horizontal logic that allows peer entities at the same layer to 'talk' to each other [6]. They define the 'how' of data movement, while services define the 'what' [16]. Efficient protocol design minimizes 'control' bits (overhead) relative to 'data' bits (payload) to maximize goodput . Architects choose specific protocols to balance reliability requirements against latency budgets [17, 18].",
+        "syntax_or_example": "The 'SYN' bit in a TCP header [19]",
+        "real_world_analogy": "The social etiquette of two people taking turns to speak and acknowledging when they understand each other.",
+        "computer_analogy": "An interface or API contract in object-oriented programming [6].",
+        "common_misconception": "A protocol and a service are the same thing; a protocol is the implementation of a service [16].",
+        "suggested_related_terms": [
+            "Service",
+            "Interface",
+            "Protocol Stack"
+        ],
+        "prerequisites": [
+            "Peer Entity",
+            "Layering"
+        ],
+        "next_steps": [
+            "OSI Reference Model",
+            "Encapsulation"
+        ]
+    },
+    {
+        "id": "net_007",
+        "term": "Peer Entity",
+        "domain": "Computer Networks",
+        "one_line_definition": "The corresponding parts of the same layer on two different computers.",
+        "technical_definition": "The processes or hardware components that make up a specific layer on a single machine and communicate with their counterparts on other machines [20, 21].",
+        "explanation": "Peer entities use protocols to maintain the illusion of direct horizontal communication [21]. This abstraction allows designers to focus on a single layer's logic without worrying about the complexities of layers above or below [7]. In reality, communication is vertical, passing down the stack on the sender and up on the receiver [21]. The efficiency of peer interaction determines the overall performance of that specific network layer [21].",
+        "syntax_or_example": "Two TCP entities on different hosts coordinating sequence numbers [22]",
+        "real_world_analogy": "Two CEOs communicating through their respective assistants; they 'talk' peer-to-peer conceptually.",
+        "computer_analogy": "Two instances of the same class on different JVMs communicating via a network.",
+        "common_misconception": "Peer entities are physically connected; they are only virtually connected through the protocol hierarchy [21].",
+        "suggested_related_terms": [
+            "Protocol",
+            "Layering",
+            "Encapsulation"
+        ],
+        "prerequisites": [
+            "Protocol Hierarchy",
+            "Virtual Communication"
+        ],
+        "next_steps": [
+            "Service Access Point",
+            "Protocol Data Unit"
+        ]
+    },
+    {
+        "id": "net_008",
+        "term": "Service Access Point (SAP)",
+        "domain": "Computer Networks",
+        "one_line_definition": "The specific 'door' or address where one layer accesses the layer below it.",
+        "technical_definition": "The location at which a layer can access the services offered by the layer below it, with each SAP having a unique address [18].",
+        "explanation": "SAPs act as the multiplexing/demultiplexing points in the stack, allowing multiple high-level processes to share a single lower-level service [18]. This optimizes the resource budget by consolidating traffic into fewer physical streams [18]. The choice of SAP (like a port number) determines which entity handles incoming data, making it critical for correct routing within the host [23, 24]. The trade-off is the overhead of managing these internal address mappings [18].",
+        "syntax_or_example": "TCP Port 80 (A Transport Layer SAP for HTTP) [23]",
+        "real_world_analogy": "The individual mailboxes in an apartment building's lobby where the mail carrier leaves letters.",
+        "computer_analogy": "A file descriptor or handle used by a program to read from a specific hardware resource.",
+        "common_misconception": "SAPs are physical plugs; they are logical identifiers in software or firmware [18].",
+        "suggested_related_terms": [
+            "Port Number",
+            "Interface",
+            "Protocol Hierarchy"
+        ],
+        "prerequisites": [
+            "Layering",
+            "Service Provider"
+        ],
+        "next_steps": [
+            "Socket",
+            "TSAP"
+        ]
+    },
+    {
+        "id": "net_009",
+        "term": "Protocol Data Unit (PDU)",
+        "domain": "Computer Networks",
+        "one_line_definition": "A single 'chunk' of data including both the payload and the protocol's own headers.",
+        "technical_definition": "The unit of data exchanged between peer entities in a specific layer, consisting of the Service Data Unit and protocol control information [25].",
+        "explanation": "PDUs are the result of encapsulation, where a layer wraps the data from above with its own header to ensure proper delivery by its peer [25]. The size of the PDU is a critical performance factor; too large leads to fragmentation, while too small increases relative overhead [26, 27]. Efficient PDU design ensures that headers are kept minimal to save bandwidth [28, 29]. PDUs change names at different layers (e.g., segments, packets, frames) [30].",
+        "syntax_or_example": "An Ethernet frame (A Data Link Layer PDU) [31]",
+        "real_world_analogy": "A letter (SDU) inside an envelope with an address on it (PCI); the entire envelope is the PDU.",
+        "computer_analogy": "An object in memory that contains both application data and metadata like a checksum or type ID.",
+        "common_misconception": "A PDU is just the data being sent; it must include the layer-specific headers to be a PDU [25].",
+        "suggested_related_terms": [
+            "Service Data Unit",
+            "Encapsulation",
+            "Header"
+        ],
+        "prerequisites": [
+            "Layering",
+            "Peer Entity"
+        ],
+        "next_steps": [
+            "Segmentation",
+            "Fragmentation"
+        ]
+    },
+    {
+        "id": "net_010",
+        "term": "Interface Data Unit (IDU)",
+        "domain": "Computer Networks",
+        "one_line_definition": "The total package of data and control info passed between two adjacent layers on the same machine.",
+        "technical_definition": "The unit of information passed across an interface between two layers on a single computer, composed of the Service Data Unit and Interface Control Information [32, 33].",
+        "explanation": "IDUs represent the 'vertical' movement of data within a single host's memory [33]. Efficiency here is a 'resource budget' story of memory bandwidth and CPU cycles; minimize IDU copying to avoid bottlenecks (zero-copy networking) [34]. Unlike PDUs, IDUs are transient and exist only during the transfer between layers [33]. The interface defines the rigid boundary that hides a layer's implementation details from its neighbor [16].",
+        "syntax_or_example": "The buffer and length parameters in a socket 'send' system call [32, 35]",
+        "real_world_analogy": "A manager handing a draft to an assistant with a sticky note saying 'Fax this to London.'",
+        "computer_analogy": "A pointer to a struct being passed from a high-level function to a low-level driver.",
+        "common_misconception": "IDUs are what travel over the cable; only bits of the PDU travel over the physical medium [25].",
+        "suggested_related_terms": [
+            "Service Data Unit",
+            "Interface Control Information",
+            "Protocol Data Unit"
+        ],
+        "prerequisites": [
+            "Layer Interface",
+            "Service User"
+        ],
+        "next_steps": [
+            "Zero-Copy Networking",
+            "System Call"
+        ]
+    },
+    {
+        "id": "net_011",
+        "term": "Service Data Unit (SDU)",
+        "domain": "Computer Networks",
+        "one_line_definition": "The actual 'payload' or message a layer receives from the one above it.",
+        "technical_definition": "The portion of a Protocol Data Unit that contains the actual data from the higher layer, before any current-layer headers are added [25, 33].",
+        "explanation": "SDUs represent the 'useful' work being done by the network, stripped of the protocol's bookkeeping [33]. The SDU from layer N becomes the 'payload' inside the PDU of layer N-1 [25]. Managing SDU size is vital to avoid buffer overflows and to optimize packet scheduling [36, 37]. A major trade-off is whether to fragment large SDUs into multiple PDUs or to reject them if they exceed the Maximum Transfer Unit (MTU) [26, 38].",
+        "syntax_or_example": "The data field of an IP packet (which contains a TCP segment SDU) [38]",
+        "real_world_analogy": "The actual physical item you want to ship, before it is placed in a shipping box.",
+        "computer_analogy": "The arguments of a function call, separate from the return address and stack frame overhead.",
+        "common_misconception": "SDU and PDU are interchangeable; the PDU is the SDU plus the current layer's header [25].",
+        "suggested_related_terms": [
+            "Protocol Data Unit",
+            "Encapsulation",
+            "Payload"
+        ],
+        "prerequisites": [
+            "Layering",
+            "Service User"
+        ],
+        "next_steps": [
+            "MTU",
+            "Fragmentation"
+        ]
+    },
+    {
+        "id": "net_012",
+        "term": "Interface Control Information (ICI)",
+        "domain": "Computer Networks",
+        "one_line_definition": "Temporary instructions passed between layers to help them coordinate on a single machine.",
+        "technical_definition": "Information passed across an interface to help a lower layer provide a service, but which is not part of the data being transmitted to the remote peer [14].",
+        "explanation": "ICI includes parameters like connection identifiers or priority levels that guide the lower layer's behavior [14]. This information is discarded once the interface transfer is complete, never appearing in the network PDU [14]. It enables loose coupling between layers by providing a standard way to signal intent without exposing internal state [16]. The trade-off is the slight memory and processing cost of passing these extra parameters [33].",
+        "syntax_or_example": "A 'socket ID' passed to the 'send' primitive [39]",
+        "real_world_analogy": "The verbal instructions you give a delivery person about which door to use, which aren't written on the package.",
+        "computer_analogy": "Control flags or status codes used in a system call.",
+        "common_misconception": "ICI is sent across the network to the other computer; it is strictly local to the host [14].",
+        "suggested_related_terms": [
+            "Interface Data Unit",
+            "Service Data Unit",
+            "Service Access Point"
+        ],
+        "prerequisites": [
+            "Layer Interface",
+            "Service User"
+        ],
+        "next_steps": [
+            "Service Primitive",
+            "Socket"
+        ]
+    },
+    {
+        "id": "net_013",
+        "term": "Protocol Hierarchy",
+        "domain": "Computer Networks",
+        "one_line_definition": "The organized stack of layers where each layer handles a specific task.",
+        "technical_definition": "A design approach where a network is organized into a series of layers or levels, each built upon the one below it [40].",
+        "explanation": "Hierarchies reduce design complexity by partitioning the networking problem into manageable sub-tasks [7]. Each layer hides its complexity from the layer above, allowing for modular updates where one protocol can be replaced without affecting others [7, 41]. This abstraction ensures that application developers don't have to understand physical signaling [42]. The trade-off is the cumulative latency of processing multiple headers and 'context switching' between layers [43, 44].",
+        "syntax_or_example": "The 7-layer OSI model [7, 45]",
+        "real_world_analogy": "The hierarchy of a large corporation where executives (top) give orders that get refined by managers and eventually executed by workers (bottom) [46].",
+        "computer_analogy": "A software library stack where a high-level UI library calls a 2D graphics library which calls a hardware driver.",
+        "common_misconception": "More layers always make a network faster; more layers actually add overhead and complexity [43].",
+        "suggested_related_terms": [
+            "OSI Reference Model",
+            "Layering",
+            "Protocol Stack"
+        ],
+        "prerequisites": [
+            "Protocol",
+            "Service"
+        ],
+        "next_steps": [
+            "TCP/IP Reference Model",
+            "Encapsulation"
+        ]
+    },
+    {
+        "id": "net_014",
+        "term": "Layering",
+        "domain": "Computer Networks",
+        "one_line_definition": "Dividing the network software into levels to simplify development and management.",
+        "technical_definition": "The act of partitioning a network architecture into independent functional levels, where each level provides services to the one above [7, 47].",
+        "explanation": "Layering allows for international standardization of protocols by defining clear boundaries and functions [7]. By minimizing information flow across these interfaces, architects can design systems that are robust and easier to debug [7]. Each layer handles a different level of abstraction, such as 'reliable byte stream' vs. 'raw bit transmission' [48, 49]. The primary risk is 'over-layering,' which can lead to inefficient duplication of functions like error control [43].",
+        "syntax_or_example": "Defining the 'Data Link Layer' as being responsible for framing bits [7]",
+        "real_world_analogy": "The process of mailing a letter: writing the message, putting it in an envelope, and the postal service handling transportation.",
+        "computer_analogy": "A modular software project where different teams work on separate 'tiers' like the database, logic, and UI.",
+        "common_misconception": "Layers communicate directly with their counterparts on the other side; they only communicate 'virtually' through protocols [21].",
+        "suggested_related_terms": [
+            "Protocol Hierarchy",
+            "Protocol Stack",
+            "Encapsulation"
+        ],
+        "prerequisites": [
+            "Network Architecture",
+            "Data Abstraction"
+        ],
+        "next_steps": [
+            "Physical Layer",
+            "Transport Layer"
+        ]
+    },
+    {
+        "id": "net_015",
+        "term": "Protocol Stack",
+        "domain": "Computer Networks",
+        "one_line_definition": "The actual list of protocols used by a computer to communicate.",
+        "technical_definition": "A specific implementation of a protocol hierarchy, consisting of one protocol per layer [6, 45].",
+        "explanation": "The stack is the 'runtime' version of the architectural hierarchy [6]. Efficient stack implementation is critical for high-speed networking, as the time spent moving data between layers is often the bottleneck [44, 50]. Common stacks like TCP/IP provide the 'glue' for the Internet, hiding the diversity of the underlying physical networks [2]. Architects must ensure the stack is optimized to handle the trade-off between reliability and the CPU resource budget [51, 52].",
+        "syntax_or_example": "The TCP/IP stack: Link, Internet, Transport, and Application [53]",
+        "real_world_analogy": "A physical stack of books where you must read the top one before you can see the one below.",
+        "computer_analogy": "The call stack in a debugger that shows the history of nested function calls.",
+        "common_misconception": "A protocol stack and a reference model are the same; the model is a plan, while the stack is the actual software [47, 54].",
+        "suggested_related_terms": [
+            "TCP/IP Reference Model",
+            "Protocol Hierarchy",
+            "Layering"
+        ],
+        "prerequisites": [
+            "Protocol Hierarchy",
+            "Peer Entity"
+        ],
+        "next_steps": [
+            "Host-to-Network Layer",
+            "Internet Layer"
+        ]
+    }
+]

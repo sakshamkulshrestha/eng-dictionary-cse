@@ -2,21 +2,17 @@ export interface Concept {
   id: string;
   term: string;
   domain: string;
-  definition_short: string;
-  definition_detailed: string;
-  logic_deep?: string;
-  analogy: string;
-  examples: string[];
-  related_terms: string[];
-  prerequisites: string[];
-  advanced_topics?: string[];
-  image_query: string;
+  one_line_definition?: string;
+  technical_definition?: string;
+  explanation?: string;
   syntax_or_example?: string;
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced' | string;
-  category: 'Core' | 'Extended';
-  breadcrumbs?: string[];
-  comparisons?: { target: string; note: string }[];
-  common_misconceptions?: string[];
+  real_world_analogy?: string;
+  computer_analogy?: string;
+  common_misconception?: string[];
+  suggested_related_terms?: string[];
+  prerequisites?: string[];
+  next_steps?: string[];
+  comparisons?: { target: string; note: string; winner_scenario?: string }[];
 }
 
 export interface RoadmapStep {

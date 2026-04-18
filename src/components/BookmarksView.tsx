@@ -100,18 +100,19 @@ export default function BookmarksView({
                         {groupedBookmarks.grouped[domain].map(c => (
                           <div
                             key={c.id}
-                            className="group relative flex flex-col p-10 neo-card neo-card-interactive"
+                            className="group relative flex flex-col p-8 sm:p-10 bg-[var(--text)]/5 border border-[var(--border)] backdrop-blur-md rounded-2xl cursor-pointer hover:shadow-xl hover:scale-[1.02] hover:bg-[var(--hover)] transition-all overflow-hidden"
                             onClick={() => onNavigate(c.id)}
                           >
+                            <div className="absolute top-0 left-0 w-full h-1 bg-[var(--text)] opacity-0 group-hover:opacity-100 transition-opacity" />
                             <button
                               onClick={(e) => { e.stopPropagation(); onRemoveBookmark(c.id); }}
-                              className="absolute top-3 right-3 p-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20 transition-all opacity-0 group-hover:opacity-100"
+                              className="absolute top-3 right-3 p-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20 transition-all opacity-0 group-hover:opacity-100 rounded-full z-10"
                               title="Remove bookmark"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
-                            <span className="text-xl font-bold uppercase tracking-tight mb-2">{c.term}</span>
-                            <span className="text-xs text-muted font-medium leading-relaxed line-clamp-2">{c.definition_short}</span>
+                            <span className="text-xl sm:text-2xl font-black tracking-tight mb-3 text-[var(--text)] group-hover:text-[var(--neo-green)] transition-colors">{c.term}</span>
+                            <span className="text-sm text-[var(--muted)] font-medium leading-relaxed line-clamp-2 opacity-90 group-hover:opacity-100 transition-opacity">{c.one_line_definition}</span>
                           </div>
                         ))}
                       </div>
