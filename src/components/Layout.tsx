@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Markdown from 'react-markdown';
 import {
   Search, BookOpen, Layers, X, Info, ArrowRight,
@@ -9,7 +9,7 @@ import {
   Network, Brain, Book, Compass, GitBranch, Terminal,
   Send, Trash2, Save, MessageSquare, Map,
   Volume2, AlertCircle, Sparkles, LayoutGrid,
-  BookMarked, Clock, Bot, Star
+  BookMarked, Clock, Bot, Star, Database
 } from 'lucide-react';
 import { Concept, Roadmap, RoadmapStep, UserSettings } from '../types';
 import { getFullDomainName } from '../utils/domains';
@@ -263,6 +263,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [displayCount, setDisplayCount] = useState(30);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
   const [roadmapQuery, setRoadmapQuery] = useState('');
   const [isGeneratingRoadmap, setIsGeneratingRoadmap] = useState(false);
@@ -374,13 +375,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
     loadConcepts();
   }, []);
 
-  const { scrollYProgress } = useScroll({
-    target: scrollRef,
-    offset: ["start start", "end end"]
-  });
 
-  const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.9]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
 
   const fuse = useMemo(() => new Fuse(concepts || [], {
     keys: ['term', 'domain', 'one_line_definition', 'explanation', 'technical_definition'],
@@ -394,11 +389,11 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
   }, [searchQuery, fuse]);
 
   const domains = useMemo(() =>
-    Array.from(new Set((concepts || []).map(c => c.domain))).sort()
+    Array.from(new Set((concepts || []).map(c => c.domain).filter(Boolean))).sort()
     , [concepts]);
 
   return (
-    <div className={cn("flex flex-col min-h-screen bg-bg relative overflow-x-hidden", settings.theme === 'light' && "light")}>
+    <div className={cn("flex flex-col h-[100vh] w-full bg-[var(--bg)] overflow-hidden", settings.theme === 'light' && "light")}>
       <AnimatePresence>
         {isLoading && (
           <motion.div
@@ -414,8 +409,17 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
 
       <nav className="neo-nav backdrop-blur-xl bg-[var(--bg)]/90 border-b border-[var(--border)]">
         <div className="flex items-center gap-6">
-          <Link to="/" className="flex items-center gap-3">
-             <div className="w-9 h-9 bg-[var(--text)]" />
+           <Link to="/" className="flex items-center gap-3">
+             <motion.svg 
+               viewBox="0 0 100 100" 
+               className="w-10 h-10 text-[var(--text)] overflow-visible"
+               whileHover={{ scale: 1.05 }}
+               whileTap={{ scale: 0.95 }}
+             >
+               <rect x="0" y="0" width="100" height="100" rx="30" fill="currentColor" opacity="0.1" />
+               <path d="M 30,50 Q 50,20 70,50 T 30,50" fill="currentColor" opacity="0.8" />
+               <path d="M 35,50 Q 50,75 65,50" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" opacity="0.5" />
+             </motion.svg>
              <span className="font-black text-sm uppercase tracking-widest hidden sm:block text-[var(--text)]">The Lexicon</span>
           </Link>
           <div className="hidden sm:flex items-center gap-1">
@@ -460,9 +464,10 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
         </div>
       </nav>
 
-      <div className="flex-1 flex overflow-hidden">
-        <main ref={scrollRef} className="flex-1 overflow-y-auto custom-scrollbar">
-          <div className="max-w-5xl mx-auto px-12 py-16">
+      {/* ===== SPLIT PANES ===== */}
+      <div className="flex-1 flex overflow-hidden w-full relative min-h-0">
+        <main ref={scrollRef} className="flex-1 overflow-y-auto overscroll-contain custom-scrollbar pb-16 min-h-0">
+          <div className="max-w-5xl mx-auto px-6 sm:px-12 py-16">
             <AnimatePresence mode="wait">
               {fetchError ? (
                 <div key="error" className="py-20 text-center flex flex-col items-center justify-center space-y-6">
@@ -482,37 +487,84 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
               ) : selectedConcept ? (
                 <EntryDetail entry={selectedConcept} dictionaryData={concepts} onNavigate={(id: string) => navigate(`/concept/${id}`)} onToggleBookmark={toggleBookmark} isBookmarked={bookmarks.includes(selectedConcept.id)} autoSpeak={settings.autoSpeak} />
               ) : domainParam ? (
-                <div key={domainParam} className="space-y-12">
-                   <h1 className="text-6xl font-black uppercase tracking-tighter">{domainParam}</h1>
-                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                     {concepts.filter(c => c.domain === domainParam).map(c => (
-                       <TiltCard key={c.id} onClick={() => navigate(`/concept/${c.id}`)} className="p-8 sm:p-10 group neo-card-interactive hover:shadow-xl hover:scale-[1.02] flex flex-col bg-[var(--text)]/5 backdrop-blur-md border border-[var(--border)] transition-all overflow-hidden relative">
-                         <div className="absolute top-0 left-0 w-full h-1 bg-[var(--text)] opacity-0 group-hover:opacity-100 transition-opacity" />
-                         <div className="flex items-center justify-between mb-3">
-                           <h3 className="text-2xl font-black tracking-tight text-[var(--text)] group-hover:text-[var(--neo-green)] transition-colors">{c.term}</h3>
-                           <ArrowRight className="w-5 h-5 text-[var(--muted)] group-hover:text-[var(--text)] transition-colors opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0" />
+                <motion.div key={domainParam} className="space-y-10">
+                   <div>
+                     <button onClick={() => navigate('/')} className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted hover:text-[var(--text)] transition-colors mb-6">
+                       <ChevronLeft className="w-4 h-4" /> All Domains
+                     </button>
+                     <h1 className="text-5xl sm:text-6xl font-black uppercase tracking-tighter">{getFullDomainName(domainParam)}</h1>
+                     <p className="text-muted text-sm font-medium mt-2">{concepts.filter(c => c.domain === domainParam).length} concept{concepts.filter(c => c.domain === domainParam).length !== 1 ? 's' : ''}</p>
+                   </div>
+                   
+                   <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                     {concepts.filter(c => c.domain === domainParam).slice(0, displayCount).map(c => (
+                       <TiltCard key={c.id} onClick={() => navigate(`/concept/${c.id}`)} className="p-8 group neo-card-interactive flex flex-col bg-[var(--card)] border border-[var(--border)] transition-all overflow-hidden relative rounded-3xl hover:border-[var(--neo-green)]/50 hover:shadow-xl shadow-sm">
+                         <div className="flex items-start justify-between mb-3 group">
+                           <h3 className="text-xl font-black tracking-tight text-[var(--text)] group-hover:text-[var(--neo-green)] transition-colors pr-2">{c.term}</h3>
+                           <ArrowRight className="w-5 h-5 text-[var(--muted)] group-hover:text-[var(--text)] transition-all shrink-0 -translate-x-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-0" />
                          </div>
-                         <p className="text-sm font-medium text-[var(--muted)] line-clamp-2 leading-relaxed opacity-90 group-hover:opacity-100 transition-opacity">
+                         <p className="text-sm font-medium text-[var(--muted)] line-clamp-3 leading-relaxed transition-opacity">
                            {c.one_line_definition}
                          </p>
                        </TiltCard>
                      ))}
-                   </div>
-                </div>
+                   </motion.div>
+                   {displayCount < concepts.filter(c => c.domain === domainParam).length && (
+                      <div className="flex justify-center pt-8 pb-12">
+                        <MagneticButton 
+                          onClick={() => setDisplayCount(prev => prev + 30)}
+                          className="px-8 py-3 text-sm font-black uppercase tracking-widest rounded-full shadow-lg border border-[var(--border)]"
+                        >
+                          Load More Concepts ({concepts.filter(c => c.domain === domainParam).length - displayCount} remaining)
+                        </MagneticButton>
+                      </div>
+                   )}
+                </motion.div>
               ) : (
-                <div key="home" className="space-y-24">
-                  <motion.section style={{ scale: heroScale, opacity: heroOpacity }} className="py-32 text-center flex flex-col items-center">
-                    <AnimatedText text="Lexicon" el="h1" className="text-[14vw] font-black uppercase tracking-tighter leading-[0.85] text-[var(--text)]" animationType="chars" />
-                    <h2 className="text-3xl font-bold text-[var(--neo-green)] mt-8 uppercase tracking-widest">Protocol Intelligence</h2>
-                    <MagneticButton onClick={() => setIsSearchOpen(true)} className="mt-12 px-12 py-6 text-xl uppercase tracking-widest">Initialize</MagneticButton>
-                  </motion.section>
-                  <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div key="home" className="space-y-16">
+                  <section className="pt-20 pb-12 text-center flex flex-col items-center relative">
+                    <AnimatedText text="Lexicon" el="h1" className="text-[14vw] sm:text-[11vw] font-black uppercase tracking-tighter leading-[0.85] text-[var(--text)] drop-shadow-sm" animationType="chars" />
+                    
+                    <h2 className="text-xl sm:text-2xl font-bold text-[var(--neo-green)] mt-8 uppercase tracking-widest flex items-center gap-3">
+                       <Network className="w-5 h-5 sm:w-6 sm:h-6" /> Computing Dictionary
+                    </h2>
+                    
+                    {/* Creative Stats UI */}
+                    <div className="flex flex-wrap justify-center gap-4 mt-12 mb-10 w-full px-6">
+                       <div className="flex items-center gap-5 px-6 sm:px-8 py-5 bg-[var(--text)]/5 border border-[var(--border)] rounded-full backdrop-blur-md shadow-lg transition-transform hover:scale-105">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[var(--neo-green)]/20 flex items-center justify-center shrink-0">
+                             <Database className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--neo-green)]" />
+                          </div>
+                          <div className="text-left">
+                             <div className="text-2xl sm:text-3xl font-black text-[var(--text)] leading-none mb-1">{concepts.length}</div>
+                             <div className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#8E8E93]">Total Words</div>
+                          </div>
+                       </div>
+                       
+                       <div className="flex items-center gap-5 px-6 sm:px-8 py-5 bg-[var(--text)]/5 border border-[var(--border)] rounded-full backdrop-blur-md shadow-lg transition-transform hover:scale-105">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[var(--neo-purple)]/20 flex items-center justify-center shrink-0">
+                             <LayoutGrid className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--neo-purple)]" />
+                          </div>
+                          <div className="text-left">
+                             <div className="text-2xl sm:text-3xl font-black text-[var(--text)] leading-none mb-1">{domains.length}</div>
+                             <div className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#8E8E93]">Root Domains</div>
+                          </div>
+                       </div>
+                    </div>
+                    
+                    <MagneticButton onClick={() => setIsSearchOpen(true)} className="px-12 py-5 text-sm font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl mt-4 border border-[var(--border)]">
+                      Search Dictionary
+                    </MagneticButton>
+                  </section>
+                  <section className="px-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {domains.map(d => (
                       <TiltCard key={d} onClick={() => navigate(`/domain/${d}`)} className="p-10 neo-card-interactive flex flex-col justify-between h-64">
                         <h3 className="text-3xl font-black uppercase tracking-tighter">{d.replace(/-/g, ' ')}</h3>
                         <div className="text-xs font-bold uppercase tracking-widest flex items-center gap-2">Explore <ArrowRight className="w-3 h-3" /></div>
                       </TiltCard>
                     ))}
+                    </div>
                   </section>
                 </div>
               )}
@@ -522,14 +574,14 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
 
         <AnimatePresence>
           {isRightPanelOpen && (
-            <motion.aside initial={{ width: 0 }} animate={{ width: 380 }} exit={{ width: 0 }} className="h-full bg-card border-l border-[var(--border)] flex flex-col">
+             <motion.aside initial={{ width: 0 }} animate={{ width: 380 }} exit={{ width: 0 }} className="w-[380px] h-full bg-card border-l border-[var(--border)] flex flex-col shrink-0">
               <div className="p-6 border-b border-[var(--border)] flex items-center justify-between">
                 <span className="font-bold text-sm uppercase tracking-widest">Intelligence</span>
                 <X className="w-4 h-4 cursor-pointer" onClick={() => setIsRightPanelOpen(false)} />
               </div>
-              <div className="flex p-px bg-border">
+              <div className="flex mx-6 mt-6 mb-4 p-1 bg-[var(--hover)] rounded-2xl border border-[var(--border)]">
                 {(['ask', 'roadmap'] as const).map(t => (
-                  <button key={t} onClick={() => setRightPanelMode(t)} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest ${rightPanelMode === t ? 'bg-[var(--text)] text-[var(--bg)]' : 'bg-transparent text-muted'}`}>{t}</button>
+                  <button key={t} onClick={() => setRightPanelMode(t)} className={`flex-1 py-2.5 text-[11px] font-black uppercase tracking-[0.2em] rounded-xl transition-all ${rightPanelMode === t ? 'bg-[var(--text)] text-[var(--bg)] shadow-md' : 'bg-transparent text-[var(--muted)] hover:text-[var(--text)]'}`}>{t}</button>
                 ))}
               </div>
               <div className="flex-1 overflow-y-auto p-6 space-y-6">

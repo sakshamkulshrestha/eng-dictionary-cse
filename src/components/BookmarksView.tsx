@@ -59,16 +59,16 @@ export default function BookmarksView({
             Your saved knowledge components.
           </p>
 
-          <div className="flex bg-[var(--hover)] p-0 w-fit border-2 border-[var(--text)]">
+          <div className="flex bg-[var(--card)] p-1.5 rounded-2xl w-fit border border-[var(--border)] shadow-sm">
             <button
               onClick={() => setActiveTab('words')}
-              className={`px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all ${activeTab === 'words' ? 'bg-[var(--text)] text-[var(--bg)]' : 'text-muted hover:text-[var(--text)]'}`}
+              className={`px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all rounded-xl ${activeTab === 'words' ? 'bg-[var(--text)] text-[var(--bg)] shadow-md' : 'text-muted hover:text-[var(--text)] hover:bg-[var(--hover)]'}`}
             >
               Saved Words
             </button>
             <button
               onClick={() => setActiveTab('roadmaps')}
-              className={`px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all ${activeTab === 'roadmaps' ? 'bg-[var(--text)] text-[var(--bg)]' : 'text-muted hover:text-[var(--text)]'}`}
+              className={`px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all rounded-xl ${activeTab === 'roadmaps' ? 'bg-[var(--text)] text-[var(--bg)] shadow-md' : 'text-muted hover:text-[var(--text)] hover:bg-[var(--hover)]'}`}
             >
               Saved Roadmaps
             </button>
@@ -100,10 +100,9 @@ export default function BookmarksView({
                         {groupedBookmarks.grouped[domain].map(c => (
                           <div
                             key={c.id}
-                            className="group relative flex flex-col p-8 sm:p-10 bg-[var(--text)]/5 border border-[var(--border)] backdrop-blur-md rounded-2xl cursor-pointer hover:shadow-xl hover:scale-[1.02] hover:bg-[var(--hover)] transition-all overflow-hidden"
+                            className="group relative flex flex-col p-8 sm:p-10 bg-[var(--card)] border border-[var(--border)] shadow-sm rounded-3xl cursor-pointer hover:shadow-xl hover:scale-[1.02] hover:border-[var(--neo-green)] transition-all overflow-hidden"
                             onClick={() => onNavigate(c.id)}
                           >
-                            <div className="absolute top-0 left-0 w-full h-1 bg-[var(--text)] opacity-0 group-hover:opacity-100 transition-opacity" />
                             <button
                               onClick={(e) => { e.stopPropagation(); onRemoveBookmark(c.id); }}
                               className="absolute top-3 right-3 p-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20 transition-all opacity-0 group-hover:opacity-100 rounded-full z-10"
@@ -111,8 +110,8 @@ export default function BookmarksView({
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
-                            <span className="text-xl sm:text-2xl font-black tracking-tight mb-3 text-[var(--text)] group-hover:text-[var(--neo-green)] transition-colors">{c.term}</span>
-                            <span className="text-sm text-[var(--muted)] font-medium leading-relaxed line-clamp-2 opacity-90 group-hover:opacity-100 transition-opacity">{c.one_line_definition}</span>
+                            <span className="text-xl sm:text-2xl font-black tracking-tight mb-3 text-[var(--text)] group-hover:text-[var(--neo-green)] transition-colors pr-6">{c.term}</span>
+                            <span className="text-sm text-[var(--muted)] font-medium leading-relaxed line-clamp-2 opacity-90 transition-opacity">{c.one_line_definition}</span>
                           </div>
                         ))}
                       </div>

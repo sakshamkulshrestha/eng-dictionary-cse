@@ -49,6 +49,15 @@
   --neo-orange: var(--orange-sunshine);
   --neo-pink: var(--pink-pong);
 
+  /* Border Radius Scale — Soft, premium design */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-2xl: 36px;
+  --radius-full: 9999px;
+
   /* Easing and Animation */
   --spring-bouncy: cubic-bezier(0.175, 0.885, 0.32, 1.15);
   --spring-smooth: cubic-bezier(0.25, 1, 0.5, 1);
@@ -58,25 +67,19 @@
 .light {
   --bg: #FAF9F6;
   --card: #F2F1EA;
-  --text: #0D0D0D;
-  --muted: #666666;
+  --text: #111111;
+  --muted: #555555;
   --border: #D1D1CB;
   --hover: #E8E7DF;
   --active: #DFDDD5;
   --search: #E8E7DF;
 
   /* Adjust NeoPOP for light mode — darker, subdued accents */
-  --neo-green: #6B7A00;
-  --neo-gold: #9E7600;
+  --neo-green: #4A6A00;
+  --neo-gold: #8A6700;
   --neo-purple: #4018A8;
   --neo-orange: #A34500;
   --neo-pink: #A8163D;
-}
-
-/* Base resets for the strict grid / border-radius */
-*, *::before, *::after {
-  /* Enforce brutalist sharp corners globally */
-  border-radius: 0 !important;
 }
 
 /* Animations */
@@ -91,16 +94,37 @@
   }
 }
 
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
 @layer base {
+  html, body, #root {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+  }
+
   body {
     background-color: var(--bg);
     color: var(--text);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-y: auto !important;
-    min-height: 100vh;
-    line-height: 1.5;
+    line-height: 1.6;
   }
 
   ::selection {
@@ -126,9 +150,20 @@
       linear-gradient(to bottom, var(--border) 1px, transparent 1px);
     background-size: 40px 40px;
     mask-image: radial-gradient(circle at center, black, transparent 80%);
-    opacity: 0.1;
+    opacity: 0.08;
     pointer-events: none;
     z-index: -1;
+  }
+
+  /* Font size settings */
+  [data-font-size="large"] {
+    font-size: 18px;
+  }
+  [data-font-size="small"] {
+    font-size: 14px;
+  }
+  [data-font-size="standard"] {
+    font-size: 16px;
   }
 }
 
@@ -151,9 +186,9 @@
     background-color: var(--pop-white);
     color: var(--pop-black);
     border: 1px solid var(--pop-white);
+    border-radius: var(--radius-md);
     transition: transform 0.15s var(--neo-ease), box-shadow 0.15s var(--neo-ease), background-color 0.15s;
     
-    /* NeoPOP 3D Shadow: Sharp bottom right (Dark Green/Yellow mix for pop), light top left inset for neon edge */
     box-shadow: 
       4px 4px 0px 0px var(--neo-green),
       inset 2px 2px 0px rgba(255, 255, 255, 1);
@@ -167,7 +202,6 @@
   }
 
   .neo-btn-primary:active {
-    /* Push down effect */
     box-shadow: 0px 0px 0px 0px transparent;
     transform: translate(5px, 5px);
   }
@@ -177,6 +211,7 @@
     background-color: var(--card);
     color: var(--text);
     border: 1px solid var(--border);
+    border-radius: var(--radius-md);
     transition: transform 0.15s var(--neo-ease), box-shadow 0.15s var(--neo-ease);
     
     box-shadow: 
@@ -197,6 +232,7 @@
     background-color: transparent;
     color: var(--text);
     border: 1px solid transparent;
+    border-radius: var(--radius-md);
     transition: transform 0.15s var(--neo-ease), box-shadow 0.15s var(--neo-ease);
   }
 
@@ -219,8 +255,8 @@
     @apply p-8;
     background-color: var(--card);
     border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
     position: relative;
-    /* Premium Multi-layered Pseudo-morphic Shadow */
     box-shadow: 
       5px 5px 0px 0px var(--pop-black),
       10px 10px 0px 0px rgba(0,0,0,0.3),
@@ -235,7 +271,6 @@
   .neo-card-interactive:hover {
     border-color: var(--text);
     transform: translate(-5px, -5px);
-    /* Neon glow effect on hover via shadow spread */
     box-shadow: 
       5px 5px 0px 0px var(--neo-green),
       10px 10px 0px 0px var(--pop-black),
@@ -251,7 +286,7 @@
   /* --- Navbar & Layout Elements --- */
   .neo-nav {
     @apply sticky top-0 flex items-center justify-between w-full z-50 px-6 sm:px-12 py-4;
-    background: rgba(13, 13, 13, 0.85); /* pop black with opacity */
+    background: rgba(13, 13, 13, 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
@@ -278,10 +313,20 @@
   .markdown-body pre {
     background: #000;
     border: 1px solid var(--border);
+    border-radius: var(--radius-md);
     padding: 1.5rem;
     box-shadow: inset 2px 2px 0px rgba(255,255,255,0.02);
     overflow-x: auto;
     margin-bottom: 1.5rem;
+  }
+
+  /* Animate utility classes */
+  .animate-fade-in {
+    animation: fade-in 0.4s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.5s var(--neo-ease) forwards;
   }
 }
 
@@ -301,21 +346,27 @@
   }
 }
 
-/* Custom Scrollbar - Brutalist style */
+/* Custom Scrollbar — Rounded, premium */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--pop-black);
+  background: var(--bg);
   border-left: 1px solid var(--border);
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--muted);
+  border-radius: 20px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text);
+}
+
+/* Light mode nav adaptation */
+.light .neo-nav {
+  background: rgba(250, 249, 246, 0.88);
 }

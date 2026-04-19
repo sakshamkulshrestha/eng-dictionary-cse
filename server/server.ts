@@ -120,7 +120,7 @@ async function startServer() {
 
       let allConcepts: any[] = [];
       for (const col of collections) {
-        const data = await db.collection(col.name).find({}).limit(500).toArray();
+        const data = await db.collection(col.name).find({}).toArray();
         const dataWithSource = data.map((d: any) => ({ ...d, id: d._id.toString(), collection_source: col.name }));
         allConcepts = allConcepts.concat(dataWithSource);
       }

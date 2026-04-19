@@ -50,6 +50,31 @@ export function useUserState() {
     document.documentElement.setAttribute('data-font-size', settings.fontSize);
     document.documentElement.setAttribute('data-font-family', settings.fontFamily);
 
+    // Actually apply font-size to document
+    const fontSizes: Record<string, string> = { small: '14px', standard: '16px', large: '18px', medium: '16px' };
+    document.documentElement.style.fontSize = fontSizes[settings.fontSize] || '16px';
+
+    // Apply font family
+    const fontFamilies: Record<string, string> = {
+      default: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      system: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      mono: "'SF Mono', 'Fira Code', 'Cascadia Code', monospace",
+      dyslexic: "'Comic Sans MS', 'OpenDyslexic', cursive, sans-serif",
+      sans: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+    };
+    if (settings.fontFamily && settings.fontFamily !== 'default') {
+      document.documentElement.style.setProperty('--font-sans', fontFamilies[settings.fontFamily] || fontFamilies.default);
+    } else {
+      document.documentElement.style.removeProperty('--font-sans');
+    }
+
+    // Reduce motion
+    if (settings.reduceMotion) {
+      document.documentElement.classList.add('reduce-motion');
+    } else {
+      document.documentElement.classList.remove('reduce-motion');
+    }
+
     // Apply theme class to body for tailwind dark mode if needed
     if (settings.theme === 'dark') {
       document.documentElement.classList.add('dark');
@@ -62,7 +87,6 @@ export function useUserState() {
     if (settings.accentColor) {
       document.documentElement.style.setProperty('--color-accent', settings.accentColor);
 
-      // Calculate luminance for contrast safety (ensures text is readable on accent)
       const hex = settings.accentColor.replace('#', '');
       const r = parseInt(hex.substr(0, 2), 16);
       const g = parseInt(hex.substr(2, 2), 16);
