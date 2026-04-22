@@ -111,6 +111,60 @@ async function startServer() {
     }
   });
 
+  app.post('/api/analyze-history', async (req, res) => {
+    try {
+      const { history } = req.body;
+      if (!history || !Array.isArray(history) || history.length === 0) {
+        return res.json({ suggestions: [] });
+      }
+
+      // We don't want to pass all concepts (too large). We just ask the AI to suggest generic terms, or we can cross-reference later.
+      // But actually, the safest is to constrain the AI. For speed, we just ask for term name and reason.
+      const payload = {
+        model: "nvidia/nemotron-3-nano-30b-a3b",
+        messages: [{
+          role: "user",
+          content: `Based on the following recent computing search history: [${history.join(', ')}].
+Suggest exactly 3 relevant computing or software engineering concepts the user should explore next.
+Prioritize core/fundamental concepts that are likely to be in a standard technical dictionary (e.g., specific protocols, algorithms, or architectural patterns).
+If a concept is likely to be "extra knowledge" not in a basic set, provide a particularly clear and insightful reason.
+Output ONLY a JSON object with a single key "suggestions" containing an array of objects. Each object must have "term" (string) and "reason" (string).`
+        }],
+        temperature: 0.7,
+        top_p: 1,
+        max_tokens: 2048,
+        stream: false,
+        response_format: { type: "json_object" }
+      };
+
+      const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${nvidiaApiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Nvidia API Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const text = data?.choices?.[0]?.message?.content;
+      
+      if (!text) {
+        return res.json({ suggestions: [] });
+      }
+
+      const parsed = JSON.parse(text);
+      res.json(parsed);
+    } catch (error: any) {
+      console.error('Analyze history failed:', error);
+      res.status(500).json({ error: error.message || 'Analysis failed' });
+    }
+  });
+
   // API Routes
   app.get('/api/terms', async (req, res) => {
     try {

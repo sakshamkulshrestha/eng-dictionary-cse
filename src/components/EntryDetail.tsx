@@ -75,7 +75,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="max-w-[1400px] w-full mx-auto p-8 sm:p-16 pb-32 relative"
+      className="w-full relative"
     >
       {/* Back button */}
       <MagneticButton
@@ -155,66 +155,104 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
       </header>
 
       {/* Main Body */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 lg:gap-12 relative z-10">
+      <div className="flex flex-col gap-10 sm:gap-14 relative z-10 w-full mb-24">
         
-        {/* Left Column */}
-        <div className="space-y-8">
+        {/* Top Info Grid: Primary definitions and metadata */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] flex-col gap-8">
           
-          {/* 1. Core Explanation */}
-          {entry.explanation && (
-            <motion.div 
-              {...sectionAnim}
-              className="p-8 sm:p-10 bg-[var(--hover)]/30 backdrop-blur-xl border border-[var(--border)] rounded-2xl shadow-sm"
-            >
-              <h2 className="text-sm font-bold text-[var(--muted)] mb-6 uppercase tracking-widest flex items-center gap-2">
-                <Info className="w-4 h-4" /> Core Explanation
-              </h2>
-              <p className="text-[17px] sm:text-[20px] leading-[1.9] text-[var(--text)] font-medium tracking-tight" style={{ fontFamily: 'var(--font-serif)', fontWeight: 400, letterSpacing: '0.01em' }}>
-                {entry.explanation}
-              </p>
-            </motion.div>
-          )}
+          {/* Top Left: Core & Technical */}
+          <div className="space-y-8">
+            {/* 1. Core Explanation */}
+            {entry.explanation && (
+              <motion.div 
+                {...sectionAnim}
+                className="p-8 sm:p-10 bg-[var(--hover)]/30 backdrop-blur-xl border border-[var(--border)] rounded-2xl shadow-sm"
+              >
+                <h2 className="text-sm font-bold text-[var(--muted)] mb-6 uppercase tracking-widest flex items-center gap-2">
+                  <Info className="w-4 h-4" /> Core Explanation
+                </h2>
+                <p className="text-[17px] sm:text-[20px] leading-[1.9] text-[var(--text)] font-medium tracking-tight" style={{ fontFamily: 'var(--font-serif)', fontWeight: 400, letterSpacing: '0.01em' }}>
+                  {entry.explanation}
+                </p>
+              </motion.div>
+            )}
 
-          {/* 2. Technical Definition */}
-          {entry.technical_definition && (
-            <motion.div 
-              {...sectionAnim}
-              className="p-8 sm:p-10 bg-[var(--text)]/5 backdrop-blur-xl border border-[var(--border)] rounded-2xl shadow-sm"
-            >
-              <h2 className="text-sm font-bold text-[var(--muted)] mb-6 uppercase tracking-widest flex items-center gap-2">
-                <Code className="w-4 h-4" /> Technical Definition
-              </h2>
-              <p className="text-[15px] sm:text-[17px] leading-[1.9] text-[var(--text)] font-medium font-mono opacity-90">
-                {entry.technical_definition}
-              </p>
-            </motion.div>
-          )}
+            {/* 2. Technical Definition */}
+            {entry.technical_definition && (
+              <motion.div 
+                {...sectionAnim}
+                className="p-8 sm:p-10 bg-[var(--text)]/5 backdrop-blur-xl border border-[var(--border)] rounded-2xl shadow-sm"
+              >
+                <h2 className="text-sm font-bold text-[var(--muted)] mb-6 uppercase tracking-widest flex items-center gap-2">
+                  <Code className="w-4 h-4" /> Technical Definition
+                </h2>
+                <p className="text-[15px] sm:text-[17px] leading-[1.9] text-[var(--text)] font-medium font-mono opacity-90">
+                  {entry.technical_definition}
+                </p>
+              </motion.div>
+            )}
+          </div>
 
-          {/* 3. Usage Example */}
-          {entry.syntax_or_example && (
-             <motion.div 
-              {...sectionAnim}
-              className="p-8 sm:p-10 rounded-2xl shadow-lg bg-[var(--text)]/8 backdrop-blur-2xl border border-[var(--border)] relative overflow-hidden group"
-            >
-              <div className="absolute top-4 right-4 transition-opacity opacity-0 group-hover:opacity-100">
-                <button
-                  onClick={() => handleCopy(entry.syntax_or_example)}
-                  className="bg-[var(--bg)]/80 backdrop-blur-sm px-4 py-2 text-[10px] uppercase font-bold tracking-widest rounded-full border border-[var(--border)] text-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-colors"
-                >
-                  {copied ? "Copied!" : "Copy"}
-                </button>
-              </div>
-              <h2 className="text-sm font-bold text-[var(--muted)] mb-6 uppercase tracking-widest flex items-center gap-2">
-                <Terminal className="w-4 h-4" /> Usage Example
-              </h2>
-              <pre className="text-[var(--text)] font-mono text-[14px] sm:text-[15px] leading-[1.9] overflow-x-auto whitespace-pre-wrap">
-                <code>{entry.syntax_or_example}</code>
-              </pre>
-            </motion.div>
-          )}
+          {/* Top Right: Misconceptions & Prerequisites */}
+          <div className="space-y-6">
+            {/* Misconceptions */}
+            {entry.common_misconception?.length > 0 && (
+              <motion.div 
+                {...sectionAnim}
+                className="p-8 bg-red-500/5 backdrop-blur-xl border border-red-500/20 rounded-2xl"
+              >
+                <h2 className="text-[12px] font-black text-red-500 mb-5 uppercase tracking-widest flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4" /> Misconceptions
+                </h2>
+                <ul className="space-y-4">
+                  {entry.common_misconception.map((misc: string, i: number) => (
+                    <motion.li
+                      key={i}
+                      initial={{ opacity: 0, x: 8 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.06 }}
+                      className="flex gap-3 text-[14px] font-medium text-[var(--text)] opacity-90 leading-relaxed"
+                    >
+                      <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-red-500 mt-2" />
+                      <span>{misc}</span>
+                    </motion.li>
+                  ))}
+                </ul>
+              </motion.div>
+            )}
 
-          {/* Analogies Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Prerequisites */}
+            {entry.prerequisites?.length > 0 && (
+              <motion.div 
+                {...sectionAnim}
+                className="p-8 bg-[var(--hover)]/30 backdrop-blur-xl border border-[var(--border)] rounded-2xl"
+              >
+                <h2 className="text-[12px] font-bold text-[var(--muted)] mb-5 uppercase tracking-widest flex items-center gap-2">
+                  <Search className="w-4 h-4" /> Prerequisites
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {entry.prerequisites.map((w: string, i: number) => {
+                    const targetId = findId(w);
+                    return (
+                      <button 
+                        key={i} 
+                        onClick={() => targetId && onNavigate(targetId)} 
+                        className={`px-4 py-2 text-[13px] font-medium rounded-xl border border-[var(--border)] transition-all ${targetId ? 'bg-[var(--text)]/5 hover:bg-[var(--text)] hover:text-[var(--bg)] cursor-pointer' : 'bg-transparent opacity-50 cursor-default'}`}
+                      >
+                         {w}
+                      </button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </div>
+        </div>
+
+        {/* 3. Analogies Grid - Full width split */}
+        {(entry.real_world_analogy || entry.computer_analogy) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
             {entry.real_world_analogy && (
               <motion.div 
                 {...sectionAnim}
@@ -249,25 +287,50 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
               </motion.div>
             )}
           </div>
+        )}
 
-          {/* Comparisons — renamed from "Architectural Comparisons" */}
-          {entry.comparisons?.length > 0 && (
-            <motion.div {...sectionAnim} className="mt-8 space-y-4">
-              <h2 className="text-[13px] font-bold text-[var(--muted)] mb-5 uppercase tracking-widest flex items-center gap-2">
-                <Scale className="w-4 h-4" /> Comparisons
-              </h2>
-              <div className="grid grid-cols-1 gap-4">
-                {entry.comparisons.map((c: any, i: number) => {
-                  const targetId = findId(c.target);
-                  return (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, y: 12 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.08, duration: 0.4, ease: [0.16, 1, 0.3, 1] as any }}
-                      className="group p-6 sm:p-8 bg-[var(--hover)]/30 backdrop-blur-md border border-[var(--border)] rounded-2xl hover:border-[var(--text)]/20 transition-all"
-                    >
+        {/* 4. Usage Example - Full Width */}
+        {entry.syntax_or_example && (
+           <motion.div 
+            {...sectionAnim}
+            className="p-8 sm:p-10 rounded-2xl shadow-lg bg-[var(--text)]/8 backdrop-blur-2xl border border-[var(--border)] relative overflow-hidden group w-full"
+          >
+            <div className="absolute top-4 right-4 transition-opacity opacity-0 group-hover:opacity-100">
+              <button
+                onClick={() => handleCopy(entry.syntax_or_example)}
+                className="bg-[var(--bg)]/80 backdrop-blur-sm px-4 py-2 text-[10px] uppercase font-bold tracking-widest rounded-full border border-[var(--border)] text-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-colors"
+              >
+                {copied ? "Copied!" : "Copy"}
+              </button>
+            </div>
+            <h2 className="text-sm font-bold text-[var(--muted)] mb-6 uppercase tracking-widest flex items-center gap-2">
+              <Terminal className="w-4 h-4" /> Usage Example
+            </h2>
+            <pre className="text-[var(--text)] font-mono text-[14px] sm:text-[15px] leading-[1.9] overflow-x-auto whitespace-pre-wrap">
+              <code>{entry.syntax_or_example}</code>
+            </pre>
+          </motion.div>
+        )}
+
+        {/* 5. Comparisons - Full width */}
+        {entry.comparisons?.length > 0 && (
+          <motion.div {...sectionAnim} className="space-y-4 w-full">
+            <h2 className="text-[13px] font-bold text-[var(--muted)] mb-5 uppercase tracking-widest flex items-center gap-2">
+              <Scale className="w-4 h-4" /> Comparisons
+            </h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {entry.comparisons.map((c: any, i: number) => {
+                const targetId = findId(c.target);
+                return (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 12 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.08, duration: 0.4, ease: [0.16, 1, 0.3, 1] as any }}
+                    className="group p-6 sm:p-8 bg-[var(--hover)]/30 backdrop-blur-md border border-[var(--border)] rounded-2xl hover:border-[var(--text)]/20 transition-all flex flex-col justify-between"
+                  >
+                     <div>
                        <div className="flex justify-between items-start mb-3">
                          <div className="flex items-center gap-3">
                            <span className="text-[18px] font-bold text-[var(--text)]">{c.target}</span>
@@ -278,54 +341,25 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
                            )}
                          </div>
                        </div>
-                       <p className="text-[15px] text-[var(--text)] opacity-85 leading-relaxed mb-3">
+                       <p className="text-[15px] text-[var(--text)] opacity-85 leading-relaxed mb-4">
                          {c.note}
                        </p>
-                       {c.winner_scenario && (
-                         <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20 rounded-lg text-sm font-medium">
-                           <CheckCircle className="w-3.5 h-3.5" /> Use when: {c.winner_scenario}
-                         </div>
-                       )}
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </motion.div>
-          )}
+                     </div>
+                     {c.winner_scenario && (
+                       <div className="inline-flex self-start items-center gap-2 px-3 py-1.5 bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20 rounded-lg text-sm font-medium">
+                         <CheckCircle className="w-3.5 h-3.5 shrink-0" /> <span className="line-clamp-2">Use when: {c.winner_scenario}</span>
+                       </div>
+                     )}
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
 
-        </div>
-
-        {/* Right Column (Meta & Links) */}
-        <div className="space-y-6">
-          
-          {/* Misconceptions — renamed from "Common Pitfalls" */}
-          {entry.common_misconception?.length > 0 && (
-            <motion.div 
-              {...sectionAnim}
-              className="p-8 bg-red-500/5 backdrop-blur-xl border border-red-500/20 rounded-2xl"
-            >
-              <h2 className="text-[12px] font-black text-red-500 mb-5 uppercase tracking-widest flex items-center gap-2">
-                <AlertCircle className="w-4 h-4" /> Misconceptions
-              </h2>
-              <ul className="space-y-4">
-                {entry.common_misconception.map((misc: string, i: number) => (
-                  <motion.li
-                    key={i}
-                    initial={{ opacity: 0, x: 8 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.06 }}
-                    className="flex gap-3 text-[14px] font-medium text-[var(--text)] opacity-90 leading-relaxed"
-                  >
-                    <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-red-500 mt-2" />
-                    <span>{misc}</span>
-                  </motion.li>
-                ))}
-              </ul>
-            </motion.div>
-          )}
-
-          {/* Related Terms — renamed from "Related Nodes" */}
+        {/* 6. Bottom Meta: Related terms & Next steps */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+          {/* Related Terms */}
           {entry.suggested_related_terms?.length > 0 && (
             <motion.div 
               {...sectionAnim}
@@ -349,32 +383,6 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
                     >
                        {w}
                     </motion.button>
-                  );
-                })}
-              </div>
-            </motion.div>
-          )}
-
-          {/* Prerequisites */}
-          {entry.prerequisites?.length > 0 && (
-            <motion.div 
-              {...sectionAnim}
-              className="p-8 bg-[var(--hover)]/30 backdrop-blur-xl border border-[var(--border)] rounded-2xl"
-            >
-              <h2 className="text-[12px] font-bold text-[var(--muted)] mb-5 uppercase tracking-widest flex items-center gap-2">
-                <Search className="w-4 h-4" /> Prerequisites
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {entry.prerequisites.map((w: string, i: number) => {
-                  const targetId = findId(w);
-                  return (
-                    <button 
-                      key={i} 
-                      onClick={() => targetId && onNavigate(targetId)} 
-                      className={`px-4 py-2 text-[13px] font-medium rounded-xl border border-[var(--border)] transition-all ${targetId ? 'bg-[var(--text)]/5 hover:bg-[var(--text)] hover:text-[var(--bg)] cursor-pointer' : 'bg-transparent opacity-50 cursor-default'}`}
-                    >
-                       {w}
-                    </button>
                   );
                 })}
               </div>
@@ -407,7 +415,6 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
               </div>
             </motion.div>
           )}
-
         </div>
       </div>
     </motion.div>

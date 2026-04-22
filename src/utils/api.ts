@@ -84,5 +84,15 @@ export const DictionaryApi = {
       method: 'POST',
       body: JSON.stringify({ query, concepts })
     });
+  },
+
+  /**
+   * Smart Search History Analysis
+   */
+  async analyzeHistory(history: string[]): Promise<{ suggestions: { term: string, reason: string }[] }> {
+    return request<{ suggestions: { term: string, reason: string }[] }>('/analyze-history', {
+      method: 'POST',
+      body: JSON.stringify({ history })
+    });
   }
 };

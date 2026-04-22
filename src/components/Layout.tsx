@@ -262,6 +262,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [domainSearchQuery, setDomainSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [displayCount, setDisplayCount] = useState(30);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
@@ -279,9 +280,66 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
   }, [chatMessages, isDiscussing]);
 
   const [aiSuggestions, setAiSuggestions] = useState<{ term: string, reason: string }[]>([]);
+  const [isAnalyzingHistory, setIsAnalyzingHistory] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollPositions = useRef<Record<string, number>>({});
+
+  useEffect(() => {
+    const mainEl = scrollRef.current;
+    if (!mainEl) return;
+    
+    // Attempt scroll restoration, we give it a tiny delay to ensure react has re-rendered
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        if (scrollRef.current) {
+          scrollRef.current.scrollTop = scrollPositions.current[location.key] || 0;
+        }
+      }, 10);
+    });
+  }, [location.key, concepts, domainParam]);
+
+  const handleScroll = (e: React.UIEvent<HTMLElement>) => {
+    scrollPositions.current[location.key] = e.currentTarget.scrollTop;
+  };
+
+  // Background AI analysis — runs whenever history changes, regardless of current view
+  useEffect(() => {
+    if (history.length < 2) {
+      setAiSuggestions([]);
+      return;
+    }
+
+    const recentHistory = history.slice(0, 15);
+    const cacheKey = `ai_sugg_${recentHistory.join(',')}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        setAiSuggestions(JSON.parse(cached));
+      } catch { /* ignore parse errors */ }
+      return;
+    }
+
+    let cancelled = false;
+    const fetchSuggestions = async () => {
+      setIsAnalyzingHistory(true);
+      try {
+        const data = await DictionaryApi.analyzeHistory(recentHistory);
+        if (!cancelled && data.suggestions?.length > 0) {
+          setAiSuggestions(data.suggestions.slice(0, 6));
+          localStorage.setItem(cacheKey, JSON.stringify(data.suggestions.slice(0, 6)));
+        }
+      } catch (error) {
+        console.error("AI History Analysis failed:", error);
+      } finally {
+        if (!cancelled) setIsAnalyzingHistory(false);
+      }
+    };
+
+    fetchSuggestions();
+    return () => { cancelled = true; };
+  }, [history]);
 
   const selectedConcept = useMemo(() =>
     concepts.find(c => c.id === idParam) || null
@@ -289,7 +347,14 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
 
   useEffect(() => {
     setChatMessages([]);
+    setDomainSearchQuery('');
   }, [location.pathname, selectedConcept?.id]);
+
+  useEffect(() => {
+    if (selectedConcept) {
+      addToHistory(selectedConcept.term);
+    }
+  }, [selectedConcept?.id]);
 
   // Global keyboard shortcuts
   useEffect(() => {
@@ -388,6 +453,15 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
     return { main: results.slice(0, 5) };
   }, [searchQuery, fuse]);
 
+  const domainSearchFuse = useMemo(() => {
+    // Only compile the fuse object for the domain if we are in domain mode
+    const domainConcepts = concepts.filter(c => c.domain === domainParam);
+    return new Fuse(domainConcepts, {
+      keys: ['term', 'one_line_definition', 'explanation', 'technical_definition'],
+      threshold: 0.3
+    });
+  }, [concepts, domainParam]);
+
   const domains = useMemo(() =>
     Array.from(new Set((concepts || []).map(c => c.domain).filter(Boolean))).sort()
     , [concepts]);
@@ -437,22 +511,73 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
               type="text"
               value={searchQuery}
               onChange={(e) => { setSearchQuery(e.target.value); setIsSearchOpen(true); }}
+              onFocus={() => setIsSearchOpen(true)}
               placeholder="Search concepts..."
               className="w-full pl-14 pr-10 py-4 bg-[var(--hover)] border-2 border-[var(--border)] text-sm font-semibold focus:outline-none focus:border-[var(--text)]"
             />
           </div>
           <AnimatePresence>
-            {isSearchOpen && searchQuery && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="absolute top-[calc(100%+8px)] left-6 right-6 z-[60] neo-card p-2 shadow-2xl overflow-y-auto max-h-[60vh]">
-                {searchResults.main.map(c => (
-                  <button key={c.id} onClick={() => { navigate(`/concept/${c.id}`); setIsSearchOpen(false); setSearchQuery(''); }} className="w-full p-4 hover:bg-[var(--text)] hover:text-[var(--bg)] text-left text-sm font-bold uppercase tracking-tight flex flex-col group transition-all border-b border-[var(--border)] last:border-0 last:rounded-b-lg first:rounded-t-lg">
-                    <div className="flex justify-between items-center w-full mb-1">
-                      <span className="text-lg">{c.term}</span>
-                      <span className="text-[10px] opacity-50 uppercase tracking-widest">{c.domain}</span>
-                    </div>
-                    {c.one_line_definition && <span className="text-xs font-medium opacity-70 normal-case tracking-normal line-clamp-1">{c.one_line_definition}</span>}
-                  </button>
-                ))}
+            {isSearchOpen && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-[calc(100%+8px)] left-6 right-6 z-[60] neo-card p-2 shadow-2xl overflow-y-auto max-h-[60vh]">
+                {searchQuery ? (
+                  /* Search results */
+                  searchResults.main.length > 0 ? (
+                    searchResults.main.map(c => (
+                      <button key={c.id} onClick={() => { 
+                        addToHistory(c.term);
+                        navigate(`/concept/${c.id}`); 
+                        setIsSearchOpen(false); 
+                        setSearchQuery(''); 
+                      }} className="w-full p-4 hover:bg-[var(--text)] hover:text-[var(--bg)] text-left text-sm font-bold uppercase tracking-tight flex flex-col group transition-all border-b border-[var(--border)] last:border-0 last:rounded-b-lg first:rounded-t-lg">
+                        <div className="flex justify-between items-center w-full mb-1">
+                          <span className="text-lg">{c.term}</span>
+                          <span className="text-[10px] opacity-50 uppercase tracking-widest">{c.domain}</span>
+                        </div>
+                        {c.one_line_definition && <span className="text-xs font-medium opacity-70 normal-case tracking-normal line-clamp-1">{c.one_line_definition}</span>}
+                      </button>
+                    ))
+                  ) : (
+                    <div className="p-6 text-center text-[var(--muted)] text-sm">No results found</div>
+                  )
+                ) : (
+                  /* Recent history when search is empty */
+                  history.length > 0 ? (
+                    <>
+                      <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
+                        <div className="flex items-center gap-2 text-[var(--muted)]">
+                          <History className="w-3.5 h-3.5" />
+                          <span className="text-[10px] font-black uppercase tracking-widest">Recent Searches</span>
+                        </div>
+                        <button onClick={(e) => { e.stopPropagation(); clearHistory(); }} className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)] hover:text-red-500 transition-colors">
+                          Clear All
+                        </button>
+                      </div>
+                      {history.slice(0, 8).map((h, i) => {
+                        const matchedConcept = concepts.find(c => c.term.toLowerCase() === h.toLowerCase());
+                        return (
+                          <button
+                            key={i}
+                            onClick={() => {
+                              if (matchedConcept) {
+                                navigate(`/concept/${matchedConcept.id}`);
+                              } else {
+                                setSearchQuery(h);
+                              }
+                              setIsSearchOpen(false);
+                            }}
+                            className="w-full px-4 py-3 hover:bg-[var(--text)] hover:text-[var(--bg)] text-left text-sm font-semibold flex items-center gap-3 transition-all border-b border-[var(--border)] last:border-0"
+                          >
+                            <Clock className="w-3.5 h-3.5 opacity-40 shrink-0" />
+                            <span className="truncate">{h}</span>
+                            {matchedConcept && <span className="ml-auto text-[9px] opacity-40 uppercase tracking-widest shrink-0">{matchedConcept.domain}</span>}
+                          </button>
+                        );
+                      })}
+                    </>
+                  ) : (
+                    <div className="p-6 text-center text-[var(--muted)] text-sm">Start searching to build your history</div>
+                  )
+                )}
               </motion.div>
             )}
           </AnimatePresence>
@@ -466,8 +591,8 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
 
       {/* ===== SPLIT PANES ===== */}
       <div className="flex-1 flex overflow-hidden w-full relative min-h-0">
-        <main ref={scrollRef} className="flex-1 overflow-y-auto overscroll-contain custom-scrollbar pb-16 min-h-0">
-          <div className="max-w-5xl mx-auto px-6 sm:px-12 py-16">
+        <main onScroll={handleScroll} ref={scrollRef} className="flex-1 overflow-y-auto overscroll-contain custom-scrollbar pb-16 min-h-0">
+          <div className="max-w-[1400px] mx-auto px-6 sm:px-12 py-16">
             <AnimatePresence mode="wait">
               {fetchError ? (
                 <div key="error" className="py-20 text-center flex flex-col items-center justify-center space-y-6">
@@ -488,39 +613,76 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                 <EntryDetail entry={selectedConcept} dictionaryData={concepts} onNavigate={(id: string) => navigate(`/concept/${id}`)} onToggleBookmark={toggleBookmark} isBookmarked={bookmarks.includes(selectedConcept.id)} autoSpeak={settings.autoSpeak} />
               ) : domainParam ? (
                 <motion.div key={domainParam} className="space-y-10">
-                   <div>
+                   {(() => {
+                     const domainConcepts = concepts.filter(c => c.domain === domainParam);
+                     const filteredDomainConcepts = domainSearchQuery.trim()
+                       ? domainSearchFuse.search(domainSearchQuery).map(r => r.item)
+                       : domainConcepts;
+                     
+                     return (
+                       <>
+                         <div>
                      <button onClick={() => navigate('/')} className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted hover:text-[var(--text)] transition-colors mb-6">
                        <ChevronLeft className="w-4 h-4" /> All Domains
                      </button>
                      <h1 className="text-5xl sm:text-6xl font-black uppercase tracking-tighter">{getFullDomainName(domainParam)}</h1>
                      <p className="text-muted text-sm font-medium mt-2">{concepts.filter(c => c.domain === domainParam).length} concept{concepts.filter(c => c.domain === domainParam).length !== 1 ? 's' : ''}</p>
+                     <div className="relative mt-8 mb-4 max-w-xl">
+                       <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--muted)]" />
+                       <input
+                         type="text"
+                         value={domainSearchQuery}
+                         onChange={(e) => setDomainSearchQuery(e.target.value)}
+                         placeholder={`Search within ${getFullDomainName(domainParam)}...`}
+                         className="w-full pl-14 pr-12 py-4 bg-[var(--hover)] border-2 border-[var(--border)] text-sm font-semibold focus:outline-none focus:border-[var(--text)] transition-colors rounded-2xl"
+                       />
+                       {domainSearchQuery && (
+                         <button 
+                           onClick={() => setDomainSearchQuery('')}
+                           className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--text)] transition-colors p-1"
+                         >
+                           <X className="w-4 h-4" />
+                         </button>
+                       )}
+                     </div>
                    </div>
                    
-                   <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                     {concepts.filter(c => c.domain === domainParam).slice(0, displayCount).map(c => (
-                       <TiltCard key={c.id} onClick={() => navigate(`/concept/${c.id}`)} className="p-8 group neo-card-interactive flex flex-col bg-[var(--card)] border border-[var(--border)] transition-all overflow-hidden relative rounded-3xl hover:border-[var(--neo-green)]/50 hover:shadow-xl shadow-sm">
-                         <div className="flex items-start justify-between mb-3 group">
-                           <h3 className="text-xl font-black tracking-tight text-[var(--text)] group-hover:text-[var(--neo-green)] transition-colors pr-2">{c.term}</h3>
-                           <ArrowRight className="w-5 h-5 text-[var(--muted)] group-hover:text-[var(--text)] transition-all shrink-0 -translate-x-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-0" />
-                         </div>
-                         <p className="text-sm font-medium text-[var(--muted)] line-clamp-3 leading-relaxed transition-opacity">
-                           {c.one_line_definition}
-                         </p>
-                       </TiltCard>
-                     ))}
-                   </motion.div>
-                   {displayCount < concepts.filter(c => c.domain === domainParam).length && (
+                   {filteredDomainConcepts.length === 0 ? (
+                     <div className="py-12 text-center flex flex-col items-center justify-center opacity-70">
+                       <Search className="w-12 h-12 mb-4 text-[var(--muted)]" />
+                       <p className="text-lg font-bold text-[var(--text)]">No concepts found</p>
+                       <p className="text-sm font-medium text-[var(--muted)]">Try adjusting your search query</p>
+                     </div>
+                   ) : (
+                     <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                       {filteredDomainConcepts.slice(0, displayCount).map(c => (
+                         <TiltCard key={c.id} onClick={() => { addToHistory(c.term); navigate(`/concept/${c.id}`); }} className="p-8 group neo-card-interactive flex flex-col bg-[var(--card)] border border-[var(--border)] transition-all overflow-hidden relative rounded-3xl hover:border-[var(--neo-green)]/50 hover:shadow-xl shadow-sm">
+                           <div className="flex items-start justify-between mb-3 group">
+                             <h3 className="text-xl font-black tracking-tight text-[var(--text)] group-hover:text-[var(--neo-green)] transition-colors pr-2">{c.term}</h3>
+                             <ArrowRight className="w-5 h-5 text-[var(--muted)] group-hover:text-[var(--text)] transition-all shrink-0 -translate-x-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-0" />
+                           </div>
+                           <p className="text-sm font-medium text-[var(--muted)] line-clamp-3 leading-relaxed transition-opacity">
+                             {c.one_line_definition}
+                           </p>
+                         </TiltCard>
+                       ))}
+                     </motion.div>
+                   )}
+                   {displayCount < filteredDomainConcepts.length && (
                       <div className="flex justify-center pt-8 pb-12">
                         <MagneticButton 
                           onClick={() => setDisplayCount(prev => prev + 30)}
                           className="px-8 py-3 text-sm font-black uppercase tracking-widest rounded-full shadow-lg border border-[var(--border)]"
                         >
-                          Load More Concepts ({concepts.filter(c => c.domain === domainParam).length - displayCount} remaining)
+                          Load More Concepts ({filteredDomainConcepts.length - displayCount} remaining)
                         </MagneticButton>
                       </div>
                    )}
-                </motion.div>
-              ) : (
+                 </>
+               );
+             })()}
+             </motion.div>
+           ) : (
                 <div key="home" className="space-y-16">
                   <section className="pt-20 pb-12 text-center flex flex-col items-center relative">
                     <AnimatedText text="Lexicon" el="h1" className="text-[14vw] sm:text-[11vw] font-black uppercase tracking-tighter leading-[0.85] text-[var(--text)] drop-shadow-sm" animationType="chars" />
@@ -552,10 +714,71 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                        </div>
                     </div>
                     
-                    <MagneticButton onClick={() => setIsSearchOpen(true)} className="px-12 py-5 text-sm font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl mt-4 border border-[var(--border)]">
+                    <MagneticButton onClick={() => { searchInputRef.current?.focus(); setIsSearchOpen(true); }} className="px-12 py-5 text-sm font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl mt-4 border border-[var(--border)]">
                       Search Dictionary
                     </MagneticButton>
                   </section>
+
+                  {/* AI Suggestions — "Based on your searches" */}
+                  {(aiSuggestions.length > 0 || isAnalyzingHistory) && (
+                    <motion.section 
+                      initial={{ opacity: 0, y: 30 }} 
+                      animate={{ opacity: 1, y: 0 }} 
+                      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                      className="px-6"
+                    >
+                       <div className="flex items-center gap-3 mb-2">
+                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--neo-green)]/20 to-[var(--neo-purple)]/20 flex items-center justify-center">
+                           <Sparkles className="w-4 h-4 text-[var(--text)]" />
+                         </div>
+                         <div>
+                           <h3 className="text-sm font-black uppercase tracking-widest text-[var(--text)]">Based on your searches</h3>
+                           <p className="text-[11px] text-[var(--muted)] font-medium mt-0.5">AI analyzed your recent {history.length} topic{history.length !== 1 ? 's' : ''} and suggests</p>
+                         </div>
+                       </div>
+                       
+                       {isAnalyzingHistory ? (
+                          <div className="flex items-center gap-3 py-10 justify-center">
+                             <Loader2 className="w-5 h-5 animate-spin text-[var(--muted)]" />
+                             <span className="text-sm font-medium text-[var(--muted)]">Analyzing your learning path...</span>
+                          </div>
+                       ) : (
+                          <motion.div 
+                            variants={staggerContainer}
+                            initial="hidden"
+                            animate="visible"
+                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6"
+                          >
+                             {aiSuggestions.map((sugg, i) => {
+                               const matchedConcept = concepts.find(c => c.term.toLowerCase() === sugg.term.toLowerCase());
+                               return (
+                                 <motion.div
+                                   key={i}
+                                   variants={staggerItem}
+                                   whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                                   onClick={() => matchedConcept ? navigate(`/concept/${matchedConcept.id}`) : setIsSearchOpen(true)}
+                                   className="group p-6 rounded-2xl border border-[var(--border)] bg-[var(--hover)]/30 backdrop-blur-xl cursor-pointer hover:border-[var(--neo-green)]/40 hover:shadow-lg transition-all relative overflow-hidden"
+                                 >
+                                    <div className="absolute inset-0 bg-gradient-to-br from-[var(--neo-green)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    <div className="relative z-10">
+                                      <div className="flex items-center gap-2 mb-3">
+                                        <Sparkles className="w-3.5 h-3.5 text-[var(--neo-green)] opacity-60" />
+                                        <h4 className="font-bold text-[var(--text)] tracking-tight text-base">{sugg.term}</h4>
+                                      </div>
+                                      <p className="text-[13px] text-[var(--muted)] leading-relaxed">{sugg.reason}</p>
+                                      {matchedConcept && (
+                                        <div className="flex items-center gap-1 mt-4 text-xs font-bold text-[var(--neo-green)] uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
+                                          Explore <ArrowRight className="w-3 h-3" />
+                                        </div>
+                                      )}
+                                    </div>
+                                 </motion.div>
+                               )
+                             })}
+                          </motion.div>
+                       )}
+                    </motion.section>
+                  )}
                   <section className="px-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {domains.map(d => (
