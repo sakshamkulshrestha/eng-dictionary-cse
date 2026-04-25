@@ -11,4 +11,5 @@ coverage/
 data/
 resetCloudTerms.js
 script.js
-transform_terms.json
+transform_terms.js
+
