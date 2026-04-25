@@ -7,6 +7,30 @@ import MagneticButton from './primitives/MagneticButton';
 import TiltCard from './primitives/TiltCard';
 import AnimatedText from './primitives/AnimatedText';
 
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.1
+    }
+  }
+};
+
+const staggerItem = {
+  hidden: { opacity: 0, y: 10, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.4,
+      ease: [0.16, 1, 0.3, 1] as any
+    }
+  }
+};
+
 export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavigateDomain, onToggleBookmark, isBookmarked, autoSpeak }: any) {
   const [copied, setCopied] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -70,11 +94,13 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
   };
 
   return (
-    <motion.div 
+    <motion.div
       ref={containerRef}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      key={entry.id}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] as any }}
       className="w-full relative"
     >
       {/* Back button */}
@@ -89,15 +115,24 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
       {/* Header Section */}
       <header className="mb-14 relative">
         <div className="flex items-center justify-between mb-8">
-          {/* Clickable domain badge */}
-          <motion.button
-            onClick={() => onNavigateDomain?.(entry.domain)}
-            initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-            className="inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--text)]/5 backdrop-blur-md border border-[var(--border)] rounded-full text-[12px] font-bold text-[var(--muted)] uppercase tracking-widest shadow-sm hover:bg-[var(--text)]/10 hover:border-[var(--text)]/30 hover:text-[var(--text)] transition-all cursor-pointer group"
-          >
-            {getFullDomainName(entry.domain)}
-            <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all" />
-          </motion.button>
+          {/* Clickable domain badges for all identical terms */}
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => onNavigateDomain?.(entry.domain)}
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--text)] text-[var(--bg)] rounded-full text-[12px] font-bold uppercase tracking-widest shadow-sm cursor-pointer"
+            >
+              {getFullDomainName(entry.domain)}
+            </button>
+            {dictionaryData.filter((d: any) => d.term?.trim().toLowerCase() === entry.term?.trim().toLowerCase() && d.id !== entry.id).map((dup: any) => (
+              <button
+                key={dup.id}
+                onClick={() => onNavigate(dup.id)}
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--text)]/5 backdrop-blur-md border border-[var(--border)] rounded-full text-[12px] font-bold text-[var(--muted)] hover:text-[var(--text)] hover:bg-[var(--text)]/10 uppercase tracking-widest shadow-sm transition-all cursor-pointer group"
+              >
+                {getFullDomainName(dup.domain)}
+              </button>
+            ))}
+          </motion.div>
 
           {/* Action buttons */}
           <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="flex items-center gap-2">
@@ -115,11 +150,10 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
             <MagneticButton
               onClick={() => onToggleBookmark(entry.id)}
               variant="ghost"
-              className={`w-11 h-11 rounded-full backdrop-blur-sm border transition-all ${
-                isBookmarked
-                  ? 'bg-[var(--neo-green)] border-[var(--neo-green)] text-[var(--pop-black)] shadow-[0_0_16px_rgba(229,254,64,0.3)]'
-                  : 'border-[var(--border)]/50 text-[var(--muted)] hover:text-[var(--text)] hover:bg-[var(--hover)]'
-              }`}
+              className={`w-11 h-11 rounded-full backdrop-blur-sm border transition-all ${isBookmarked
+                ? 'bg-[var(--neo-green)] border-[var(--neo-green)] text-[var(--pop-black)] shadow-[0_0_16px_rgba(229,254,64,0.3)]'
+                : 'border-[var(--border)]/50 text-[var(--muted)] hover:text-[var(--text)] hover:bg-[var(--hover)]'
+                }`}
             >
               {isBookmarked
                 ? <BookmarkCheck className="w-[18px] h-[18px]" strokeWidth={2.5} />
@@ -128,23 +162,23 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
             </MagneticButton>
           </motion.div>
         </div>
-        
+
         {/* Term & One-line definition */}
         <div className="relative mb-8">
-           <motion.div 
+          <motion.div
             style={{ scale: bgScale }}
             className="absolute -left-10 top-0 w-[400px] h-[400px] bg-[var(--neo-green)] opacity-[0.04] blur-[150px] pointer-events-none rounded-full"
           />
-          <AnimatedText 
+          <AnimatedText
             key={entry.id}
-            text={entry.term} 
-            el="h1" 
-            className="text-[10vw] sm:text-[7vw] font-black leading-[0.9] tracking-tight text-[var(--text)] relative z-10 mb-6 drop-shadow-sm" 
-            animationType="words" 
-            delayOffset={0.1} 
+            text={entry.term}
+            el="h1"
+            className="text-[10vw] sm:text-[7vw] font-black leading-[0.9] tracking-tight text-[var(--text)] relative z-10 mb-6 drop-shadow-sm"
+            animationType="words"
+            delayOffset={0.1}
           />
           {entry.one_line_definition && (
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6 }}
               className="text-xl sm:text-3xl text-[var(--text)] font-semibold leading-snug tracking-tight relative z-10 max-w-4xl italic opacity-90 border-l-4 border-[var(--neo-green)]/30 pl-6 py-2"
             >
@@ -156,15 +190,15 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
 
       {/* Main Body */}
       <div className="flex flex-col gap-10 sm:gap-14 relative z-10 w-full mb-24">
-        
+
         {/* Top Info Grid: Primary definitions and metadata */}
         <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] flex-col gap-8">
-          
+
           {/* Top Left: Core & Technical */}
           <div className="space-y-8">
             {/* 1. Core Explanation */}
             {entry.explanation && (
-              <motion.div 
+              <motion.div
                 {...sectionAnim}
                 className="p-8 sm:p-10 bg-[var(--hover)]/30 backdrop-blur-xl border border-[var(--border)] rounded-2xl shadow-sm"
               >
@@ -179,7 +213,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
 
             {/* 2. Technical Definition */}
             {entry.technical_definition && (
-              <motion.div 
+              <motion.div
                 {...sectionAnim}
                 className="p-8 sm:p-10 bg-[var(--text)]/5 backdrop-blur-xl border border-[var(--border)] rounded-2xl shadow-sm"
               >
@@ -197,7 +231,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
           <div className="space-y-6">
             {/* Misconceptions */}
             {entry.common_misconception?.length > 0 && (
-              <motion.div 
+              <motion.div
                 {...sectionAnim}
                 className="p-8 bg-red-500/5 backdrop-blur-xl border border-red-500/20 rounded-2xl"
               >
@@ -224,7 +258,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
 
             {/* Prerequisites */}
             {entry.prerequisites?.length > 0 && (
-              <motion.div 
+              <motion.div
                 {...sectionAnim}
                 className="p-8 bg-[var(--hover)]/30 backdrop-blur-xl border border-[var(--border)] rounded-2xl"
               >
@@ -235,12 +269,12 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
                   {entry.prerequisites.map((w: string, i: number) => {
                     const targetId = findId(w);
                     return (
-                      <button 
-                        key={i} 
-                        onClick={() => targetId && onNavigate(targetId)} 
+                      <button
+                        key={i}
+                        onClick={() => targetId && onNavigate(targetId)}
                         className={`px-4 py-2 text-[13px] font-medium rounded-xl border border-[var(--border)] transition-all ${targetId ? 'bg-[var(--text)]/5 hover:bg-[var(--text)] hover:text-[var(--bg)] cursor-pointer' : 'bg-transparent opacity-50 cursor-default'}`}
                       >
-                         {w}
+                        {w}
                       </button>
                     );
                   })}
@@ -254,7 +288,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
         {(entry.real_world_analogy || entry.computer_analogy) && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
             {entry.real_world_analogy && (
-              <motion.div 
+              <motion.div
                 {...sectionAnim}
                 className="p-8 rounded-2xl bg-[var(--text)] text-[var(--bg)] shadow-lg relative overflow-hidden"
               >
@@ -271,7 +305,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
             )}
 
             {entry.computer_analogy && (
-              <motion.div 
+              <motion.div
                 {...sectionAnim}
                 className="p-8 rounded-2xl bg-[var(--hover)]/80 backdrop-blur-xl border border-[var(--border)] shadow-lg relative overflow-hidden"
               >
@@ -291,7 +325,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
 
         {/* 4. Usage Example - Full Width */}
         {entry.syntax_or_example && (
-           <motion.div 
+          <motion.div
             {...sectionAnim}
             className="p-8 sm:p-10 rounded-2xl shadow-lg bg-[var(--text)]/8 backdrop-blur-2xl border border-[var(--border)] relative overflow-hidden group w-full"
           >
@@ -326,30 +360,31 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
                     key={i}
                     initial={{ opacity: 0, y: 12 }}
                     whileInView={{ opacity: 1, y: 0 }}
+                    whileHover={{ y: -4, scale: 1.01 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.08, duration: 0.4, ease: [0.16, 1, 0.3, 1] as any }}
-                    className="group p-6 sm:p-8 bg-[var(--hover)]/30 backdrop-blur-md border border-[var(--border)] rounded-2xl hover:border-[var(--text)]/20 transition-all flex flex-col justify-between"
+                    className="group p-6 sm:p-8 bg-[var(--hover)]/30 backdrop-blur-md border border-[var(--border)] rounded-2xl hover:border-[var(--neo-green)]/30 hover:shadow-lg transition-all flex flex-col justify-between"
                   >
-                     <div>
-                       <div className="flex justify-between items-start mb-3">
-                         <div className="flex items-center gap-3">
-                           <span className="text-[18px] font-bold text-[var(--text)]">{c.target}</span>
-                           {targetId && (
-                             <button onClick={() => onNavigate(targetId)} className="p-1.5 rounded-lg bg-[var(--text)]/10 text-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-colors">
-                               <ArrowRight className="w-3.5 h-3.5" />
-                             </button>
-                           )}
-                         </div>
-                       </div>
-                       <p className="text-[15px] text-[var(--text)] opacity-85 leading-relaxed mb-4">
-                         {c.note}
-                       </p>
-                     </div>
-                     {c.winner_scenario && (
-                       <div className="inline-flex self-start items-center gap-2 px-3 py-1.5 bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20 rounded-lg text-sm font-medium">
-                         <CheckCircle className="w-3.5 h-3.5 shrink-0" /> <span className="line-clamp-2">Use when: {c.winner_scenario}</span>
-                       </div>
-                     )}
+                    <div>
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex items-center gap-3">
+                          <span className="text-[18px] font-bold text-[var(--text)]">{c.target}</span>
+                          {targetId && (
+                            <button onClick={() => onNavigate(targetId)} className="p-1.5 rounded-lg bg-[var(--text)]/10 text-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-colors">
+                              <ArrowRight className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      <p className="text-[15px] text-[var(--text)] opacity-85 leading-relaxed mb-4">
+                        {c.note}
+                      </p>
+                    </div>
+                    {c.winner_scenario && (
+                      <div className="inline-flex self-start items-center gap-2 px-3 py-1.5 bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20 rounded-lg text-sm font-medium">
+                        <CheckCircle className="w-3.5 h-3.5 shrink-0" /> <span className="line-clamp-2">Use when: {c.winner_scenario}</span>
+                      </div>
+                    )}
                   </motion.div>
                 );
               })}
@@ -361,58 +396,68 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
           {/* Related Terms */}
           {entry.suggested_related_terms?.length > 0 && (
-            <motion.div 
+            <motion.div
               {...sectionAnim}
               className="p-8 bg-[var(--hover)]/30 backdrop-blur-xl border border-[var(--border)] rounded-2xl"
             >
               <h2 className="text-[12px] font-bold text-[var(--muted)] mb-5 uppercase tracking-widest flex items-center gap-2">
                 <Link2 className="w-4 h-4" /> Related Terms
               </h2>
-              <div className="flex flex-wrap gap-2">
+              <motion.div
+                variants={staggerContainer}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                className="flex flex-wrap gap-2"
+              >
                 {entry.suggested_related_terms.map((w: string, i: number) => {
                   const targetId = findId(w);
                   return (
-                    <motion.button 
+                    <motion.button
                       key={i}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.04 }} 
-                      onClick={() => targetId && onNavigate(targetId)} 
+                      variants={staggerItem}
+                      onClick={() => targetId && onNavigate(targetId)}
                       className={`px-4 py-2 text-[13px] font-medium rounded-xl border border-[var(--border)] transition-all ${targetId ? 'bg-[var(--text)]/5 hover:bg-[var(--text)] hover:text-[var(--bg)] cursor-pointer hover:shadow-md' : 'bg-transparent opacity-50 cursor-default'}`}
                     >
-                       {w}
+                      {w}
                     </motion.button>
                   );
                 })}
-              </div>
+              </motion.div>
             </motion.div>
           )}
 
           {/* Next Steps */}
           {entry.next_steps?.length > 0 && (
-             <motion.div 
+            <motion.div
               {...sectionAnim}
               className="p-8 bg-[var(--hover)]/30 backdrop-blur-xl border border-[var(--border)] rounded-2xl"
             >
               <h2 className="text-[12px] font-bold text-[var(--muted)] mb-5 uppercase tracking-widest flex items-center gap-2">
                 <Navigation className="w-4 h-4" /> Next Steps
               </h2>
-              <div className="flex flex-wrap gap-2">
+              <motion.div
+                variants={staggerContainer}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                className="flex flex-wrap gap-2"
+              >
                 {entry.next_steps.map((w: string, i: number) => {
                   const targetId = findId(w);
                   return (
-                    <button 
-                      key={i} 
-                      onClick={() => targetId && onNavigate(targetId)} 
+                    <motion.button
+                      key={i}
+                      variants={staggerItem}
+                      onClick={() => targetId && onNavigate(targetId)}
                       className={`group flex items-center gap-2 px-4 py-2 text-[13px] font-medium rounded-xl border border-[var(--border)] transition-all ${targetId ? 'bg-[var(--text)]/5 hover:bg-[var(--text)] hover:text-[var(--bg)] cursor-pointer' : 'bg-transparent opacity-50 cursor-default'}`}
                     >
-                       {w}
-                       {targetId && <ArrowRight className="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />}
-                    </button>
+                      {w}
+                      {targetId && <ArrowRight className="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />}
+                    </motion.button>
                   );
                 })}
-              </div>
+              </motion.div>
             </motion.div>
           )}
         </div>

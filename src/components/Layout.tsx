@@ -16,7 +16,7 @@ import { getFullDomainName } from '../utils/domains';
 import Fuse from 'fuse.js';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { useNavigate, useParams, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useParams, useLocation, Link, useNavigationType } from 'react-router-dom';
 import { useUserState } from '../hooks/useUserState';
 import { DictionaryApi } from '../utils/api';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -54,7 +54,7 @@ const staggerItem = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.8,
+      duration: 0.6,
       ease: [0.16, 1, 0.3, 1] as any
     }
   }
@@ -286,11 +286,20 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollPositions = useRef<Record<string, number>>({});
 
+  const navType = useNavigationType();
+
   useEffect(() => {
     const mainEl = scrollRef.current;
     if (!mainEl) return;
-    
-    // Attempt scroll restoration, we give it a tiny delay to ensure react has re-rendered
+
+    // If it's a PUSH navigation (new link clicked), always scroll to top
+    // If it's a POP navigation (back/forward), attempt restoration
+    if (navType === 'PUSH') {
+      mainEl.scrollTop = 0;
+      scrollPositions.current[location.key] = 0;
+      return;
+    }
+
     requestAnimationFrame(() => {
       setTimeout(() => {
         if (scrollRef.current) {
@@ -298,7 +307,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
         }
       }, 10);
     });
-  }, [location.key, concepts, domainParam]);
+  }, [location.key, navType, concepts, domainParam]);
 
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
     scrollPositions.current[location.key] = e.currentTarget.scrollTop;
@@ -356,33 +365,29 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
     }
   }, [selectedConcept?.id]);
 
-  // Global keyboard shortcuts
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        if (isSearchOpen) { setIsSearchOpen(false); setSearchQuery(''); return; }
-        if (isRightPanelOpen) { setIsRightPanelOpen(false); return; }
-      }
-      if ((e.key === '/' || (e.metaKey && e.key === 'k')) && !isSearchOpen && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
-        e.preventDefault();
-        searchInputRef.current?.focus();
-        setIsSearchOpen(true);
-      }
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [isSearchOpen, isRightPanelOpen]);
-
   const generateRoadmap = async () => {
     if (!roadmapQuery.trim()) return;
     setIsGeneratingRoadmap(true);
     try {
-      const data = await DictionaryApi.generateRoadmap(roadmapQuery, concepts);
+      const data = await DictionaryApi.generateRoadmap(roadmapQuery);
       const steps: RoadmapStep[] = data.steps || [];
+
+      const roadmapFuse = new Fuse(concepts, { keys: ['term'], threshold: 0.4 });
+      const mappedSteps = steps.map(step => {
+        const exact = concepts.find(c => c.term.toLowerCase() === step.term.toLowerCase());
+        if (exact) return { ...step, term: exact.term };
+
+        const fuzzyResults = roadmapFuse.search(step.term);
+        if (fuzzyResults.length > 0) {
+          return { ...step, term: fuzzyResults[0].item.term };
+        }
+        return step;
+      });
+
       const newRoadmap: Roadmap = {
         id: crypto.randomUUID(),
-        query: roadmapQuery,
-        steps: steps.sort((a, b) => a.order - b.order),
+        query: data.title || roadmapQuery,
+        steps: mappedSteps.sort((a, b) => a.order - b.order),
         createdAt: Date.now()
       };
       setActiveRoadmap(newRoadmap);
@@ -447,11 +452,39 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
     threshold: 0.3
   }), [concepts]);
 
-  const searchResults = useMemo(() => {
-    if (!searchQuery) return { main: [], similar: [], contrast: [], prereq: [] };
+  const { uniqueSearchResults, hasExactMatch } = useMemo(() => {
+    if (!searchQuery) return { uniqueSearchResults: [], hasExactMatch: false };
     const results = fuse.search(searchQuery).map(r => r.item);
-    return { main: results.slice(0, 5) };
+    const unique = [];
+    const seen = new Set();
+    let exactMatch = false;
+    for (const item of results) {
+      const lower = item.term.toLowerCase();
+      if (!seen.has(lower)) {
+        seen.add(lower);
+        unique.push(item);
+        if (lower === searchQuery.toLowerCase()) exactMatch = true;
+      }
+    }
+    return { uniqueSearchResults: unique.slice(0, 5), hasExactMatch: exactMatch };
   }, [searchQuery, fuse]);
+
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        setIsSearchOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => { document.removeEventListener('mousedown', handleClickOutside); };
+  }, []);
+
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  useEffect(() => {
+    setSelectedIndex(-1);
+  }, [searchQuery, isSearchOpen]);
 
   const domainSearchFuse = useMemo(() => {
     // Only compile the fuse object for the domain if we are in domain mode
@@ -465,6 +498,57 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
   const domains = useMemo(() =>
     Array.from(new Set((concepts || []).map(c => c.domain).filter(Boolean))).sort()
     , [concepts]);
+
+  // Global keyboard shortcuts
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (isSearchOpen) { setIsSearchOpen(false); setSearchQuery(''); return; }
+        if (isRightPanelOpen) { setIsRightPanelOpen(false); return; }
+      }
+
+      if (isSearchOpen) {
+        const searchItems = searchQuery ? uniqueSearchResults : history.slice(0, 8);
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          setSelectedIndex(prev => (prev < searchItems.length - 1 ? prev + 1 : prev));
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          setSelectedIndex(prev => (prev > 0 ? prev - 1 : prev));
+        } else if (e.key === 'Enter' && selectedIndex >= 0) {
+          e.preventDefault();
+          if (searchQuery) {
+            const c = uniqueSearchResults[selectedIndex];
+            if (c) {
+              addToHistory(c.term);
+              navigate(`/concept/${c.id}`);
+              setIsSearchOpen(false);
+              setSearchQuery('');
+            }
+          } else {
+            const h = history.slice(0, 8)[selectedIndex];
+            if (h) {
+              const matchedConcept = concepts.find(c => c.term.toLowerCase() === h.toLowerCase());
+              if (matchedConcept) {
+                navigate(`/concept/${matchedConcept.id}`);
+              } else {
+                setSearchQuery(h);
+              }
+              setIsSearchOpen(false);
+            }
+          }
+        }
+      }
+
+      if ((e.key === '/' || (e.metaKey && e.key === 'k')) && !isSearchOpen && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        setIsSearchOpen(true);
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [isSearchOpen, isRightPanelOpen, searchQuery, uniqueSearchResults, history, concepts, selectedIndex, navigate, addToHistory]);
 
   return (
     <div className={cn("flex flex-col h-[100vh] w-full bg-[var(--bg)] overflow-hidden", settings.theme === 'light' && "light")}>
@@ -483,18 +567,18 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
 
       <nav className="neo-nav backdrop-blur-xl bg-[var(--bg)]/90 border-b border-[var(--border)]">
         <div className="flex items-center gap-6">
-           <Link to="/" className="flex items-center gap-3">
-             <motion.svg 
-               viewBox="0 0 100 100" 
-               className="w-10 h-10 text-[var(--text)] overflow-visible"
-               whileHover={{ scale: 1.05 }}
-               whileTap={{ scale: 0.95 }}
-             >
-               <rect x="0" y="0" width="100" height="100" rx="30" fill="currentColor" opacity="0.1" />
-               <path d="M 30,50 Q 50,20 70,50 T 30,50" fill="currentColor" opacity="0.8" />
-               <path d="M 35,50 Q 50,75 65,50" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" opacity="0.5" />
-             </motion.svg>
-             <span className="font-black text-sm uppercase tracking-widest hidden sm:block text-[var(--text)]">The Lexicon</span>
+          <Link to="/" className="flex items-center gap-3">
+            <motion.svg
+              viewBox="0 0 100 100"
+              className="w-10 h-10 text-[var(--text)] overflow-visible"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <rect x="0" y="0" width="100" height="100" rx="30" fill="currentColor" opacity="0.1" />
+              <path d="M 30,50 Q 50,20 70,50 T 30,50" fill="currentColor" opacity="0.8" />
+              <path d="M 35,50 Q 50,75 65,50" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" opacity="0.5" />
+            </motion.svg>
+            <span className="font-black text-sm uppercase tracking-widest hidden sm:block text-[var(--text)]">The Lexicon</span>
           </Link>
           <div className="hidden sm:flex items-center gap-1">
             <button onClick={() => navigate('/')} className="px-5 py-2 text-[10px] font-black uppercase text-muted hover:text-[var(--text)]">Explore</button>
@@ -503,7 +587,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
           </div>
         </div>
 
-        <div className="flex-1 max-w-xl mx-auto px-6 relative">
+        <div ref={searchContainerRef} className="flex-1 max-w-xl mx-auto px-6 relative">
           <div className="relative group">
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
             <input
@@ -521,19 +605,19 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-[calc(100%+8px)] left-6 right-6 z-[60] neo-card p-2 shadow-2xl overflow-y-auto max-h-[60vh]">
                 {searchQuery ? (
                   /* Search results */
-                  searchResults.main.length > 0 ? (
-                    searchResults.main.map(c => (
-                      <button key={c.id} onClick={() => { 
+                  uniqueSearchResults.length > 0 ? (
+                    uniqueSearchResults.map((c, i) => (
+                      <button key={c.id} onMouseEnter={() => setSelectedIndex(i)} onClick={() => {
                         addToHistory(c.term);
-                        navigate(`/concept/${c.id}`); 
-                        setIsSearchOpen(false); 
-                        setSearchQuery(''); 
-                      }} className="w-full p-4 hover:bg-[var(--text)] hover:text-[var(--bg)] text-left text-sm font-bold uppercase tracking-tight flex flex-col group transition-all border-b border-[var(--border)] last:border-0 last:rounded-b-lg first:rounded-t-lg">
+                        navigate(`/concept/${c.id}`);
+                        setIsSearchOpen(false);
+                        setSearchQuery('');
+                      }} className={cn("w-full p-4 hover:bg-[var(--text)] hover:text-[var(--bg)] text-left text-sm font-bold uppercase tracking-tight flex flex-col group transition-all border-b border-[var(--border)] last:border-0 last:rounded-b-lg first:rounded-t-lg", i === selectedIndex ? "bg-[var(--text)] text-[var(--bg)]" : "")}>
                         <div className="flex justify-between items-center w-full mb-1">
                           <span className="text-lg">{c.term}</span>
-                          <span className="text-[10px] opacity-50 uppercase tracking-widest">{c.domain}</span>
+                          <span className={cn("text-[10px] uppercase tracking-widest", i === selectedIndex ? "opacity-70" : "opacity-50")}>{c.domain}</span>
                         </div>
-                        {c.one_line_definition && <span className="text-xs font-medium opacity-70 normal-case tracking-normal line-clamp-1">{c.one_line_definition}</span>}
+                        {c.one_line_definition && <span className={cn("text-xs font-medium normal-case tracking-normal line-clamp-1", i === selectedIndex ? "opacity-90" : "opacity-70")}>{c.one_line_definition}</span>}
                       </button>
                     ))
                   ) : (
@@ -557,6 +641,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                         return (
                           <button
                             key={i}
+                            onMouseEnter={() => setSelectedIndex(i)}
                             onClick={() => {
                               if (matchedConcept) {
                                 navigate(`/concept/${matchedConcept.id}`);
@@ -565,11 +650,11 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                               }
                               setIsSearchOpen(false);
                             }}
-                            className="w-full px-4 py-3 hover:bg-[var(--text)] hover:text-[var(--bg)] text-left text-sm font-semibold flex items-center gap-3 transition-all border-b border-[var(--border)] last:border-0"
+                            className={cn("w-full px-4 py-3 hover:bg-[var(--text)] hover:text-[var(--bg)] text-left text-sm font-semibold flex items-center gap-3 transition-all border-b border-[var(--border)] last:border-0", i === selectedIndex ? "bg-[var(--text)] text-[var(--bg)]" : "")}
                           >
-                            <Clock className="w-3.5 h-3.5 opacity-40 shrink-0" />
+                            <Clock className={cn("w-3.5 h-3.5 shrink-0", i === selectedIndex ? "opacity-70" : "opacity-40")} />
                             <span className="truncate">{h}</span>
-                            {matchedConcept && <span className="ml-auto text-[9px] opacity-40 uppercase tracking-widest shrink-0">{matchedConcept.domain}</span>}
+                            {matchedConcept && <span className={cn("ml-auto text-[9px] uppercase tracking-widest shrink-0", i === selectedIndex ? "opacity-70" : "opacity-40")}>{matchedConcept.domain}</span>}
                           </button>
                         );
                       })}
@@ -613,107 +698,107 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                 <EntryDetail entry={selectedConcept} dictionaryData={concepts} onNavigate={(id: string) => navigate(`/concept/${id}`)} onToggleBookmark={toggleBookmark} isBookmarked={bookmarks.includes(selectedConcept.id)} autoSpeak={settings.autoSpeak} />
               ) : domainParam ? (
                 <motion.div key={domainParam} className="space-y-10">
-                   {(() => {
-                     const domainConcepts = concepts.filter(c => c.domain === domainParam);
-                     const filteredDomainConcepts = domainSearchQuery.trim()
-                       ? domainSearchFuse.search(domainSearchQuery).map(r => r.item)
-                       : domainConcepts;
-                     
-                     return (
-                       <>
-                         <div>
-                     <button onClick={() => navigate('/')} className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted hover:text-[var(--text)] transition-colors mb-6">
-                       <ChevronLeft className="w-4 h-4" /> All Domains
-                     </button>
-                     <h1 className="text-5xl sm:text-6xl font-black uppercase tracking-tighter">{getFullDomainName(domainParam)}</h1>
-                     <p className="text-muted text-sm font-medium mt-2">{concepts.filter(c => c.domain === domainParam).length} concept{concepts.filter(c => c.domain === domainParam).length !== 1 ? 's' : ''}</p>
-                     <div className="relative mt-8 mb-4 max-w-xl">
-                       <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--muted)]" />
-                       <input
-                         type="text"
-                         value={domainSearchQuery}
-                         onChange={(e) => setDomainSearchQuery(e.target.value)}
-                         placeholder={`Search within ${getFullDomainName(domainParam)}...`}
-                         className="w-full pl-14 pr-12 py-4 bg-[var(--hover)] border-2 border-[var(--border)] text-sm font-semibold focus:outline-none focus:border-[var(--text)] transition-colors rounded-2xl"
-                       />
-                       {domainSearchQuery && (
-                         <button 
-                           onClick={() => setDomainSearchQuery('')}
-                           className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--text)] transition-colors p-1"
-                         >
-                           <X className="w-4 h-4" />
-                         </button>
-                       )}
-                     </div>
-                   </div>
-                   
-                   {filteredDomainConcepts.length === 0 ? (
-                     <div className="py-12 text-center flex flex-col items-center justify-center opacity-70">
-                       <Search className="w-12 h-12 mb-4 text-[var(--muted)]" />
-                       <p className="text-lg font-bold text-[var(--text)]">No concepts found</p>
-                       <p className="text-sm font-medium text-[var(--muted)]">Try adjusting your search query</p>
-                     </div>
-                   ) : (
-                     <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                       {filteredDomainConcepts.slice(0, displayCount).map(c => (
-                         <TiltCard key={c.id} onClick={() => { addToHistory(c.term); navigate(`/concept/${c.id}`); }} className="p-8 group neo-card-interactive flex flex-col bg-[var(--card)] border border-[var(--border)] transition-all overflow-hidden relative rounded-3xl hover:border-[var(--neo-green)]/50 hover:shadow-xl shadow-sm">
-                           <div className="flex items-start justify-between mb-3 group">
-                             <h3 className="text-xl font-black tracking-tight text-[var(--text)] group-hover:text-[var(--neo-green)] transition-colors pr-2">{c.term}</h3>
-                             <ArrowRight className="w-5 h-5 text-[var(--muted)] group-hover:text-[var(--text)] transition-all shrink-0 -translate-x-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-0" />
-                           </div>
-                           <p className="text-sm font-medium text-[var(--muted)] line-clamp-3 leading-relaxed transition-opacity">
-                             {c.one_line_definition}
-                           </p>
-                         </TiltCard>
-                       ))}
-                     </motion.div>
-                   )}
-                   {displayCount < filteredDomainConcepts.length && (
-                      <div className="flex justify-center pt-8 pb-12">
-                        <MagneticButton 
-                          onClick={() => setDisplayCount(prev => prev + 30)}
-                          className="px-8 py-3 text-sm font-black uppercase tracking-widest rounded-full shadow-lg border border-[var(--border)]"
-                        >
-                          Load More Concepts ({filteredDomainConcepts.length - displayCount} remaining)
-                        </MagneticButton>
-                      </div>
-                   )}
-                 </>
-               );
-             })()}
-             </motion.div>
-           ) : (
+                  {(() => {
+                    const domainConcepts = concepts.filter(c => c.domain === domainParam);
+                    const filteredDomainConcepts = domainSearchQuery.trim()
+                      ? domainSearchFuse.search(domainSearchQuery).map(r => r.item)
+                      : domainConcepts;
+
+                    return (
+                      <>
+                        <div>
+                          <button onClick={() => navigate('/')} className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted hover:text-[var(--text)] transition-colors mb-6">
+                            <ChevronLeft className="w-4 h-4" /> All Domains
+                          </button>
+                          <h1 className="text-5xl sm:text-6xl font-black uppercase tracking-tighter">{getFullDomainName(domainParam)}</h1>
+                          <p className="text-muted text-sm font-medium mt-2">{concepts.filter(c => c.domain === domainParam).length} concept{concepts.filter(c => c.domain === domainParam).length !== 1 ? 's' : ''}</p>
+                          <div className="relative mt-8 mb-4 max-w-xl">
+                            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--muted)]" />
+                            <input
+                              type="text"
+                              value={domainSearchQuery}
+                              onChange={(e) => setDomainSearchQuery(e.target.value)}
+                              placeholder={`Search within ${getFullDomainName(domainParam)}...`}
+                              className="w-full pl-14 pr-12 py-4 bg-[var(--hover)] border-2 border-[var(--border)] text-sm font-semibold focus:outline-none focus:border-[var(--text)] transition-colors rounded-2xl"
+                            />
+                            {domainSearchQuery && (
+                              <button
+                                onClick={() => setDomainSearchQuery('')}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--text)] transition-colors p-1"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        {filteredDomainConcepts.length === 0 ? (
+                          <div className="py-12 text-center flex flex-col items-center justify-center opacity-70">
+                            <Search className="w-12 h-12 mb-4 text-[var(--muted)]" />
+                            <p className="text-lg font-bold text-[var(--text)]">No concepts found</p>
+                            <p className="text-sm font-medium text-[var(--muted)]">Try adjusting your search query</p>
+                          </div>
+                        ) : (
+                          <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {filteredDomainConcepts.slice(0, displayCount).map(c => (
+                              <TiltCard key={c.id} onClick={() => { addToHistory(c.term); navigate(`/concept/${c.id}`); }} className="p-8 group neo-card-interactive flex flex-col bg-[var(--card)] border border-[var(--border)] transition-all overflow-hidden relative rounded-3xl hover:border-[var(--neo-green)]/50 hover:shadow-xl shadow-sm">
+                                <div className="flex items-start justify-between mb-3 group">
+                                  <h3 className="text-xl font-black tracking-tight text-[var(--text)] group-hover:text-[var(--neo-green)] transition-colors pr-2">{c.term}</h3>
+                                  <ArrowRight className="w-5 h-5 text-[var(--muted)] group-hover:text-[var(--text)] transition-all shrink-0 -translate-x-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-0" />
+                                </div>
+                                <p className="text-sm font-medium text-[var(--muted)] line-clamp-3 leading-relaxed transition-opacity">
+                                  {c.one_line_definition}
+                                </p>
+                              </TiltCard>
+                            ))}
+                          </motion.div>
+                        )}
+                        {displayCount < filteredDomainConcepts.length && (
+                          <div className="flex justify-center pt-8 pb-12">
+                            <MagneticButton
+                              onClick={() => setDisplayCount(prev => prev + 30)}
+                              className="px-8 py-3 text-sm font-black uppercase tracking-widest rounded-full shadow-lg border border-[var(--border)]"
+                            >
+                              Load More Concepts ({filteredDomainConcepts.length - displayCount} remaining)
+                            </MagneticButton>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
+                </motion.div>
+              ) : (
                 <div key="home" className="space-y-16">
                   <section className="pt-20 pb-12 text-center flex flex-col items-center relative">
                     <AnimatedText text="Lexicon" el="h1" className="text-[14vw] sm:text-[11vw] font-black uppercase tracking-tighter leading-[0.85] text-[var(--text)] drop-shadow-sm" animationType="chars" />
-                    
+
                     <h2 className="text-xl sm:text-2xl font-bold text-[var(--neo-green)] mt-8 uppercase tracking-widest flex items-center gap-3">
-                       <Network className="w-5 h-5 sm:w-6 sm:h-6" /> Computing Dictionary
+                      <Network className="w-5 h-5 sm:w-6 sm:h-6" /> Computing Dictionary
                     </h2>
-                    
+
                     {/* Creative Stats UI */}
                     <div className="flex flex-wrap justify-center gap-4 mt-12 mb-10 w-full px-6">
-                       <div className="flex items-center gap-5 px-6 sm:px-8 py-5 bg-[var(--text)]/5 border border-[var(--border)] rounded-full backdrop-blur-md shadow-lg transition-transform hover:scale-105">
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[var(--neo-green)]/20 flex items-center justify-center shrink-0">
-                             <Database className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--neo-green)]" />
-                          </div>
-                          <div className="text-left">
-                             <div className="text-2xl sm:text-3xl font-black text-[var(--text)] leading-none mb-1">{concepts.length}</div>
-                             <div className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#8E8E93]">Total Words</div>
-                          </div>
-                       </div>
-                       
-                       <div className="flex items-center gap-5 px-6 sm:px-8 py-5 bg-[var(--text)]/5 border border-[var(--border)] rounded-full backdrop-blur-md shadow-lg transition-transform hover:scale-105">
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[var(--neo-purple)]/20 flex items-center justify-center shrink-0">
-                             <LayoutGrid className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--neo-purple)]" />
-                          </div>
-                          <div className="text-left">
-                             <div className="text-2xl sm:text-3xl font-black text-[var(--text)] leading-none mb-1">{domains.length}</div>
-                             <div className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#8E8E93]">Root Domains</div>
-                          </div>
-                       </div>
+                      <div className="flex items-center gap-5 px-6 sm:px-8 py-5 bg-[var(--text)]/5 border border-[var(--border)] rounded-full backdrop-blur-md shadow-lg transition-transform hover:scale-105">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[var(--neo-green)]/20 flex items-center justify-center shrink-0">
+                          <Database className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--neo-green)]" />
+                        </div>
+                        <div className="text-left">
+                          <div className="text-2xl sm:text-3xl font-black text-[var(--text)] leading-none mb-1">{concepts.length}</div>
+                          <div className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#8E8E93]">Total Words</div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-5 px-6 sm:px-8 py-5 bg-[var(--text)]/5 border border-[var(--border)] rounded-full backdrop-blur-md shadow-lg transition-transform hover:scale-105">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[var(--neo-purple)]/20 flex items-center justify-center shrink-0">
+                          <LayoutGrid className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--neo-purple)]" />
+                        </div>
+                        <div className="text-left">
+                          <div className="text-2xl sm:text-3xl font-black text-[var(--text)] leading-none mb-1">{domains.length}</div>
+                          <div className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#8E8E93]">Root Domains</div>
+                        </div>
+                      </div>
                     </div>
-                    
+
                     <MagneticButton onClick={() => { searchInputRef.current?.focus(); setIsSearchOpen(true); }} className="px-12 py-5 text-sm font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl mt-4 border border-[var(--border)]">
                       Search Dictionary
                     </MagneticButton>
@@ -721,73 +806,85 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
 
                   {/* AI Suggestions — "Based on your searches" */}
                   {(aiSuggestions.length > 0 || isAnalyzingHistory) && (
-                    <motion.section 
-                      initial={{ opacity: 0, y: 30 }} 
-                      animate={{ opacity: 1, y: 0 }} 
+                    <motion.section
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                       className="px-6"
                     >
-                       <div className="flex items-center gap-3 mb-2">
-                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--neo-green)]/20 to-[var(--neo-purple)]/20 flex items-center justify-center">
-                           <Sparkles className="w-4 h-4 text-[var(--text)]" />
-                         </div>
-                         <div>
-                           <h3 className="text-sm font-black uppercase tracking-widest text-[var(--text)]">Based on your searches</h3>
-                           <p className="text-[11px] text-[var(--muted)] font-medium mt-0.5">AI analyzed your recent {history.length} topic{history.length !== 1 ? 's' : ''} and suggests</p>
-                         </div>
-                       </div>
-                       
-                       {isAnalyzingHistory ? (
-                          <div className="flex items-center gap-3 py-10 justify-center">
-                             <Loader2 className="w-5 h-5 animate-spin text-[var(--muted)]" />
-                             <span className="text-sm font-medium text-[var(--muted)]">Analyzing your learning path...</span>
-                          </div>
-                       ) : (
-                          <motion.div 
-                            variants={staggerContainer}
-                            initial="hidden"
-                            animate="visible"
-                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6"
-                          >
-                             {aiSuggestions.map((sugg, i) => {
-                               const matchedConcept = concepts.find(c => c.term.toLowerCase() === sugg.term.toLowerCase());
-                               return (
-                                 <motion.div
-                                   key={i}
-                                   variants={staggerItem}
-                                   whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                                   onClick={() => matchedConcept ? navigate(`/concept/${matchedConcept.id}`) : setIsSearchOpen(true)}
-                                   className="group p-6 rounded-2xl border border-[var(--border)] bg-[var(--hover)]/30 backdrop-blur-xl cursor-pointer hover:border-[var(--neo-green)]/40 hover:shadow-lg transition-all relative overflow-hidden"
-                                 >
-                                    <div className="absolute inset-0 bg-gradient-to-br from-[var(--neo-green)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    <div className="relative z-10">
-                                      <div className="flex items-center gap-2 mb-3">
-                                        <Sparkles className="w-3.5 h-3.5 text-[var(--neo-green)] opacity-60" />
-                                        <h4 className="font-bold text-[var(--text)] tracking-tight text-base">{sugg.term}</h4>
-                                      </div>
-                                      <p className="text-[13px] text-[var(--muted)] leading-relaxed">{sugg.reason}</p>
-                                      {matchedConcept && (
-                                        <div className="flex items-center gap-1 mt-4 text-xs font-bold text-[var(--neo-green)] uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
-                                          Explore <ArrowRight className="w-3 h-3" />
-                                        </div>
-                                      )}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--neo-green)]/20 to-[var(--neo-purple)]/20 flex items-center justify-center">
+                          <Sparkles className="w-4 h-4 text-[var(--text)]" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-black uppercase tracking-widest text-[var(--text)]">Based on your searches</h3>
+                          <p className="text-[11px] text-[var(--muted)] font-medium mt-0.5">AI analyzed your recent {history.length} topic{history.length !== 1 ? 's' : ''} and suggests</p>
+                        </div>
+                      </div>
+
+                      {isAnalyzingHistory ? (
+                        <div className="flex items-center gap-3 py-10 justify-center">
+                          <Loader2 className="w-5 h-5 animate-spin text-[var(--muted)]" />
+                          <span className="text-sm font-medium text-[var(--muted)]">Analyzing your learning path...</span>
+                        </div>
+                      ) : (
+                        <motion.div
+                          variants={staggerContainer}
+                          initial="hidden"
+                          animate="visible"
+                          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6"
+                        >
+                          {aiSuggestions.map((sugg, i) => {
+                            const matchedConcept = concepts.find(c => c.term.toLowerCase() === sugg.term.toLowerCase());
+                            return (
+                              <motion.div
+                                key={i}
+                                variants={staggerItem}
+                                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                                onClick={() => matchedConcept ? navigate(`/concept/${matchedConcept.id}`) : setIsSearchOpen(true)}
+                                className="group p-6 rounded-2xl border border-[var(--border)] bg-[var(--hover)]/30 backdrop-blur-xl cursor-pointer hover:border-[var(--neo-green)]/40 hover:shadow-lg transition-all relative overflow-hidden"
+                              >
+                                <div className="absolute inset-0 bg-gradient-to-br from-[var(--neo-green)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <div className="relative z-10">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <Sparkles className="w-3.5 h-3.5 text-[var(--neo-green)] opacity-60" />
+                                    <h4 className="font-bold text-[var(--text)] tracking-tight text-base">{sugg.term}</h4>
+                                  </div>
+                                  <p className="text-[13px] text-[var(--muted)] leading-relaxed">{sugg.reason}</p>
+                                  {matchedConcept && (
+                                    <div className="flex items-center gap-1 mt-4 text-xs font-bold text-[var(--neo-green)] uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
+                                      Explore <ArrowRight className="w-3 h-3" />
                                     </div>
-                                 </motion.div>
-                               )
-                             })}
-                          </motion.div>
-                       )}
+                                  )}
+                                </div>
+                              </motion.div>
+                            )
+                          })}
+                        </motion.div>
+                      )}
                     </motion.section>
                   )}
                   <section className="px-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {domains.map(d => (
-                      <TiltCard key={d} onClick={() => navigate(`/domain/${d}`)} className="p-10 neo-card-interactive flex flex-col justify-between h-64">
-                        <h3 className="text-3xl font-black uppercase tracking-tighter">{d.replace(/-/g, ' ')}</h3>
-                        <div className="text-xs font-bold uppercase tracking-widest flex items-center gap-2">Explore <ArrowRight className="w-3 h-3" /></div>
-                      </TiltCard>
-                    ))}
-                    </div>
+                    <motion.div
+                      variants={staggerContainer}
+                      initial="hidden"
+                      animate="visible"
+                      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                    >
+                      {domains.map(d => (
+                        <motion.div key={d} variants={staggerItem}>
+                          <TiltCard
+                            onClick={() => navigate(`/domain/${d}`)}
+                            className="p-10 neo-card-interactive flex flex-col justify-between h-64 bg-[var(--card)] border border-[var(--border)] rounded-3xl"
+                          >
+                            <h3 className="text-3xl font-black uppercase tracking-tighter text-[var(--text)]">{d.replace(/-/g, ' ')}</h3>
+                            <div className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-[var(--neo-green)]">
+                              Explore <ArrowRight className="w-3 h-3" />
+                            </div>
+                          </TiltCard>
+                        </motion.div>
+                      ))}
+                    </motion.div>
                   </section>
                 </div>
               )}
@@ -797,36 +894,93 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
 
         <AnimatePresence>
           {isRightPanelOpen && (
-             <motion.aside initial={{ width: 0 }} animate={{ width: 380 }} exit={{ width: 0 }} className="w-[380px] h-full bg-card border-l border-[var(--border)] flex flex-col shrink-0">
-              <div className="p-6 border-b border-[var(--border)] flex items-center justify-between">
-                <span className="font-bold text-sm uppercase tracking-widest">Intelligence</span>
-                <X className="w-4 h-4 cursor-pointer" onClick={() => setIsRightPanelOpen(false)} />
+            <motion.aside initial={{ width: 0 }} animate={{ width: 380 }} exit={{ width: 0 }} className="w-[380px] h-full bg-[var(--bg)] border-l border-[var(--border)] flex flex-col shrink-0 shadow-2xl z-50">
+              <div className="p-8 pb-6 border-b border-[var(--border)]/50 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Bot className="w-5 h-5 text-[var(--neo-green)]" />
+                  <span className="font-bold text-sm uppercase tracking-[0.2em]">Intelligence</span>
+                </div>
+                <button onClick={() => setIsRightPanelOpen(false)} className="p-2 hover:bg-[var(--hover)] rounded-full transition-colors text-muted hover:text-[var(--text)]"><X className="w-5 h-5" /></button>
               </div>
-              <div className="flex mx-6 mt-6 mb-4 p-1 bg-[var(--hover)] rounded-2xl border border-[var(--border)]">
+              <div className="flex mx-8 mt-8 mb-6 p-1 bg-[var(--hover)] rounded-[32px] border border-[var(--border)]/50 shadow-inner overflow-hidden">
                 {(['ask', 'roadmap'] as const).map(t => (
-                  <button key={t} onClick={() => setRightPanelMode(t)} className={`flex-1 py-2.5 text-[11px] font-black uppercase tracking-[0.2em] rounded-xl transition-all ${rightPanelMode === t ? 'bg-[var(--text)] text-[var(--bg)] shadow-md' : 'bg-transparent text-[var(--muted)] hover:text-[var(--text)]'}`}>{t}</button>
+                  <button key={t} onClick={() => setRightPanelMode(t)} className={`flex-1 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-full transition-all duration-300 ${rightPanelMode === t ? 'bg-[var(--text)] text-[var(--bg)] shadow-md' : 'bg-transparent text-[var(--muted)] hover:text-[var(--text)]'}`}>{t}</button>
                 ))}
               </div>
-              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              <div className="flex-1 overflow-y-auto space-y-6">
                 {rightPanelMode === 'ask' ? (
-                  <div className="flex flex-col h-full">
-                    <div className="flex-1 space-y-6 mb-6">
+                  <div className="flex flex-col h-full overflow-hidden">
+                    <div className="flex-1 overflow-y-auto space-y-6 mb-6 custom-scrollbar px-8 py-2">
                       {chatMessages.map((m, i) => (
-                        <div key={i} className={`p-6 neo-card ${m.role === 'user' ? 'bg-[var(--text)] text-[var(--bg)]' : 'border-border'}`}>
-                          <Markdown>{m.text}</Markdown>
+                        <div key={i} className={`p-6 shadow-sm border border-[var(--border)] ${m.role === 'user' ? 'bg-[var(--text)] text-[var(--bg)] rounded-[24px] rounded-br-none ml-8' : 'bg-[var(--card)] rounded-[24px] rounded-bl-none mr-8'}`}>
+                          <div className="prose prose-sm dark:prose-invert max-w-none"><Markdown>{m.text}</Markdown></div>
                         </div>
                       ))}
+                      {isDiscussing && (
+                        <div className="p-6 rounded-[24px] rounded-bl-none border border-[var(--border)] bg-[var(--card)] mr-8 flex items-center justify-center">
+                          <Loader2 className="w-5 h-5 animate-spin text-muted" />
+                        </div>
+                      )}
+                      <div ref={chatEndRef} />
                     </div>
-                    <div className="relative">
-                      <textarea value={discussionQuery} onChange={e => setDiscussionQuery(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); discussFurther(); } }} placeholder="CMD..." className="w-full p-4 bg-[var(--hover)] border border-border text-xs focus:outline-none" />
-                      <button onClick={discussFurther} className="absolute right-4 bottom-4 p-2 bg-[var(--text)] text-[var(--bg)]"><Send className="w-3 h-3" /></button>
+                    <div className="mt-auto relative px-8 pb-8">
+                      <div className="relative group">
+                        <textarea
+                          value={discussionQuery}
+                          onChange={e => setDiscussionQuery(e.target.value)}
+                          placeholder="Ask anything..."
+                          className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[32px] p-5 pr-14 min-h-[60px] max-h-[150px] resize-none text-sm font-medium outline-none focus:border-[var(--text)] focus:ring-4 focus:ring-[var(--border)]/20 shadow-sm transition-all custom-scrollbar"
+                          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); discussFurther(); } }}
+                        />
+                        <button onClick={discussFurther} disabled={isDiscussing} className="absolute bottom-4 right-4 w-10 h-10 bg-[var(--text)] text-[var(--bg)] rounded-full flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-all outline-none">
+                          {isDiscussing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 ml-0.5" />}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : rightPanelMode === 'roadmap' ? (
+                  <div className="flex flex-col h-full overflow-hidden px-8">
+                    <div className="flex-1 overflow-y-auto pb-8 custom-scrollbar pt-2">
+                      <div className="relative group mb-6">
+                        <textarea
+                          value={roadmapQuery}
+                          onChange={(e) => setRoadmapQuery(e.target.value)}
+                          placeholder="e.g., Guide me through Backend Development..."
+                          className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[32px] p-6 min-h-[140px] text-sm font-medium resize-none focus:border-[var(--text)] focus:ring-4 focus:ring-[var(--border)]/20 shadow-sm transition-all custom-scrollbar outline-none"
+                        />
+                      </div>
+                      <MagneticButton disabled={isGeneratingRoadmap || !roadmapQuery.trim()} onClick={generateRoadmap} className="w-full py-5 text-xs font-black uppercase tracking-[0.2em] rounded-[32px] shadow-lg border border-[var(--border)]">
+                        {isGeneratingRoadmap ? 'Processing...' : 'Generate Pathway'}
+                      </MagneticButton>
+
+                      {activeRoadmap && (
+                        <AnimatePresence>
+                          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-10 space-y-6">
+                            <h4 className="font-bold text-[13px] uppercase tracking-widest text-[var(--neo-green)] mb-6">{activeRoadmap.query}</h4>
+                            <div className="space-y-4">
+                              {activeRoadmap.steps.map((step, i) => {
+                                const c = concepts.find(x => x.term.toLowerCase() === step.term.toLowerCase());
+                                return (
+                                  <div key={i} className="p-6 bg-[var(--card)] rounded-[24px] border border-[var(--border)] shadow-sm cursor-pointer hover:border-[var(--neo-green)]/50 hover:shadow-md transition-all group" onClick={() => c && navigate(`/concept/${c.id}`)}>
+                                    <div className="flex items-center justify-between mb-3">
+                                      <span className="font-bold text-[15px] group-hover:text-[var(--neo-green)] transition-colors"><span className="opacity-50 text-xs mr-2">{step.order}</span> {step.term}</span>
+                                      {c && <ArrowRight className="w-3.5 h-3.5 text-muted group-hover:text-[var(--text)] transition-colors" />}
+                                    </div>
+                                    <p className="text-[13px] text-muted leading-relaxed opacity-90">{step.reason}</p>
+                                  </div>
+                                )
+                              })}
+                            </div>
+                            <MagneticButton onClick={() => saveRoadmap(activeRoadmap)} className="w-full py-4 mt-8 text-xs font-black uppercase tracking-widest rounded-[32px] border border-[var(--border)] flex items-center justify-center gap-3">
+                              <Save className="w-4 h-4" /> Save Timeline
+                            </MagneticButton>
+                          </motion.div>
+                        </AnimatePresence>
+                      )}
                     </div>
                   </div>
                 ) : (
-                  <div className="space-y-6">
-                     <textarea value={roadmapQuery} onChange={(e) => setRoadmapQuery(e.target.value)} placeholder="PATHWAY..." className="w-full h-32 p-4 bg-[var(--hover)] border border-border text-xs focus:outline-none" />
-                     <button onClick={generateRoadmap} className="w-full py-4 bg-[var(--text)] text-[var(--bg)] font-black uppercase text-[10px]">Generate Path</button>
-                  </div>
+                  null
                 )}
               </div>
             </motion.aside>

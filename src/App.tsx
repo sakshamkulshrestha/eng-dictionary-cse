@@ -6,16 +6,16 @@ export default function App() {
   return (
     <ErrorBoundary>
       <Router>
-          <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] transition-colors duration-500 ease-in-out selection:bg-[var(--neo-green)] selection:text-[var(--pop-black)]">
-            <Routes>
-              <Route path="/" element={<Layout />} />
-              <Route path="/settings" element={<Layout view="settings" />} />
-              <Route path="/guide" element={<Layout view="guide" />} />
-              <Route path="/domain/:domain" element={<Layout />} />
-              <Route path="/concept/:id" element={<Layout />} />
-              <Route path="/bookmarks" element={<Layout view="bookmarks" />} />
-            </Routes>
-          </div>
+        <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] transition-colors duration-500 ease-in-out selection:bg-[var(--neo-green)] selection:text-[var(--pop-black)]">
+          <Routes>
+            <Route path="/" element={<Layout />} />
+            <Route path="/settings" element={<Layout view="settings" />} />
+            <Route path="/guide" element={<Layout view="guide" />} />
+            <Route path="/domain/:domain" element={<Layout />} />
+            <Route path="/concept/:id" element={<Layout />} />
+            <Route path="/bookmarks" element={<Layout view="bookmarks" />} />
+          </Routes>
+        </div>
       </Router>
     </ErrorBoundary>
   );

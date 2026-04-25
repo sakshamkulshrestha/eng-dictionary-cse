@@ -79,10 +79,10 @@ export const DictionaryApi = {
   /**
    * Roadmap generation
    */
-  async generateRoadmap(query: string, concepts: Concept[]): Promise<{ steps: RoadmapStep[] }> {
-    return request<{ steps: RoadmapStep[] }>('/generate-roadmap', {
+  async generateRoadmap(query: string): Promise<{ title: string, steps: RoadmapStep[] }> {
+    return request<{ title: string, steps: RoadmapStep[] }>('/generate-roadmap', {
       method: 'POST',
-      body: JSON.stringify({ query, concepts })
+      body: JSON.stringify({ query })
     });
   },
 

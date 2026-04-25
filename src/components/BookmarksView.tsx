@@ -139,30 +139,31 @@ export default function BookmarksView({
                   {sortedRoadmaps.map((r, i) => (
                     <div
                       key={r.id}
-                      className="group relative flex flex-col sm:flex-row sm:items-center justify-between p-10 neo-card neo-card-interactive"
+                      className="group relative flex flex-col sm:flex-row sm:items-center justify-between p-8 sm:p-10 bg-[var(--card)] border border-[var(--border)] rounded-[32px] cursor-pointer hover:border-[var(--neo-green)]/50 hover:shadow-xl transition-all shadow-sm overflow-hidden"
                       onClick={() => onOpenRoadmap(r)}
                     >
-                      <div className="flex-1 min-w-0 pr-12 sm:pr-4 mb-3 sm:mb-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xl font-bold text-[var(--text)] truncate">{r.query}</span>
+                      <div className="flex-1 min-w-0 pr-12 sm:pr-8 mb-4 sm:mb-0">
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="text-xl sm:text-2xl font-black text-[var(--text)] tracking-tight group-hover:text-[var(--neo-green)] transition-colors line-clamp-1">{r.query}</span>
                         </div>
-                        <div className="flex items-center gap-3 text-sm font-medium text-[#8E8E93]">
-                          <span className="flex items-center gap-1"><Network className="w-3.5 h-3.5" /> {r.steps.length} steps</span>
+                        <div className="flex items-center gap-4 text-sm font-bold uppercase tracking-widest text-[#8E8E93]">
+                          <span className="flex items-center gap-1.5"><Network className="w-4 h-4" /> {r.steps.length} steps</span>
                           <span>•</span>
-                          <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {new Date(r.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                          <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" /> {new Date(r.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                         </div>
                       </div>
 
                       <button
                         onClick={(e) => { e.stopPropagation(); onDeleteRoadmap(r.id); }}
-                        className="absolute top-5 right-5 p-3 bg-[var(--neo-pink)] text-[var(--pop-white)] opacity-0 group-hover:opacity-100 transition-all transform-gpu"
-                        title="Extract roadmap"
+                        className="absolute top-6 right-6 p-3 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-full opacity-0 group-hover:opacity-100 transition-all z-10 border border-red-500/20"
+                        title="Delete roadmap"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
 
-                      <div className="hidden sm:flex shrink-0 w-12 h-12 bg-[var(--text)] items-center justify-center text-[var(--bg)] group-hover:bg-[var(--neo-green)] transition-colors">
-                        <Map className="w-5 h-5" />
+                      <div className="hidden sm:flex shrink-0 w-14 h-14 bg-[var(--text)]/5 rounded-full items-center justify-center text-[var(--text)] group-hover:bg-[var(--text)] group-hover:text-[var(--bg)] transition-colors border border-[var(--border)] mr-10 relative z-0">
+                        <ArrowRight className="w-5 h-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 absolute transition-all" />
+                        <Map className="w-5 h-5 group-hover:opacity-0 transition-all absolute" />
                       </div>
                     </div>
                   ))}

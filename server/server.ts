@@ -25,18 +25,16 @@ async function startServer() {
 
   app.post('/api/generate-roadmap', async (req, res) => {
     try {
-      const { query, concepts } = req.body;
+      const { query } = req.body;
       if (!query) return res.status(400).json({ error: 'Query is required' });
-
-      const conceptList = concepts.map((c: any) => c.term).join(', ');
 
       const payload = {
         model: "nvidia/nemotron-3-nano-30b-a3b",
         messages: [{
           role: "user",
-          content: `I want to learn: "${query}". \nBased on the following available concepts in my database, generate a step-by-step learning roadmap. \nOnly use concepts from this list: [${conceptList}]. \nProvide a logical order and a brief reason why each step is important.\nOutput ONLY a JSON object with a single key "steps" containing an array of objects. Each object must have "term" (string), "reason" (string), and "order" (number).`
+          content: `I want to learn: "${query}". \nGenerate a step-by-step learning roadmap. \nProvide a logical order and a brief reason why each step is important.\nOutput ONLY a JSON object with two keys: "title" (a short, meaningful string summarizing the roadmap), and "steps" containing an array of objects. Each object must have "term" (string), "reason" (string), and "order" (number).`
         }],
-        temperature: 1,
+        temperature: 0.7,
         top_p: 1,
         max_tokens: 16384,
         reasoning_budget: 16384,
@@ -152,7 +150,7 @@ Output ONLY a JSON object with a single key "suggestions" containing an array of
 
       const data = await response.json();
       const text = data?.choices?.[0]?.message?.content;
-      
+
       if (!text) {
         return res.json({ suggestions: [] });
       }
@@ -178,7 +176,7 @@ Output ONLY a JSON object with a single key "suggestions" containing an array of
         const dataWithSource = data.map((d: any) => ({ ...d, id: d._id.toString(), collection_source: col.name }));
         allConcepts = allConcepts.concat(dataWithSource);
       }
-      
+
       console.log(`📡 GET /api/terms - Retrieved ${allConcepts.length} terms`);
       res.json(allConcepts);
     } catch (error) {

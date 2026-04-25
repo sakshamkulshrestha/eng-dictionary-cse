@@ -9,3 +9,6 @@ coverage/
 .vercel
 .env*.local
 data/
+resetCloudTerms.js
+script.js
+transform_terms.json
