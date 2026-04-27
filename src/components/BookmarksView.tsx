@@ -34,10 +34,10 @@ export default function BookmarksView({
       return acc;
     }, {} as Record<string, Concept[]>);
 
-    const sortedDomains = Object.keys(grouped).sort((a, b) => getFullDomainName(a).localeCompare(getFullDomainName(b)));
+    const sortedDomains = Object.keys(grouped).sort((a, b) => (getFullDomainName(a) || '').localeCompare(getFullDomainName(b) || ''));
 
     sortedDomains.forEach(domain => {
-      grouped[domain].sort((a, b) => a.term.localeCompare(b.term));
+      grouped[domain].sort((a, b) => (a.term || '').localeCompare(b.term || ''));
     });
 
     return { grouped, sortedDomains };

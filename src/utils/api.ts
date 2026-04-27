@@ -1,9 +1,10 @@
+/// <reference types="vite/client" />
 import { Concept, RoadmapStep } from '../types';
 
 /**
  * Handles all backend API requests with consistent error semantics
  */
-const BASE_URL = '/api';
+const BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {

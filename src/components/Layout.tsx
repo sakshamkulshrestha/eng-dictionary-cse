@@ -374,7 +374,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
 
       const roadmapFuse = new Fuse(concepts, { keys: ['term'], threshold: 0.4 });
       const mappedSteps = steps.map(step => {
-        const exact = concepts.find(c => c.term.toLowerCase() === step.term.toLowerCase());
+        const exact = concepts.find(c => c.term?.toLowerCase() === step.term?.toLowerCase());
         if (exact) return { ...step, term: exact.term };
 
         const fuzzyResults = roadmapFuse.search(step.term);
@@ -416,7 +416,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
       const data = await DictionaryApi.chat(userMsg, contextBlock);
       const rawText = data.text || '';
       const conceptMatches = [...rawText.matchAll(/\[CONCEPT:\s*([^\]]+)\]/g)].map(m => m[1].trim());
-      const relatedTerms = conceptMatches.filter(t => concepts.find(c => c.term.toLowerCase() === t.toLowerCase()));
+      const relatedTerms = conceptMatches.filter(t => concepts.find(c => c.term?.toLowerCase() === t.toLowerCase()));
       const cleanText = rawText.replace(/\[CONCEPT:\s*[^\]]+\]/g, (m) => {
         return `**${m.replace(/\[CONCEPT:\s*/, '').replace(/\]/, '').trim()}**`;
       });
@@ -434,7 +434,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
       setFetchError(null);
       try {
         const allData = await DictionaryApi.getTerms();
-        setConcepts(allData.sort((a: any, b: any) => a.term.localeCompare(b.term)));
+        setConcepts(allData.sort((a: any, b: any) => (a.term || '').localeCompare(b.term || '')));
       } catch (error: any) {
         console.error('Fetch failed:', error);
         setFetchError(error.message || 'Failed to sync with intelligence database.');
@@ -459,7 +459,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
     const seen = new Set();
     let exactMatch = false;
     for (const item of results) {
-      const lower = item.term.toLowerCase();
+      const lower = (item.term || '').toLowerCase();
       if (!seen.has(lower)) {
         seen.add(lower);
         unique.push(item);
@@ -528,7 +528,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
           } else {
             const h = history.slice(0, 8)[selectedIndex];
             if (h) {
-              const matchedConcept = concepts.find(c => c.term.toLowerCase() === h.toLowerCase());
+              const matchedConcept = concepts.find(c => c.term?.toLowerCase() === h.toLowerCase());
               if (matchedConcept) {
                 navigate(`/concept/${matchedConcept.id}`);
               } else {
@@ -637,7 +637,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                         </button>
                       </div>
                       {history.slice(0, 8).map((h, i) => {
-                        const matchedConcept = concepts.find(c => c.term.toLowerCase() === h.toLowerCase());
+                        const matchedConcept = concepts.find(c => c.term?.toLowerCase() === h.toLowerCase());
                         return (
                           <button
                             key={i}
@@ -835,7 +835,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6"
                         >
                           {aiSuggestions.map((sugg, i) => {
-                            const matchedConcept = concepts.find(c => c.term.toLowerCase() === sugg.term.toLowerCase());
+                            const matchedConcept = concepts.find(c => c.term?.toLowerCase() === sugg.term?.toLowerCase());
                             return (
                               <motion.div
                                 key={i}
@@ -959,7 +959,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                             <h4 className="font-bold text-[13px] uppercase tracking-widest text-[var(--neo-green)] mb-6">{activeRoadmap.query}</h4>
                             <div className="space-y-4">
                               {activeRoadmap.steps.map((step, i) => {
-                                const c = concepts.find(x => x.term.toLowerCase() === step.term.toLowerCase());
+                                const c = concepts.find(x => x.term?.toLowerCase() === step.term?.toLowerCase());
                                 return (
                                   <div key={i} className="p-6 bg-[var(--card)] rounded-[24px] border border-[var(--border)] shadow-sm cursor-pointer hover:border-[var(--neo-green)]/50 hover:shadow-md transition-all group" onClick={() => c && navigate(`/concept/${c.id}`)}>
                                     <div className="flex items-center justify-between mb-3">

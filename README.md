@@ -5,81 +5,93 @@
 
 ---
 
-## 🛰️ Overview
+## 🛰️ Architecture Overview
 
-**The Lexicon** is not just a dictionary; it's a premium, motion-driven intelligence layer designed for the modern engineer. Built with a focus on **Glassmorphism**, **Neural Connectivity**, and **Strict Technical Accuracy**, it transforms static definitions into an interactive exploration space.
+The Lexicon is a high-performance workspace combining a React single-page application (SPA) with a lightweight Express backend API. It is architected for strict separation of concerns, enabling deployment to diverse cloud environments.
 
-Whether you're decentralizing your understanding of Distributed Systems or mastering the protocols of Frontend Architecture, The Lexicon provides the depth required for mastery.
-
----
-
-## 💎 Premium Features
-
-### 🧠 Neural Mapping
-Visualize the connectivity of concepts through our interactive **D3-powered Relationship Graph**. Understand how "Load Balancing" connects to "Horizontal Scaling" before you even read the definition.
-
-### 🌊 Glassmorphism UI
-A "buttery" smooth experience featuring high-end backdrop blurs, soft borders, and fluid animations powered by **Framer Motion**. Designed for focus and visual excellence.
-
-### 🛣️ Intelligence Pathing (AI)
-Generate customized **Learning Roadmaps** on the fly. Tell the AI what you want to master, and it will draw a protocol path through the dictionary's nodes to get you there.
-
-### 🏗️ Strict Schema Intel
-Every concept card is structured for maximum information density without the clutter:
-- **One-line Intel**: Instant clarity.
-- **Deep Logic**: Comprehensive technical explanations.
-- **The Analogies Dual**: Real-world vs. Computer-system comparisons.
-- **Protocol Warnings**: Common misconceptions highlighted to prevent architectural errors.
-- **Comparisons UI**: Winner-scenario comparisons between competing technologies (e.g., GraphQL vs. REST).
+### Project Structure
+```text
+/
+├── src/               # React frontend (Vite)
+├── public/            # Static assets
+├── server/            # Express backend & API routes
+│   ├── app.ts         # Standalone API definitions
+│   ├── db.ts          # MongoDB connection cache
+│   └── server.ts      # HTTP Entrypoint (Dev/Prod)
+├── scripts/           # DB Imports, Data Transforms
+├── data/              # Source JSON artifacts
+├── .env.example       # Example env variables template
+├── package.json       # Project dependencies & scripts
+└── vite.config.ts     # Vite configuration
+```
 
 ---
 
-## 🛠️ Stack Architecture
+## 🔐 Environment Variables Strategy
 
-- **Frontend**: React 18, Vite, TypeScript
-- **Styling**: TailwindCSS + Vanilla CSS (Custom Design System)
-- **Motion**: Framer Motion
-- **Visuals**: D3.js (Force-directed graphs), Lucide Icons
-- **Backend Integration**: MongoDB (Canonical Intel persistence)
-- **Intelligence**: Google Gemini API for Dynamic Roadmap Generation
+This project enforces strict rules regarding environment variables to guarantee security and proper separation between client and server environments.
+
+* **`.env.example`**: The committed template. Use this to understand what keys the project needs. **Never place real secrets in this file.**
+* **`.env.local`**: Your local development secrets file. This file is explicitly `.gitignore`d. Place all your database URIs and API keys here.
+* **`.env`**: **Do not use a standard `.env` file**. To prevent accidental secret leakage, we enforce using `.env.local` for local secrets and standard hosting dashboard variables for production.
+
+### Variable Prefixes
+* **Server-Only (Secrets)**: Standard variables like `MONGODB_URI` and `NVIDIA_API_KEY`. These are handled exclusively by `server/` files and are never visible to the browser.
+* **Client-Safe**: Always prefixed with `VITE_` (e.g., `VITE_API_URL`). These are baked into the frontend build.
 
 ---
 
-## 🏗️ Getting Started
+## 🏗️ Local Development
 
 ### Prerequisites
-
 - Node.js (v18+)
 - MongoDB (Running locally or via Atlas)
-- Gemini API Key (For Roadmap features)
+- NVIDIA API Key
 
-### Installation
+### Getting Started
 
-1. **Clone the Intelligence**:
-   ```bash
-   git clone [repository-url]
-   cd eng-dictionary-cse
-   ```
-
-2. **Synchronize Dependencies**:
+1. **Clone & Install**:
    ```bash
    npm install
    ```
 
-3. **Configure Environment**:
-   Create a `.env.local` file and initialize your protocols:
-   ```env
-   MONGODB_URI=your_mongodb_connection_string
-   GEMINI_API_KEY=your_gemini_api_key
+2. **Configure Environment**:
+   Copy the example environment template:
+   ```bash
+   cp .env.example .env.local
    ```
+   *Edit `.env.local` and add your real keys.*
 
-4. **Initialize Protocol**:
+3. **Start the Integrated Server**:
+   During development, the Express backend automatically runs Vite as middleware to serve the React application on the same port.
    ```bash
    npm run dev
    ```
+   *By default, the application runs on `http://localhost:3000`.*
 
 ---
 
-<div align="center">
-Powered by Protocol Intelligence. Designed for focus.
-</div>
+## 🚀 Deployment config
+
+The Lexicon is deployment-platform-agnostic and can be deployed via traditional generic Node.js hosts, Docker, or split into serverless paradigms.
+
+### Option A: Unified Container / Node.js Host (Render, Railway, Heroku)
+The project natively supports running an integrated backend+frontend HTTP server in production.
+
+1. **Build the Frontend**:
+   ```bash
+   npm run build
+   ```
+   *(Outputs optimized static files to `/dist`)*
+2. **Start the Server**:
+   ```bash
+   npm run start
+   ```
+   *This starts the Express server, which serves `/api/*` dynamically and serves static files from `/dist`.*
+
+**Requirements:** Set `NODE_ENV=production`, `MONGODB_URI`, and `NVIDIA_API_KEY` in the host dashboard.
+
+### Option B: Split Static & Serverless (Netlify, Vercel)
+Because business logic is isolated in `server/app.ts`, it can easily be exported to a serverless function handler while standard CI tools deploy the Vite `/dist` folder to the CDN.
+
+If deploying to Netlify, configure your build settings to `npm run build`, set the publish directory to `dist`, and add a Netlify Function routing `/api/*` to `server/app.ts`. Remember to inject `VITE_API_URL` during the frontend build step if the backend is hosted on a different domain.
