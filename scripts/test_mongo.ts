@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb';
 import 'dotenv/config';
 
 async function testConnection() {
-  const uri = process.env.MONGO_URI || process.env.MONGODB_URI || "";
+  const uri = process.env.MONGODB_URI || "";
   console.log("URI:", uri ? "Present" : "Missing");
   if (!uri) return;
 

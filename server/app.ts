@@ -11,7 +11,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // --- API Routes ---
 
-const getNvidiaKey = () => process.env.NVIDIA_API_KEY || process.env.VITE_NVIDIA_API_KEY || '';
+const getNvidiaKey = () => process.env.NVIDIA_API_KEY || '';
 
 app.post('/api/generate-roadmap', async (req, res) => {
   try {
