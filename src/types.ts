@@ -19,6 +19,10 @@ export interface RoadmapStep {
   term: string;
   reason: string;
   order: number;
+  matched?: boolean;
+  dbTerm?: string | null;
+  id?: string | null;
+  score?: number;
 }
 
 export interface Roadmap {

@@ -1,5 +1,7 @@
 import { MongoClient } from 'mongodb';
-import 'dotenv/config';
+import dotenv from 'dotenv';
+dotenv.config();
+dotenv.config({ path: './.env.local' });
 
 async function testConnection() {
   const uri = process.env.MONGODB_URI || "";
@@ -14,13 +16,13 @@ async function testConnection() {
     const db = client.db('eng_dictionary');
     const collectionsInfo = await db.listCollections().toArray();
     console.log("Collections (raw):", collectionsInfo.map(c => c.name));
-    
+
     const collections = collectionsInfo.filter((c: any) => c.name.endsWith('_terms'));
     console.log("Terms Collections:", collections.map(c => (c as any).name));
-    
+
     for (const col of collections) {
-        const count = await db.collection((col as any).name).countDocuments();
-        console.log(` - ${col.name}: ${count} documents`);
+      const count = await db.collection((col as any).name).countDocuments();
+      console.log(` - ${col.name}: ${count} documents`);
     }
   } catch (err) {
     console.error("Connection failed:", err);

@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import { ObjectId } from 'mongodb';
 import { getDB } from './db.js';
+import { findClosestTerm } from './services/termMatcher.js';
+import { termCache } from './services/termCache.js';
 
 const app = express();
 
@@ -18,11 +20,27 @@ app.post('/api/generate-roadmap', async (req, res) => {
     const { query } = req.body;
     if (!query) return res.status(400).json({ error: 'Query is required' });
 
+    // Build a compact list of real DB terms for the AI to pick from
+    const allTermNames = termCache.getTerms().map(t => t.term);
+    // Limit to ~500 terms related to the query domain to stay within token limits
+    const termListStr = allTermNames.join(', ');
+
     const payload = {
       model: "nvidia/nemotron-3-nano-30b-a3b",
       messages: [{
         role: "user",
-        content: `I want to learn: "${query}". \nGenerate a step-by-step learning roadmap. \nProvide a logical order and a brief reason why each step is important.\nOutput ONLY a JSON object with two keys: "title" (a short, meaningful string summarizing the roadmap), and "steps" containing an array of objects. Each object must have "term" (string), "reason" (string), and "order" (number).`
+        content: `I want to learn: "${query}".
+Generate a step-by-step learning roadmap.
+Provide a logical order and a brief reason why each step is important.
+
+CRITICAL RULE: Each "term" in each step MUST be a single, specific technical concept — NOT a compound phrase or sentence.
+You MUST pick terms from this dictionary of available terms whenever possible:
+[${termListStr}]
+
+If a concept exists in the list above, use the EXACT spelling from the list.
+If a concept truly does not exist in the list, you may use a short, standard technical term (1-3 words max).
+
+Output ONLY a JSON object with two keys: "title" (a short, meaningful string summarizing the roadmap), and "steps" containing an array of objects. Each object must have "term" (string — a single concept name), "reason" (string), and "order" (number).`
       }],
       temperature: 0.7,
       top_p: 1,
@@ -52,6 +70,21 @@ app.post('/api/generate-roadmap', async (req, res) => {
 
     if (!text) throw new Error('Empty response from Nvidia API');
     const parsed = JSON.parse(text);
+
+    // AI generated the steps, now map them to internal dictionary terms
+    if (parsed.steps && Array.isArray(parsed.steps)) {
+      parsed.steps = parsed.steps.map((step: any) => {
+        const match = findClosestTerm(step.term);
+        return {
+          ...step,
+          matched: match.matched,
+          dbTerm: match.dbTerm,
+          id: match.id,
+          score: match.score
+        };
+      });
+    }
+
     res.json(parsed);
   } catch (error: any) {
     console.error('Roadmap generate failed:', error);
@@ -106,15 +139,23 @@ app.post('/api/analyze-history', async (req, res) => {
       return res.json({ suggestions: [] });
     }
 
+    const allTermNames = termCache.getTerms().map(t => t.term);
+    const termListStr = allTermNames.join(', ');
+
     const payload = {
       model: "nvidia/nemotron-3-nano-30b-a3b",
       messages: [{
         role: "user",
         content: `Based on the following recent computing search history: [${history.join(', ')}].
 Suggest exactly 3 relevant computing or software engineering concepts the user should explore next.
-Prioritize core/fundamental concepts that are likely to be in a standard technical dictionary (e.g., specific protocols, algorithms, or architectural patterns).
-If a concept is likely to be "extra knowledge" not in a basic set, provide a particularly clear and insightful reason.
-Output ONLY a JSON object with a single key "suggestions" containing an array of objects. Each object must have "term" (string) and "reason" (string).`
+
+CRITICAL RULE: Each "term" MUST be a single, specific technical concept (1-3 words max) — NOT a compound phrase or sentence.
+You MUST pick terms from this dictionary of available terms whenever possible:
+[${termListStr}]
+
+If a concept exists in the list above, use the EXACT spelling from the list.
+Prioritize core/fundamental concepts.
+Output ONLY a JSON object with a single key "suggestions" containing an array of objects. Each object must have "term" (string — a single concept name from the list) and "reason" (string).`
       }],
       temperature: 0.7,
       top_p: 1,
@@ -144,6 +185,21 @@ Output ONLY a JSON object with a single key "suggestions" containing an array of
     }
 
     const parsed = JSON.parse(text);
+
+    // Map each AI suggestion through the intelligent term matcher
+    if (parsed.suggestions && Array.isArray(parsed.suggestions)) {
+      parsed.suggestions = parsed.suggestions.map((s: any) => {
+        const match = findClosestTerm(s.term);
+        return {
+          ...s,
+          matched: match.matched,
+          dbTerm: match.dbTerm,
+          id: match.id,
+          score: match.score
+        };
+      });
+    }
+
     res.json(parsed);
   } catch (error: any) {
     console.error('Analyze history failed:', error);

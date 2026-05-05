@@ -1,8 +1,5 @@
 import { MongoClient, Db } from 'mongodb';
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
-const DB_NAME = process.env.DB_NAME || 'eng_dictionary';
-
 let dbClient: MongoClient | null = null;
 let dbInstance: Db | null = null;
 
@@ -10,6 +7,9 @@ export async function connectDB(): Promise<Db> {
   if (dbInstance) {
     return dbInstance;
   }
+
+  const MONGODB_URI = process.env.MONGODB_URI || '';
+  const DB_NAME = process.env.DB_NAME || 'eng_dictionary';
 
   if (!MONGODB_URI) {
     const errorMsg = "❌ MONGODB_URI missing in environment vars";

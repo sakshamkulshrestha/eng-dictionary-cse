@@ -307,8 +307,8 @@
     border-radius: var(--radius-lg);
     position: relative;
     box-shadow:
-      5px 5px 0px 0px var(--pop-black),
-      10px 10px 0px 0px rgba(0, 0, 0, 0.3),
+      5px 5px 0px 0px var(--bg),
+      10px 10px 0px 0px rgba(0, 0, 0, 0.15),
       inset 1px 1px 0px rgba(255, 255, 255, 0.05);
     transition: transform 0.2s var(--neo-ease), box-shadow 0.2s var(--neo-ease);
   }
@@ -322,8 +322,8 @@
     transform: translate(-5px, -5px);
     box-shadow:
       5px 5px 0px 0px var(--neo-green),
-      10px 10px 0px 0px var(--pop-black),
-      15px 15px 0px 0px rgba(0, 0, 0, 0.2),
+      10px 10px 0px 0px var(--bg),
+      15px 15px 0px 0px rgba(0, 0, 0, 0.1),
       inset 1px 1px 0px rgba(255, 255, 255, 0.1);
   }
 
@@ -335,7 +335,7 @@
   /* --- Navbar & Layout Elements --- */
   .neo-nav {
     @apply sticky top-0 flex items-center justify-between w-full z-50 px-6 sm:px-12 py-4;
-    background: rgba(13, 13, 13, 0.85);
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
@@ -370,11 +370,11 @@
   }
 
   .markdown-body pre {
-    background: #000;
+    background: var(--bg);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     padding: 1.5rem;
-    box-shadow: inset 2px 2px 0px rgba(255, 255, 255, 0.02);
+    box-shadow: inset 2px 2px 0px rgba(0, 0, 0, 0.04);
     overflow-x: auto;
     margin-bottom: 1.5rem;
   }
@@ -401,7 +401,7 @@
   }
 
   .focus-monochrome {
-    @apply focus:outline-none focus:ring-2 focus:ring-[var(--neo-green)] focus:ring-offset-2 focus:ring-offset-[var(--pop-black)];
+    @apply focus:outline-none focus:ring-2 focus:ring-[var(--neo-green)] focus:ring-offset-2 focus:ring-offset-[var(--bg)];
   }
 }
 
@@ -425,7 +425,4 @@
   background: var(--text);
 }
 
-/* Light mode nav adaptation */
-.light .neo-nav {
-  background: rgba(250, 249, 246, 0.88);
-}
+/* Light mode nav uses color-mix now — no longer needs a separate override */

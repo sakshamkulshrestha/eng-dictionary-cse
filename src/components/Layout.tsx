@@ -372,17 +372,12 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
       const data = await DictionaryApi.generateRoadmap(roadmapQuery);
       const steps: RoadmapStep[] = data.steps || [];
 
-      const roadmapFuse = new Fuse(concepts, { keys: ['term'], threshold: 0.4 });
-      const mappedSteps = steps.map(step => {
-        const exact = concepts.find(c => c.term?.toLowerCase() === step.term?.toLowerCase());
-        if (exact) return { ...step, term: exact.term };
-
-        const fuzzyResults = roadmapFuse.search(step.term);
-        if (fuzzyResults.length > 0) {
-          return { ...step, term: fuzzyResults[0].item.term };
-        }
-        return step;
-      });
+      // Backend now performs robust mapping with score, matched, and dbTerm.
+      // We will prefer the official dbTerm if matched.
+      const mappedSteps = steps.map(step => ({
+        ...step,
+        term: step.matched && step.dbTerm ? step.dbTerm : step.term
+      }));
 
       const newRoadmap: Roadmap = {
         id: crypto.randomUUID(),
@@ -606,22 +601,73 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                 {searchQuery ? (
                   /* Search results */
                   uniqueSearchResults.length > 0 ? (
-                    uniqueSearchResults.map((c, i) => (
-                      <button key={c.id} onMouseEnter={() => setSelectedIndex(i)} onClick={() => {
-                        addToHistory(c.term);
-                        navigate(`/concept/${c.id}`);
-                        setIsSearchOpen(false);
-                        setSearchQuery('');
-                      }} className={cn("w-full p-4 hover:bg-[var(--text)] hover:text-[var(--bg)] text-left text-sm font-bold uppercase tracking-tight flex flex-col group transition-all border-b border-[var(--border)] last:border-0 last:rounded-b-lg first:rounded-t-lg", i === selectedIndex ? "bg-[var(--text)] text-[var(--bg)]" : "")}>
-                        <div className="flex justify-between items-center w-full mb-1">
-                          <span className="text-lg">{c.term}</span>
-                          <span className={cn("text-[10px] uppercase tracking-widest", i === selectedIndex ? "opacity-70" : "opacity-50")}>{c.domain}</span>
-                        </div>
-                        {c.one_line_definition && <span className={cn("text-xs font-medium normal-case tracking-normal line-clamp-1", i === selectedIndex ? "opacity-90" : "opacity-70")}>{c.one_line_definition}</span>}
-                      </button>
-                    ))
+                    <>
+                      {uniqueSearchResults.map((c, i) => (
+                        <button key={c.id} onMouseEnter={() => setSelectedIndex(i)} onClick={() => {
+                          addToHistory(c.term);
+                          navigate(`/concept/${c.id}`);
+                          setIsSearchOpen(false);
+                          setSearchQuery('');
+                        }} className={cn("w-full p-4 hover:bg-[var(--text)] hover:text-[var(--bg)] text-left text-sm font-bold uppercase tracking-tight flex flex-col group transition-all border-b border-[var(--border)] last:border-0 last:rounded-b-lg first:rounded-t-lg", i === selectedIndex ? "bg-[var(--text)] text-[var(--bg)]" : "")}>
+                          <div className="flex justify-between items-center w-full mb-1">
+                            <span className="text-lg">{c.term}</span>
+                            <span className={cn("text-[10px] uppercase tracking-widest", i === selectedIndex ? "opacity-70" : "opacity-50")}>{c.domain}</span>
+                          </div>
+                          {c.one_line_definition && <span className={cn("text-xs font-medium normal-case tracking-normal line-clamp-1", i === selectedIndex ? "opacity-90" : "opacity-70")}>{c.one_line_definition}</span>}
+                        </button>
+                      ))}
+                      {!hasExactMatch && searchQuery.length > 2 && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                          className="px-4 py-3 border-t border-dashed border-[var(--border)]"
+                        >
+                          <a
+                            href="https://forms.gle/yFKUyDdgt8FL4y2M6"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2.5 text-[12px] font-semibold text-[var(--muted)] hover:text-[var(--neo-green)] transition-colors group"
+                          >
+                            <span className="w-5 h-5 rounded-full bg-[var(--neo-green)]/15 flex items-center justify-center shrink-0 group-hover:bg-[var(--neo-green)]/25 transition-colors">
+                              <Send className="w-2.5 h-2.5 text-[var(--neo-green)]" />
+                            </span>
+                            <span>Can't find <strong className="text-[var(--text)] font-bold">"{searchQuery}"</strong>? Request it here →</span>
+                          </a>
+                        </motion.div>
+                      )}
+                    </>
                   ) : (
-                    <div className="p-6 text-center text-[var(--muted)] text-sm">No results found</div>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.97 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                      className="p-8 text-center flex flex-col items-center justify-center gap-4"
+                    >
+                      <motion.div
+                        initial={{ rotate: -8, scale: 0.9 }}
+                        animate={{ rotate: 0, scale: 1 }}
+                        transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                      >
+                        <Search className="w-10 h-10 text-[var(--muted)] opacity-40" />
+                      </motion.div>
+                      <div>
+                        <p className="text-sm font-bold text-[var(--text)]">No results for "{searchQuery}"</p>
+                        <p className="text-xs text-[var(--muted)] mt-1">This term isn't in our dictionary yet</p>
+                      </div>
+                      <motion.a
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                        href="https://forms.gle/yFKUyDdgt8FL4y2M6"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[var(--neo-green)]/10 hover:bg-[var(--neo-green)]/20 text-[var(--neo-green)] text-xs font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                      >
+                        <Send className="w-3 h-3" />
+                        Request this term
+                      </motion.a>
+                    </motion.div>
                   )
                 ) : (
                   /* Recent history when search is empty */
@@ -834,24 +880,33 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                           animate="visible"
                           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6"
                         >
-                          {aiSuggestions.map((sugg, i) => {
-                            const matchedConcept = concepts.find(c => c.term?.toLowerCase() === sugg.term?.toLowerCase());
+                          {aiSuggestions.map((sugg: any, i: number) => {
+                            const isMatched = sugg.matched;
+                            const displayTerm = isMatched && sugg.dbTerm ? sugg.dbTerm : sugg.term;
                             return (
                               <motion.div
                                 key={i}
                                 variants={staggerItem}
                                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                                onClick={() => matchedConcept ? navigate(`/concept/${matchedConcept.id}`) : setIsSearchOpen(true)}
-                                className="group p-6 rounded-2xl border border-[var(--border)] bg-[var(--hover)]/30 backdrop-blur-xl cursor-pointer hover:border-[var(--neo-green)]/40 hover:shadow-lg transition-all relative overflow-hidden"
+                                onClick={() => isMatched && sugg.id ? navigate(`/concept/${sugg.id}`) : undefined}
+                                className={cn(
+                                  "group p-6 rounded-2xl border backdrop-blur-xl transition-all relative overflow-hidden",
+                                  isMatched
+                                    ? "border-[var(--border)] bg-[var(--hover)]/30 cursor-pointer hover:border-[var(--neo-green)]/40 hover:shadow-lg"
+                                    : "border-dashed border-[var(--border)] bg-[var(--hover)]/15 cursor-not-allowed opacity-75"
+                                )}
                               >
                                 <div className="absolute inset-0 bg-gradient-to-br from-[var(--neo-green)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                 <div className="relative z-10">
                                   <div className="flex items-center gap-2 mb-3">
                                     <Sparkles className="w-3.5 h-3.5 text-[var(--neo-green)] opacity-60" />
-                                    <h4 className="font-bold text-[var(--text)] tracking-tight text-base">{sugg.term}</h4>
+                                    <h4 className="font-bold text-[var(--text)] tracking-tight text-base">{displayTerm}</h4>
+                                    {!isMatched && (
+                                      <span className="text-[9px] uppercase tracking-widest bg-[var(--muted)]/20 px-2 py-0.5 rounded text-[var(--muted)] ml-auto">Coming Soon</span>
+                                    )}
                                   </div>
                                   <p className="text-[13px] text-[var(--muted)] leading-relaxed">{sugg.reason}</p>
-                                  {matchedConcept && (
+                                  {isMatched && (
                                     <div className="flex items-center gap-1 mt-4 text-xs font-bold text-[var(--neo-green)] uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
                                       Explore <ArrowRight className="w-3 h-3" />
                                     </div>
@@ -902,7 +957,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                 </div>
                 <button onClick={() => setIsRightPanelOpen(false)} className="p-2 hover:bg-[var(--hover)] rounded-full transition-colors text-muted hover:text-[var(--text)]"><X className="w-5 h-5" /></button>
               </div>
-              <div className="flex mx-8 mt-8 mb-6 p-1 bg-[var(--hover)] rounded-[32px] border border-[var(--border)]/50 shadow-inner overflow-hidden">
+              <div className="flex mx-8 mt-6 mb-4 p-1 bg-[var(--hover)] rounded-[32px] border border-[var(--border)]/50 shadow-inner overflow-hidden">
                 {(['ask', 'roadmap'] as const).map(t => (
                   <button key={t} onClick={() => setRightPanelMode(t)} className={`flex-1 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-full transition-all duration-300 ${rightPanelMode === t ? 'bg-[var(--text)] text-[var(--bg)] shadow-md' : 'bg-transparent text-[var(--muted)] hover:text-[var(--text)]'}`}>{t}</button>
                 ))}
@@ -910,29 +965,54 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
               <div className="flex-1 overflow-y-auto space-y-6">
                 {rightPanelMode === 'ask' ? (
                   <div className="flex flex-col h-full overflow-hidden">
-                    <div className="flex-1 overflow-y-auto space-y-6 mb-6 custom-scrollbar px-8 py-2">
+                    {/* New Chat button — only visible when there are messages */}
+                    {chatMessages.length > 0 && (
+                      <div className="px-8 pt-2 pb-1 flex justify-end">
+                        <button
+                          onClick={() => setChatMessages([])}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] hover:text-[var(--text)] hover:bg-[var(--hover)] border border-transparent hover:border-[var(--border)] transition-all"
+                        >
+                          <Sparkles className="w-3 h-3" />
+                          New Chat
+                        </button>
+                      </div>
+                    )}
+                    <div className="flex-1 overflow-y-auto space-y-4 mb-4 custom-scrollbar px-8 py-2">
+                      {chatMessages.length === 0 && (
+                        <div className="flex flex-col items-center justify-center h-full text-center py-16 opacity-60">
+                          <MessageSquare className="w-8 h-8 text-[var(--muted)] mb-3" />
+                          <p className="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">Ask anything</p>
+                          <p className="text-[11px] text-[var(--muted)] mt-1 max-w-[200px]">Start a conversation about any concept</p>
+                        </div>
+                      )}
                       {chatMessages.map((m, i) => (
-                        <div key={i} className={`p-6 shadow-sm border border-[var(--border)] ${m.role === 'user' ? 'bg-[var(--text)] text-[var(--bg)] rounded-[24px] rounded-br-none ml-8' : 'bg-[var(--card)] rounded-[24px] rounded-bl-none mr-8'}`}>
+                        <div key={i} className={cn(
+                          "p-5 shadow-sm border border-[var(--border)]",
+                          m.role === 'user'
+                            ? 'bg-[var(--text)] text-[var(--bg)] rounded-[20px] rounded-br-[4px] ml-10'
+                            : 'bg-[var(--card)] rounded-[20px] rounded-bl-[4px] mr-6'
+                        )}>
                           <div className="prose prose-sm dark:prose-invert max-w-none"><Markdown>{m.text}</Markdown></div>
                         </div>
                       ))}
                       {isDiscussing && (
-                        <div className="p-6 rounded-[24px] rounded-bl-none border border-[var(--border)] bg-[var(--card)] mr-8 flex items-center justify-center">
-                          <Loader2 className="w-5 h-5 animate-spin text-muted" />
+                        <div className="p-5 rounded-[20px] rounded-bl-[4px] border border-[var(--border)] bg-[var(--card)] mr-6 flex items-center gap-3">
+                          <Loader2 className="w-4 h-4 animate-spin text-muted" />
+                          <span className="text-xs text-[var(--muted)] font-medium">Thinking...</span>
                         </div>
                       )}
                       <div ref={chatEndRef} />
                     </div>
-                    <div className="mt-auto relative px-8 pb-8">
+                    <div className="mt-auto relative px-8 pb-6">
                       <div className="relative group">
                         <textarea
                           value={discussionQuery}
                           onChange={e => setDiscussionQuery(e.target.value)}
                           placeholder="Ask anything..."
-                          className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[32px] p-5 pr-14 min-h-[60px] max-h-[150px] resize-none text-sm font-medium outline-none focus:border-[var(--text)] focus:ring-4 focus:ring-[var(--border)]/20 shadow-sm transition-all custom-scrollbar"
+                          className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[24px] p-4 pr-14 min-h-[52px] max-h-[120px] resize-none text-sm font-medium outline-none focus:border-[var(--text)] focus:ring-4 focus:ring-[var(--border)]/20 shadow-sm transition-all custom-scrollbar"
                           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); discussFurther(); } }}
                         />
-                        <button onClick={discussFurther} disabled={isDiscussing} className="absolute bottom-4 right-4 w-10 h-10 bg-[var(--text)] text-[var(--bg)] rounded-full flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-all outline-none">
+                        <button onClick={discussFurther} disabled={isDiscussing} className="absolute bottom-3 right-3 w-9 h-9 bg-[var(--text)] text-[var(--bg)] rounded-full flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-all outline-none">
                           {isDiscussing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 ml-0.5" />}
                         </button>
                       </div>
@@ -946,10 +1026,11 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                           value={roadmapQuery}
                           onChange={(e) => setRoadmapQuery(e.target.value)}
                           placeholder="e.g., Guide me through Backend Development..."
-                          className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[32px] p-6 min-h-[140px] text-sm font-medium resize-none focus:border-[var(--text)] focus:ring-4 focus:ring-[var(--border)]/20 shadow-sm transition-all custom-scrollbar outline-none"
+                          className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[24px] p-5 min-h-[120px] text-sm font-medium resize-none focus:border-[var(--text)] focus:ring-4 focus:ring-[var(--border)]/20 shadow-sm transition-all custom-scrollbar outline-none"
+                          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); generateRoadmap(); } }}
                         />
                       </div>
-                      <MagneticButton disabled={isGeneratingRoadmap || !roadmapQuery.trim()} onClick={generateRoadmap} className="w-full py-5 text-xs font-black uppercase tracking-[0.2em] rounded-[32px] shadow-lg border border-[var(--border)]">
+                      <MagneticButton disabled={isGeneratingRoadmap || !roadmapQuery.trim()} onClick={generateRoadmap} className="w-full py-4 text-xs font-black uppercase tracking-[0.2em] rounded-[24px] shadow-lg border border-[var(--border)]">
                         {isGeneratingRoadmap ? 'Processing...' : 'Generate Pathway'}
                       </MagneticButton>
 
@@ -959,12 +1040,32 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                             <h4 className="font-bold text-[13px] uppercase tracking-widest text-[var(--neo-green)] mb-6">{activeRoadmap.query}</h4>
                             <div className="space-y-4">
                               {activeRoadmap.steps.map((step, i) => {
-                                const c = concepts.find(x => x.term?.toLowerCase() === step.term?.toLowerCase());
+                                const isMatched = step.matched;
                                 return (
-                                  <div key={i} className="p-6 bg-[var(--card)] rounded-[24px] border border-[var(--border)] shadow-sm cursor-pointer hover:border-[var(--neo-green)]/50 hover:shadow-md transition-all group" onClick={() => c && navigate(`/concept/${c.id}`)}>
+                                  <div
+                                    key={i}
+                                    className={cn(
+                                      "p-6 bg-[var(--card)] rounded-[24px] border shadow-sm transition-all group",
+                                      isMatched
+                                        ? "border-[var(--border)] cursor-pointer hover:border-[var(--neo-green)]/50 hover:shadow-md"
+                                        : "border-dashed border-[var(--border)] opacity-70 cursor-not-allowed"
+                                    )}
+                                    onClick={() => isMatched && step.id && navigate(`/concept/${step.id}`)}
+                                  >
                                     <div className="flex items-center justify-between mb-3">
-                                      <span className="font-bold text-[15px] group-hover:text-[var(--neo-green)] transition-colors"><span className="opacity-50 text-xs mr-2">{step.order}</span> {step.term}</span>
-                                      {c && <ArrowRight className="w-3.5 h-3.5 text-muted group-hover:text-[var(--text)] transition-colors" />}
+                                      <span className={cn(
+                                        "font-bold text-[15px] transition-colors",
+                                        isMatched && "group-hover:text-[var(--neo-green)]"
+                                      )}>
+                                        <span className="opacity-50 text-xs mr-2">{step.order}</span>
+                                        {step.term}
+                                      </span>
+                                      <div className="flex items-center gap-3">
+                                        {!isMatched && (
+                                          <span className="text-[9px] uppercase tracking-widest bg-[var(--muted)]/20 px-2 py-1 rounded text-[var(--muted)]">Incoming</span>
+                                        )}
+                                        {isMatched && <ArrowRight className="w-3.5 h-3.5 text-muted group-hover:text-[var(--text)] transition-colors" />}
+                                      </div>
                                     </div>
                                     <p className="text-[13px] text-muted leading-relaxed opacity-90">{step.reason}</p>
                                   </div>

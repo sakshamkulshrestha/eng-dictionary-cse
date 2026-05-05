@@ -3,9 +3,8 @@ import fs from "fs";
 import dotenv from "dotenv";
 
 dotenv.config();
-dotenv.config({ path: "./.env.local" });
 
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://<username>:<password>@cse-dictionary.<cluster-id>.mongodb.net";
+const MONGO_URI = process.env.MONGODB_URI || "mongodb+srv://<username>:<password>@cse-dictionary.<cluster-id>.mongodb.net";
 const DB_NAME = process.env.DB_NAME || "eng_dictionary";
 const DATA_DIR = process.env.DATA_DIR || "./data";
 
@@ -29,7 +28,7 @@ async function resetAllTerms() {
 
     try {
         console.log("🔌 Connecting to MongoDB Atlas...");
-        client = new MongoClient(MONGODB_URI);
+        client = new MongoClient(MONGO_URI);
         await client.connect();
         console.log("✅ Connected to cluster.\n");
 
