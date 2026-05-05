@@ -9,6 +9,10 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+function getQuestionPrompt(concept: Concept) {
+  return concept.one_line_definition || concept.technical_definition || concept.explanation || 'No definition available';
+}
+
 interface QuizModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -113,7 +117,7 @@ export function QuizModal({ isOpen, onClose, concepts }: QuizModalProps) {
                 <div className="space-y-6">
                   <h3 className="text-small uppercase tracking-widest font-bold text-gold">Identify the term:</h3>
                   <p className="text-h2 serif italic leading-relaxed text-ink">
-                    "{quizQuestions[currentQuestionIndex].concept.definition_short}"
+                    "{getQuestionPrompt(quizQuestions[currentQuestionIndex].concept)}"
                   </p>
                 </div>
 
