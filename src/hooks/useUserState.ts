@@ -63,9 +63,12 @@ export function useUserState() {
       sans: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
     };
     if (settings.fontFamily && settings.fontFamily !== 'default') {
-      document.documentElement.style.setProperty('--font-sans', fontFamilies[settings.fontFamily] || fontFamilies.default);
+      const selectedFont = fontFamilies[settings.fontFamily] || fontFamilies.default;
+      document.documentElement.style.setProperty('--font-sans', selectedFont);
+      document.documentElement.style.setProperty('--font-serif', selectedFont);
     } else {
       document.documentElement.style.removeProperty('--font-sans');
+      document.documentElement.style.removeProperty('--font-serif');
     }
 
     // Reduce motion

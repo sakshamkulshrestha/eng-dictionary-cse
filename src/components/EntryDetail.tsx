@@ -295,7 +295,7 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
                 <div className="absolute -right-4 -top-4 opacity-10">
                   <Lightbulb className="w-28 h-28" />
                 </div>
-                <h2 className="text-[11px] font-black uppercase tracking-widest mb-4 opacity-70 flex items-center gap-2">
+                <h2 className="text-[11px] font-black text-[var(--bg)] uppercase tracking-widest mb-4 opacity-70 flex items-center gap-2">
                   <FileText className="w-3 h-3" /> Real World Analogy
                 </h2>
                 <p className="text-[17px] sm:text-[19px] leading-relaxed font-bold italic relative z-10">

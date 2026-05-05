@@ -582,9 +582,9 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
           </div>
         </div>
 
-        <div ref={searchContainerRef} className="flex-1 max-w-xl mx-auto px-6 relative">
+        <div ref={searchContainerRef} className="flex-1 max-w-lg mx-auto px-4 sm:px-6 relative">
           <div className="relative group">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
+            <Search className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
             <input
               ref={searchInputRef}
               type="text"
@@ -592,7 +592,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
               onChange={(e) => { setSearchQuery(e.target.value); setIsSearchOpen(true); }}
               onFocus={() => setIsSearchOpen(true)}
               placeholder="Search concepts..."
-              className="w-full pl-14 pr-10 py-4 bg-[var(--hover)] border-2 border-[var(--border)] text-sm font-semibold focus:outline-none focus:border-[var(--text)]"
+              className="h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--card)]/80 pl-11 sm:pl-12 pr-9 text-[13px] font-semibold text-[var(--text)] shadow-sm transition-colors placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--text)] focus:bg-[var(--hover)]"
             />
           </div>
           <AnimatePresence>
@@ -735,7 +735,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                   </MagneticButton>
                 </div>
               ) : view === 'settings' ? (
-                <SettingsView key="settings" isDark={settings.theme === 'dark'} setIsDark={(d) => updateSettings({ theme: d ? 'dark' : 'light' })} fontSize={settings.fontSize} setFontSize={(s: any) => updateSettings({ fontSize: s })} reduceMotion={settings.reduceMotion} setReduceMotion={(r) => updateSettings({ reduceMotion: r })} autoSpeak={settings.autoSpeak} setAutoSpeak={(a) => updateSettings({ autoSpeak: a })} onClearHistory={clearHistory} onClearBookmarks={clearSystem} bookmarks={bookmarks} />
+                <SettingsView key="settings" isDark={settings.theme === 'dark'} setIsDark={(d) => updateSettings({ theme: d ? 'dark' : 'light' })} fontSize={settings.fontSize} setFontSize={(s: any) => updateSettings({ fontSize: s })} reduceMotion={settings.reduceMotion} setReduceMotion={(r) => updateSettings({ reduceMotion: r })} autoSpeak={settings.autoSpeak} setAutoSpeak={(a) => updateSettings({ autoSpeak: a })} fontFamily={settings.fontFamily} setFontFamily={(f: any) => updateSettings({ fontFamily: f })} onClearHistory={clearHistory} onClearBookmarks={clearSystem} bookmarks={bookmarks} />
               ) : view === 'bookmarks' ? (
                 <BookmarksView key="bookmarks" bookmarks={bookmarks} roadmaps={roadmaps} concepts={concepts} onNavigate={(id) => navigate(`/concept/${id}`)} onClose={() => navigate(-1)} onRemoveBookmark={toggleBookmark} onDeleteRoadmap={deleteRoadmap} onOpenRoadmap={(r) => { setActiveRoadmap(r); setRightPanelMode('roadmap'); setIsRightPanelOpen(true); }} />
               ) : view === 'guide' ? (

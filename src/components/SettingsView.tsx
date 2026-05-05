@@ -46,7 +46,7 @@ function SettingRow({ icon, iconBg, title, description, action }: { icon: React.
   return (
     <div className="flex items-center justify-between p-6 sm:p-7 border-b border-[var(--border)] last:border-0">
       <div className="flex items-center gap-4">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${iconBg}`}>
+        <div className={`w-10 h-10 rounded-xl flex shrink-0 items-center justify-center ${iconBg}`}>
           {icon}
         </div>
         <div className="flex flex-col">
@@ -104,8 +104,8 @@ export default function SettingsView({
             <h2 className="text-[10px] font-black text-muted uppercase tracking-[0.4em] pl-1">Appearance</h2>
             <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl overflow-hidden">
               <SettingRow
-                icon={isDark ? <Moon className="w-5 h-5 text-white" strokeWidth={2.5} /> : <Sun className="w-5 h-5 text-[var(--pop-black)]" strokeWidth={2.5} />}
-                iconBg={isDark ? 'bg-[var(--text)]' : 'bg-[var(--neo-gold)]'}
+                icon={isDark ? <Moon className="w-5 h-5 text-[var(--pop-black)]" strokeWidth={2.5} /> : <Sun className="w-5 h-5 text-[var(--pop-black)]" strokeWidth={2.5} />}
+                iconBg="bg-[var(--manna-gold)]"
                 title="Dark Mode"
                 description="Switch between light and dark theme"
                 action={<ToggleSwitch checked={isDark} onChange={setIsDark} />}

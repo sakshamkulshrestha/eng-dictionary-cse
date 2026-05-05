@@ -35,7 +35,7 @@ export interface Roadmap {
 export interface UserSettings {
   theme: 'light' | 'dark';
   fontSize: 'standard' | 'large' | 'small' | 'medium';
-  fontFamily: 'default' | 'sans' | 'system' | 'dyslexic';
+  fontFamily: 'default' | 'sans' | 'system' | 'mono' | 'dyslexic';
   focusMode: boolean;
   autoExpandDetails: boolean;
   accentColor?: string;

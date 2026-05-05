@@ -334,7 +334,7 @@
 
   /* --- Navbar & Layout Elements --- */
   .neo-nav {
-    @apply sticky top-0 flex items-center justify-between w-full z-50 px-6 sm:px-12 py-4;
+    @apply sticky top-0 flex items-center justify-between w-full z-50 px-6 sm:px-12 py-3;
     background: color-mix(in srgb, var(--bg) 88%, transparent);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
