@@ -45,17 +45,19 @@ function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: (v: b
 
 function SettingRow({ icon, iconBg, title, description, action }: { icon: React.ReactNode; iconBg: string; title: string; description: string; action: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between p-6 sm:p-7 border-b border-[var(--border)] last:border-0">
-      <div className="flex items-center gap-4">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 sm:p-7 border-b border-[var(--border)] last:border-0">
+      <div className="flex items-center gap-4 min-w-0 flex-1">
         <div className={`w-10 h-10 rounded-xl flex shrink-0 items-center justify-center ${iconBg}`}>
           {icon}
         </div>
-        <div className="flex flex-col">
-          <span className="text-sm font-bold">{title}</span>
-          <span className="text-[11px] text-muted">{description}</span>
+        <div className="flex flex-col min-w-0">
+          <span className="text-sm font-bold truncate">{title}</span>
+          <span className="text-[11px] text-muted whitespace-normal break-words">{description}</span>
         </div>
       </div>
-      {action}
+      <div className="flex-shrink-0 self-start sm:self-auto">
+        {action}
+      </div>
     </div>
   );
 }
@@ -110,16 +112,19 @@ export default function SettingsView({
                 title="Theme"
                 description="Choose system, light, or dark mode"
                 action={
-                  <div className="flex items-center border border-[var(--border)] rounded-xl overflow-hidden">
-                    {(['system', 'light', 'dark'] as const).map(t => (
-                      <button
-                        key={t}
-                        onClick={() => setTheme(t)}
-                        className={`px-3 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${theme === t ? 'bg-[var(--text)] text-[var(--bg)]' : 'text-muted hover:text-[var(--text)]'}`}
-                      >
-                        {t}
-                      </button>
-                    ))}
+                  <div className="relative">
+                    <select
+                      value={theme}
+                      onChange={(e) => setTheme(e.target.value as any)}
+                      className="appearance-none bg-[var(--hover)] border border-[var(--border)] text-[var(--text)] text-[12px] font-bold uppercase tracking-widest px-4 py-2 pr-8 rounded-xl outline-none focus:border-[var(--neo-green)] transition-all cursor-pointer"
+                    >
+                      <option value="system">System</option>
+                      <option value="light">Light</option>
+                      <option value="dark">Dark</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[var(--muted)]">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
                   </div>
                 }
               />
@@ -129,16 +134,19 @@ export default function SettingsView({
                 title="Text Size"
                 description="Adjust content reading density"
                 action={
-                  <div className="flex items-center border border-[var(--border)] rounded-xl overflow-hidden">
-                    {['small', 'standard', 'large'].map(s => (
-                      <button
-                        key={s}
-                        onClick={() => setFontSize(s)}
-                        className={`px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${fontSize === s ? 'bg-[var(--text)] text-[var(--bg)]' : 'text-muted hover:text-[var(--text)]'}`}
-                      >
-                        {s}
-                      </button>
-                    ))}
+                  <div className="relative">
+                    <select
+                      value={fontSize}
+                      onChange={(e) => setFontSize(e.target.value)}
+                      className="appearance-none bg-[var(--hover)] border border-[var(--border)] text-[var(--text)] text-[12px] font-bold uppercase tracking-widest px-4 py-2 pr-8 rounded-xl outline-none focus:border-[var(--neo-purple)] transition-all cursor-pointer"
+                    >
+                      <option value="small">Small</option>
+                      <option value="standard">Standard</option>
+                      <option value="large">Large</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[var(--muted)]">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
                   </div>
                 }
               />
@@ -155,23 +163,30 @@ export default function SettingsView({
           {/* Font Family */}
           <motion.div variants={fadeUp} className="space-y-4">
             <h2 className="text-[10px] font-black text-muted uppercase tracking-[0.4em] pl-1">Font</h2>
-            <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6">
-              <div className="flex flex-wrap gap-3">
-                {[
-                  { label: 'Default', value: 'default', preview: 'Inter' },
-                  { label: 'System', value: 'system', preview: '-apple-system' },
-                  { label: 'Mono', value: 'mono', preview: 'monospace' },
-                  { label: 'Dyslexic', value: 'dyslexic', preview: 'Comic Sans MS' },
-                ].map(font => (
-                  <button
-                    key={font.value}
-                    onClick={() => setFontFamily?.(font.value)}
-                    className={`px-5 py-3 rounded-xl border-2 transition-all ${(fontFamily || 'default') === font.value ? 'border-[var(--text)] bg-[var(--text)]/10 shadow-sm' : 'border-[var(--border)] hover:border-[var(--text)]/50'}`}
-                  >
-                    <span className="text-[12px] font-bold block" style={{ fontFamily: font.preview }}>{font.label}</span>
-                  </button>
-                ))}
-              </div>
+            <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl overflow-hidden">
+              <SettingRow
+                icon={<Type className="w-5 h-5 text-white" strokeWidth={2.5} />}
+                iconBg="bg-[#3b82f6]"
+                title="Font Family"
+                description="Choose the typeface used throughout the app"
+                action={
+                  <div className="relative">
+                    <select
+                      value={fontFamily || 'default'}
+                      onChange={(e) => setFontFamily?.(e.target.value)}
+                      className="appearance-none bg-[var(--hover)] border border-[var(--border)] text-[var(--text)] text-[12px] font-bold uppercase tracking-widest px-4 py-2 pr-8 rounded-xl outline-none focus:border-[#3b82f6] transition-all cursor-pointer"
+                    >
+                      <option value="default">Default</option>
+                      <option value="system">System</option>
+                      <option value="mono">Mono</option>
+                      <option value="dyslexic">Dyslexic</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[var(--muted)]">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                  </div>
+                }
+              />
             </div>
           </motion.div>
 

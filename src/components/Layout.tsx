@@ -1206,12 +1206,12 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                         )}
                         {chatMessages.map((m, i) => (
                           <div key={i} className={cn(
-                            "p-4 shadow-sm border border-[var(--border)]",
+                            "p-4 shadow-sm border border-[var(--border)] overflow-hidden break-words",
                             m.role === 'user'
                               ? 'bg-[var(--text)] text-[var(--bg)] rounded-[20px] rounded-br-[4px] ml-6'
                               : 'bg-[var(--card)] rounded-[20px] rounded-bl-[4px] mr-4'
                           )}>
-                            <div className="prose prose-sm dark:prose-invert max-w-none chat-markdown">
+                            <div className="prose prose-sm dark:prose-invert max-w-none chat-markdown break-words">
                               <Markdown components={{
                                 code({ className, children, ...props }: any) {
                                   const match = /language-(\w+)/.exec(className || '');
@@ -1337,7 +1337,12 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                                     <div
                                       key={i}
                                       className="p-5 bg-[var(--card)] rounded-[24px] border border-[var(--border)] shadow-sm transition-all group cursor-pointer hover:border-[var(--neo-green)]/50 hover:shadow-md"
-                                      onClick={() => step.id && navigate(`/concept/${step.id}`)}
+                                      onClick={() => {
+                                        if (step.id) {
+                                          navigate(`/concept/${step.id}`);
+                                          if (window.innerWidth < 1024) setIsRightPanelOpen(false);
+                                        }
+                                      }}
                                     >
                                       <div className="flex items-center justify-between mb-2.5">
                                         <span className="font-bold text-[15px] transition-colors group-hover:text-[var(--neo-green)]">
