@@ -439,12 +439,15 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
     }
   };
 
-  const discussFurther = async () => {
-    if (!discussionQuery.trim()) return;
+  const discussFurther = async (directQuery?: string | React.MouseEvent) => {
+    const queryText = typeof directQuery === 'string' ? directQuery : discussionQuery;
+    if (!queryText.trim()) return;
     setIsDiscussing(true);
-    const userMsg = discussionQuery;
+    const userMsg = queryText;
     setChatMessages(prev => [...prev, { role: 'user', text: userMsg }]);
-    setDiscussionQuery('');
+    if (typeof directQuery !== 'string') {
+      setDiscussionQuery('');
+    }
     try {
       let contextBlock = '';
       if (selectedConcept) {
@@ -737,18 +740,38 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                         <p className="text-sm font-bold text-[var(--text)]">No results for "{searchQuery}"</p>
                         <p className="text-xs text-[var(--muted)] mt-1">This term isn't in our dictionary yet</p>
                       </div>
-                      <motion.a
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                        href="https://forms.gle/yFKUyDdgt8FL4y2M6"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[var(--neo-green)]/10 hover:bg-[var(--neo-green)]/20 text-[var(--neo-green)] text-xs font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
-                      >
-                        <Send className="w-3 h-3" />
-                        Request this term
-                      </motion.a>
+                      <div className="flex flex-col sm:flex-row items-center gap-3 mt-2">
+                        <motion.button
+                          initial={{ opacity: 0, y: 6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                          onClick={() => {
+                            const query = searchQuery;
+                            setIsSearchOpen(false);
+                            setSearchQuery('');
+                            setRightPanelMode('ask');
+                            setIsRightPanelOpen(true);
+                            // Slight delay to allow animation to start
+                            setTimeout(() => discussFurther(query), 100);
+                          }}
+                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[var(--neo-purple)]/10 hover:bg-[var(--neo-purple)]/20 text-[var(--neo-purple)] text-xs font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                        >
+                          <Bot className="w-3.5 h-3.5" />
+                          Ask AI directly
+                        </motion.button>
+                        <motion.a
+                          initial={{ opacity: 0, y: 6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                          href="https://forms.gle/yFKUyDdgt8FL4y2M6"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[var(--neo-green)]/10 hover:bg-[var(--neo-green)]/20 text-[var(--neo-green)] text-xs font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                        >
+                          <Send className="w-3 h-3" />
+                          Request this term
+                        </motion.a>
+                      </div>
                     </motion.div>
                   )
                 ) : (
