@@ -10,6 +10,54 @@ export interface MatchResult {
   score: number;
 }
 
+let termFuse: Fuse<CachedTerm> | null = null;
+let fuseSignature = '';
+
+function getTermFuse(terms: CachedTerm[]) {
+  const signature = `${terms.length}:${terms[0]?.id || ''}:${terms[terms.length - 1]?.id || ''}`;
+  if (!termFuse || signature !== fuseSignature) {
+    termFuse = new Fuse(terms, {
+      keys: ['term', 'normalized', 'aliases'],
+      includeScore: true,
+      threshold: 0.25,
+      distance: 100
+    });
+    fuseSignature = signature;
+  }
+  return termFuse;
+}
+
+export function getTopTermCandidates(input: string, limit = 120): CachedTerm[] {
+  if (!termCache.isReady() || !input || typeof input !== 'string') return [];
+
+  const terms = termCache.getTerms();
+  const cleaned = input.toLowerCase().trim();
+  const normInput = normalizeTerm(input);
+  const normalizedTokens = normInput.split(/\s+/).filter(Boolean);
+
+  const directContains = terms.filter((term) => {
+    const termLower = term.term.toLowerCase();
+    return normalizedTokens.some((token) => token.length > 1 && termLower.includes(token));
+  });
+
+  const startsWith = terms.filter((term) => term.term.toLowerCase().startsWith(cleaned));
+  const fuzzy = getTermFuse(terms).search(input, { limit: limit * 2 }).map((result) => result.item);
+
+  const combined = [...startsWith, ...directContains, ...fuzzy];
+  const uniqueCandidates: CachedTerm[] = [];
+  const seenIds = new Set<string>();
+
+  for (const candidate of combined) {
+    if (!seenIds.has(candidate.id)) {
+      seenIds.add(candidate.id);
+      uniqueCandidates.push(candidate);
+      if (uniqueCandidates.length >= limit) break;
+    }
+  }
+
+  return uniqueCandidates;
+}
+
 export function findClosestTerm(input: string): MatchResult {
   if (!termCache.isReady()) {
     console.warn("⚠️ termCache mapping requested but cache not ready!");
@@ -75,14 +123,7 @@ export function findClosestTerm(input: string): MatchResult {
   }
 
   // === Layer 4: Fuzzy Match (Fuse.js) ===
-  const fuse = new Fuse(terms, {
-    keys: ['term', 'normalized', 'aliases'], // Removed superNormalized to prevent substring collision false positives
-    includeScore: true,
-    threshold: 0.25,
-    distance: 100
-  });
-
-  const fuseResults = fuse.search(input);
+  const fuseResults = getTermFuse(terms).search(input);
   if (fuseResults.length > 0) {
     const topResult = fuseResults[0];
     const item = topResult.item;

@@ -334,7 +334,7 @@
 
   /* --- Navbar & Layout Elements --- */
   .neo-nav {
-    @apply sticky top-0 flex items-center justify-between w-full z-50 px-6 sm:px-12 py-3;
+    @apply sticky top-0 flex flex-col w-full z-50 px-4 sm:px-6 lg:px-10 py-3 sm:py-4;
     background: color-mix(in srgb, var(--bg) 88%, transparent);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -386,6 +386,16 @@
 
   .animate-slide-up {
     animation: slide-up 0.5s var(--neo-ease) forwards;
+  }
+}
+
+@media (max-width: 640px) {
+  .neo-card {
+    padding: 1rem;
+    box-shadow:
+      2px 2px 0px 0px var(--bg),
+      6px 6px 0px 0px rgba(0, 0, 0, 0.1),
+      inset 1px 1px 0px rgba(255, 255, 255, 0.04);
   }
 }
 

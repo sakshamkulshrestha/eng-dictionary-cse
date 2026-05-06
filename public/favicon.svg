@@ -1,6 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <!-- Hexagonal shape -->
-  <path d="M32 4L56.785 18V46L32 60L7.215 46V18L32 4Z" fill="#E5FE40" stroke="#0D0D0D" stroke-width="2"/>
-  <!-- Letter L -->
-  <path d="M24 18V46H42V40H30V18H24Z" fill="#0D0D0D"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1020"/>
+      <stop offset="100%" stop-color="#1C243B"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E5FE40"/>
+      <stop offset="100%" stop-color="#B6D90E"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="6" y="6" width="84" height="84" rx="24" fill="url(#bg)"/>
+  <rect x="18" y="18" width="60" height="60" rx="18" stroke="#2F3C62" stroke-width="2"/>
+
+  <path d="M30 58L40 38C41.6 34.8 46.1 34.8 47.7 38L57.7 58" stroke="url(#accent)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M41 53H55" stroke="url(#accent)" stroke-width="5" stroke-linecap="round"/>
+
+  <circle cx="63.5" cy="34" r="5.5" fill="#7CD6FF"/>
+  <circle cx="29.5" cy="34" r="4.5" fill="#7CD6FF" opacity="0.75"/>
+  <path d="M34 34H58" stroke="#7CD6FF" stroke-width="2.5" stroke-linecap="round" opacity="0.75"/>
 </svg>

@@ -1,5 +1,5 @@
 <div align="center">
-# ⚡️ THE LEXICON: PROTOCOL INTELLIGENCE
+# ⚡️ ENGINEERING DICTIONARY FOR CSE
 ### A High-Performance Knowledge Retrieval System for Software Engineering
 </div>
 
@@ -7,7 +7,7 @@
 
 ## 🛰️ Architecture Overview
 
-The Lexicon is a high-performance workspace combining a React single-page application (SPA) with a lightweight Express backend API. It is architected for strict separation of concerns, enabling deployment to diverse cloud environments.
+Engineering Dictionary for CSE is a high-performance workspace combining a React single-page application (SPA) with a lightweight Express backend API. It is architected for strict separation of concerns, enabling deployment to diverse cloud environments.
 
 ### Project Structure
 ```text
@@ -73,7 +73,7 @@ This project enforces strict rules regarding environment variables to guarantee 
 
 ## 🚀 Deployment config
 
-The Lexicon is deployment-platform-agnostic and can be deployed via traditional generic Node.js hosts, Docker, or split into serverless paradigms.
+Engineering Dictionary for CSE is deployment-platform-agnostic and can be deployed via traditional generic Node.js hosts, Docker, or split into serverless paradigms.
 
 ### Option A: Unified Container / Node.js Host (Render, Railway, Heroku)
 The project natively supports running an integrated backend+frontend HTTP server in production.

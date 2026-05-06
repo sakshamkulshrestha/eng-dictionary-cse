@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
 import { Info, Code, Bookmark, BookmarkCheck, AlertCircle, Terminal, ChevronRight, ChevronLeft, Network, Scale, FileText, Volume2, Search, ArrowRight, Lightbulb, Zap, CheckCircle, Navigation, Link2 } from 'lucide-react';
 import { getFullDomainName } from '../utils/domains';
 import MagneticButton from './primitives/MagneticButton';
@@ -34,6 +33,23 @@ const staggerItem = {
 export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavigateDomain, onToggleBookmark, isBookmarked, autoSpeak }: any) {
   const [copied, setCopied] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const relatedDomains = useMemo(() => {
+    if (!entry?.term) return [];
+    const seenDomains = new Set<string>();
+    return dictionaryData
+      .filter((concept: any) =>
+        concept?.id !== entry.id &&
+        concept?.domain &&
+        concept?.domain !== entry.domain &&
+        concept?.term?.trim().toLowerCase() === entry.term?.trim().toLowerCase()
+      )
+      .filter((concept: any) => {
+        if (seenDomains.has(concept.domain)) return false;
+        seenDomains.add(concept.domain);
+        return true;
+      });
+  }, [dictionaryData, entry?.domain, entry?.id, entry?.term]);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -116,22 +132,29 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
       <header className="mb-14 relative">
         <div className="flex items-center justify-between mb-8">
           {/* Clickable domain badges for all identical terms */}
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={() => onNavigateDomain?.(entry.domain)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--text)] text-[var(--bg)] rounded-full text-[12px] font-bold uppercase tracking-widest shadow-sm cursor-pointer"
-            >
-              {getFullDomainName(entry.domain)}
-            </button>
-            {dictionaryData.filter((d: any) => d.term?.trim().toLowerCase() === entry.term?.trim().toLowerCase() && d.id !== entry.id).map((dup: any) => (
-              <button
-                key={dup.id}
-                onClick={() => onNavigate(dup.id)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--text)]/5 backdrop-blur-md border border-[var(--border)] rounded-full text-[12px] font-bold text-[var(--muted)] hover:text-[var(--text)] hover:bg-[var(--text)]/10 uppercase tracking-widest shadow-sm transition-all cursor-pointer group"
-              >
-                {getFullDomainName(dup.domain)}
-              </button>
-            ))}
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="flex-1 min-w-0">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--muted)] mb-2">
+              Domain Context
+            </p>
+            <div className="overflow-x-auto pb-1">
+              <div className="inline-flex items-center gap-2 min-w-max pr-2">
+                <button
+                  onClick={() => onNavigateDomain?.(entry.domain)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--text)] text-[var(--bg)] rounded-full text-[11px] sm:text-[12px] font-bold uppercase tracking-widest shadow-sm cursor-pointer whitespace-nowrap"
+                >
+                  {getFullDomainName(entry.domain)}
+                </button>
+                {relatedDomains.map((dup: any) => (
+                  <button
+                    key={dup.domain}
+                    onClick={() => onNavigate(dup.id)}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--text)]/5 backdrop-blur-md border border-[var(--border)] rounded-full text-[11px] sm:text-[12px] font-bold text-[var(--muted)] hover:text-[var(--text)] hover:bg-[var(--text)]/10 uppercase tracking-widest shadow-sm transition-all cursor-pointer group whitespace-nowrap"
+                  >
+                    {getFullDomainName(dup.domain)}
+                  </button>
+                ))}
+              </div>
+            </div>
           </motion.div>
 
           {/* Action buttons */}
@@ -461,6 +484,15 @@ export default function EntryDetail({ entry, dictionaryData, onNavigate, onNavig
             </motion.div>
           )}
         </div>
+
+        <motion.div
+          {...sectionAnim}
+          className="p-5 sm:p-6 rounded-2xl border border-dashed border-[var(--border)] bg-[var(--card)]/55"
+        >
+          <p className="text-[11px] sm:text-xs text-[var(--muted)] leading-relaxed">
+            Some explanations and examples may be AI-generated. Use this as a learning reference and verify critical details with primary technical documentation.
+          </p>
+        </motion.div>
       </div>
     </motion.div>
   );

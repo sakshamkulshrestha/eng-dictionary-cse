@@ -49,9 +49,8 @@ export default function BookmarksView({
 
   return (
     <div className="w-full h-full animate-fade-in perspective-1000">
-
-      <div className="max-w-[1400px] w-full mx-auto p-20 text-[var(--text)] pb-32">
-        <header className="mb-20">
+      <div className="max-w-[1400px] w-full mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12 text-[var(--text)] pb-24">
+        <header className="mb-12 sm:mb-16">
           <h1 className="text-page-title mb-5">
             Library
           </h1>
@@ -59,16 +58,16 @@ export default function BookmarksView({
             Your saved knowledge components.
           </p>
 
-          <div className="flex bg-[var(--card)] p-1.5 rounded-2xl w-fit border border-[var(--border)] shadow-sm">
+          <div className="flex flex-wrap bg-[var(--card)] p-1.5 rounded-2xl w-full sm:w-fit border border-[var(--border)] shadow-sm gap-1">
             <button
               onClick={() => setActiveTab('words')}
-              className={`px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all rounded-xl ${activeTab === 'words' ? 'bg-[var(--text)] text-[var(--bg)] shadow-md' : 'text-muted hover:text-[var(--text)] hover:bg-[var(--hover)]'}`}
+              className={`flex-1 sm:flex-none px-6 sm:px-8 py-3 sm:py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all rounded-xl ${activeTab === 'words' ? 'bg-[var(--text)] text-[var(--bg)] shadow-md' : 'text-muted hover:text-[var(--text)] hover:bg-[var(--hover)]'}`}
             >
               Saved Words
             </button>
             <button
               onClick={() => setActiveTab('roadmaps')}
-              className={`px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all rounded-xl ${activeTab === 'roadmaps' ? 'bg-[var(--text)] text-[var(--bg)] shadow-md' : 'text-muted hover:text-[var(--text)] hover:bg-[var(--hover)]'}`}
+              className={`flex-1 sm:flex-none px-6 sm:px-8 py-3 sm:py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all rounded-xl ${activeTab === 'roadmaps' ? 'bg-[var(--text)] text-[var(--bg)] shadow-md' : 'text-muted hover:text-[var(--text)] hover:bg-[var(--hover)]'}`}
             >
               Saved Roadmaps
             </button>
@@ -86,8 +85,14 @@ export default function BookmarksView({
               </div>
 
               {groupedBookmarks.sortedDomains.length === 0 ? (
-                <div className="py-20 bg-[var(--hover)] text-center border-2 border-dashed border-[var(--border)]">
-                  <p className="text-muted font-black uppercase tracking-widest">Protocol: No intelligence saved.</p>
+                <div className="py-16 px-6 bg-[var(--card)]/70 rounded-[32px] text-center border border-dashed border-[var(--border)] flex flex-col items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl border border-[var(--border)] bg-[var(--hover)] flex items-center justify-center">
+                    <Bookmark className="w-5 h-5 text-[var(--muted)]" />
+                  </div>
+                  <p className="text-[var(--text)] font-black uppercase tracking-[0.16em]">No saved words yet.</p>
+                  <p className="text-sm text-[var(--muted)] max-w-md">
+                    Bookmark any term from a definition page and it will appear here.
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-12">

@@ -96,7 +96,7 @@ export default function SettingsView({
         >
           <motion.header variants={fadeUp} className="mb-8">
             <h1 className="text-page-title mb-3">Settings</h1>
-            <p className="text-muted text-sm font-medium">Customize your Lexicon experience.</p>
+            <p className="text-muted text-sm font-medium">Customize your Engineering Dictionary for CSE experience.</p>
           </motion.header>
 
           {/* Appearance */}

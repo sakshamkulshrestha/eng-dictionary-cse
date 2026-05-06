@@ -29,6 +29,7 @@ import SkeletonLoader from './primitives/SkeletonLoader';
 import MagneticButton from './primitives/MagneticButton';
 import TiltCard from './primitives/TiltCard';
 import AnimatedText from './primitives/AnimatedText';
+import { BrandMark } from './primitives/BrandMark';
 import * as d3 from 'd3';
 
 function cn(...inputs: ClassValue[]) {
@@ -58,6 +59,15 @@ const staggerItem = {
       ease: [0.16, 1, 0.3, 1] as any
     }
   }
+};
+
+type AiSuggestion = {
+  term: string;
+  reason: string;
+  matched?: boolean;
+  dbTerm?: string | null;
+  id?: string | null;
+  score?: number;
 };
 
 // --- HELPER COMPONENTS ---
@@ -273,13 +283,14 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
   const [discussionQuery, setDiscussionQuery] = useState('');
   const [isDiscussing, setIsDiscussing] = useState(false);
   const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'ai', text: string, relatedTerms?: string[] }[]>([]);
+  const [isCompactLayout, setIsCompactLayout] = useState(() => window.innerWidth < 1024);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages, isDiscussing]);
 
-  const [aiSuggestions, setAiSuggestions] = useState<{ term: string, reason: string }[]>([]);
+  const [aiSuggestions, setAiSuggestions] = useState<AiSuggestion[]>([]);
   const [isAnalyzingHistory, setIsAnalyzingHistory] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -287,6 +298,12 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
   const scrollPositions = useRef<Record<string, number>>({});
 
   const navType = useNavigationType();
+
+  useEffect(() => {
+    const onResize = () => setIsCompactLayout(window.innerWidth < 1024);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => {
     const mainEl = scrollRef.current;
@@ -325,7 +342,8 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
     const cached = localStorage.getItem(cacheKey);
     if (cached) {
       try {
-        setAiSuggestions(JSON.parse(cached));
+        const parsed = JSON.parse(cached) as AiSuggestion[];
+        setAiSuggestions(parsed.filter((s) => s.matched && s.id).slice(0, 6));
       } catch { /* ignore parse errors */ }
       return;
     }
@@ -335,9 +353,12 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
       setIsAnalyzingHistory(true);
       try {
         const data = await DictionaryApi.analyzeHistory(recentHistory);
-        if (!cancelled && data.suggestions?.length > 0) {
-          setAiSuggestions(data.suggestions.slice(0, 6));
-          localStorage.setItem(cacheKey, JSON.stringify(data.suggestions.slice(0, 6)));
+        if (!cancelled) {
+          const cleanedSuggestions = (data.suggestions || [])
+            .filter((s) => s.matched && s.id)
+            .slice(0, 6);
+          setAiSuggestions(cleanedSuggestions);
+          localStorage.setItem(cacheKey, JSON.stringify(cleanedSuggestions));
         }
       } catch (error) {
         console.error("AI History Analysis failed:", error);
@@ -372,17 +393,30 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
       const data = await DictionaryApi.generateRoadmap(roadmapQuery);
       const steps: RoadmapStep[] = data.steps || [];
 
-      // Backend now performs robust mapping with score, matched, and dbTerm.
-      // We will prefer the official dbTerm if matched.
-      const mappedSteps = steps.map(step => ({
-        ...step,
-        term: step.matched && step.dbTerm ? step.dbTerm : step.term
-      }));
+      // Keep roadmap steps strictly limited to dictionary-backed terms.
+      const mappedSteps = steps
+        .filter((step) => step.matched && step.id)
+        .map(step => ({
+          ...step,
+          term: step.dbTerm || step.term
+        }));
+
+      const dedupedSteps: RoadmapStep[] = [];
+      const seenStepIds = new Set<string>();
+      for (const step of mappedSteps) {
+        const key = step.id || step.term.toLowerCase();
+        if (!seenStepIds.has(key)) {
+          seenStepIds.add(key);
+          dedupedSteps.push(step);
+        }
+      }
 
       const newRoadmap: Roadmap = {
         id: crypto.randomUUID(),
         query: data.title || roadmapQuery,
-        steps: mappedSteps.sort((a, b) => a.order - b.order),
+        steps: dedupedSteps
+          .sort((a, b) => a.order - b.order)
+          .map((step, index) => ({ ...step, order: index + 1 })),
         createdAt: Date.now()
       };
       setActiveRoadmap(newRoadmap);
@@ -561,28 +595,65 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
       </AnimatePresence>
 
       <nav className="neo-nav backdrop-blur-xl bg-[var(--bg)]/90 border-b border-[var(--border)]">
-        <div className="flex items-center gap-6">
-          <Link to="/" className="flex items-center gap-3">
-            <motion.svg
-              viewBox="0 0 100 100"
-              className="w-10 h-10 text-[var(--text)] overflow-visible"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <rect x="0" y="0" width="100" height="100" rx="30" fill="currentColor" opacity="0.1" />
-              <path d="M 30,50 Q 50,20 70,50 T 30,50" fill="currentColor" opacity="0.8" />
-              <path d="M 35,50 Q 50,75 65,50" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" opacity="0.5" />
-            </motion.svg>
-            <span className="font-black text-sm uppercase tracking-widest hidden sm:block text-[var(--text)]">The Lexicon</span>
-          </Link>
-          <div className="hidden sm:flex items-center gap-1">
-            <button onClick={() => navigate('/')} className="px-5 py-2 text-[10px] font-black uppercase text-muted hover:text-[var(--text)]">Explore</button>
-            <button onClick={() => navigate('/bookmarks')} className="px-5 py-2 text-[10px] font-black uppercase text-muted hover:text-[var(--text)]">Library</button>
-            <button onClick={() => navigate('/guide')} className="px-5 py-2 text-[10px] font-black uppercase text-muted hover:text-[var(--text)]">Guide</button>
+        <div className="w-full flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 lg:gap-6 min-w-0">
+            <Link to="/" className="flex items-center gap-3 min-w-0">
+              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
+                <BrandMark className="w-10 h-10" />
+              </motion.div>
+              <div className="min-w-0">
+                <p className="font-black text-[10px] sm:text-xs uppercase tracking-[0.2em] text-[var(--text)] leading-none truncate">
+                  Engineering Dictionary
+                </p>
+                <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-[var(--muted)] mt-1 hidden sm:block">
+                  For CSE
+                </p>
+              </div>
+            </Link>
+            <div className="hidden lg:flex items-center gap-1">
+              <button
+                onClick={() => navigate('/')}
+                className={cn(
+                  "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.18em] transition-colors",
+                  !view && !domainParam && !idParam
+                    ? "bg-[var(--text)] text-[var(--bg)]"
+                    : "text-muted hover:text-[var(--text)]"
+                )}
+              >
+                Explore
+              </button>
+              <button
+                onClick={() => navigate('/bookmarks')}
+                className={cn(
+                  "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.18em] transition-colors",
+                  view === 'bookmarks'
+                    ? "bg-[var(--text)] text-[var(--bg)]"
+                    : "text-muted hover:text-[var(--text)]"
+                )}
+              >
+                Library
+              </button>
+              <button
+                onClick={() => navigate('/guide')}
+                className={cn(
+                  "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.18em] transition-colors",
+                  view === 'guide'
+                    ? "bg-[var(--text)] text-[var(--bg)]"
+                    : "text-muted hover:text-[var(--text)]"
+                )}
+              >
+                Guide
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <MagneticButton onClick={() => setIsRightPanelOpen(!isRightPanelOpen)} variant="ghost" className="w-10 h-10 p-0 rounded-full"><Bot className="w-4 h-4" /></MagneticButton>
+            <MagneticButton onClick={() => navigate('/settings')} variant="ghost" className="w-10 h-10 p-0 rounded-full"><Settings className="w-4 h-4" /></MagneticButton>
           </div>
         </div>
 
-        <div ref={searchContainerRef} className="flex-1 max-w-lg mx-auto px-4 sm:px-6 relative">
+        <div ref={searchContainerRef} className="w-full relative mt-3 lg:max-w-2xl lg:mx-auto">
           <div className="relative group">
             <Search className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
             <input
@@ -591,13 +662,13 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
               value={searchQuery}
               onChange={(e) => { setSearchQuery(e.target.value); setIsSearchOpen(true); }}
               onFocus={() => setIsSearchOpen(true)}
-              placeholder="Search concepts..."
-              className="h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--card)]/80 pl-11 sm:pl-12 pr-9 text-[13px] font-semibold text-[var(--text)] shadow-sm transition-colors placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--text)] focus:bg-[var(--hover)]"
+              placeholder="Search engineering terms..."
+              className="h-11 sm:h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--card)]/85 pl-11 sm:pl-12 pr-9 text-[13px] font-semibold text-[var(--text)] shadow-sm transition-colors placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--neo-green)] focus:bg-[var(--hover)]"
             />
           </div>
           <AnimatePresence>
             {isSearchOpen && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-[calc(100%+8px)] left-6 right-6 z-[60] neo-card p-2 shadow-2xl overflow-y-auto max-h-[60vh]">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-[calc(100%+8px)] left-0 right-0 z-[60] neo-card p-2 shadow-2xl overflow-y-auto max-h-[60vh]">
                 {searchQuery ? (
                   /* Search results */
                   uniqueSearchResults.length > 0 ? (
@@ -714,16 +785,47 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
           </AnimatePresence>
         </div>
 
-        <div className="flex items-center gap-2">
-          <MagneticButton onClick={() => setIsRightPanelOpen(!isRightPanelOpen)} variant="ghost" className="w-10 h-10 p-0"><Bot className="w-4 h-4" /></MagneticButton>
-          <MagneticButton onClick={() => navigate('/settings')} variant="ghost" className="w-10 h-10 p-0"><Settings className="w-4 h-4" /></MagneticButton>
+        <div className="grid grid-cols-3 gap-2 mt-3 lg:hidden">
+          <button
+            onClick={() => navigate('/')}
+            className={cn(
+              "px-3 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.14em] border transition-colors",
+              !view && !domainParam && !idParam
+                ? "bg-[var(--text)] text-[var(--bg)] border-[var(--text)]"
+                : "border-[var(--border)] text-[var(--muted)] hover:text-[var(--text)]"
+            )}
+          >
+            Explore
+          </button>
+          <button
+            onClick={() => navigate('/bookmarks')}
+            className={cn(
+              "px-3 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.14em] border transition-colors",
+              view === 'bookmarks'
+                ? "bg-[var(--text)] text-[var(--bg)] border-[var(--text)]"
+                : "border-[var(--border)] text-[var(--muted)] hover:text-[var(--text)]"
+            )}
+          >
+            Library
+          </button>
+          <button
+            onClick={() => navigate('/guide')}
+            className={cn(
+              "px-3 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.14em] border transition-colors",
+              view === 'guide'
+                ? "bg-[var(--text)] text-[var(--bg)] border-[var(--text)]"
+                : "border-[var(--border)] text-[var(--muted)] hover:text-[var(--text)]"
+            )}
+          >
+            Guide
+          </button>
         </div>
       </nav>
 
       {/* ===== SPLIT PANES ===== */}
       <div className="flex-1 flex overflow-hidden w-full relative min-h-0">
         <main onScroll={handleScroll} ref={scrollRef} className="flex-1 overflow-y-auto overscroll-contain custom-scrollbar pb-16 min-h-0">
-          <div className="max-w-[1400px] mx-auto px-6 sm:px-12 py-16">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12">
             <AnimatePresence mode="wait">
               {fetchError ? (
                 <div key="error" className="py-20 text-center flex flex-col items-center justify-center space-y-6">
@@ -815,11 +917,11 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                 </motion.div>
               ) : (
                 <div key="home" className="space-y-16">
-                  <section className="pt-20 pb-12 text-center flex flex-col items-center relative">
-                    <AnimatedText text="Lexicon" el="h1" className="text-[14vw] sm:text-[11vw] font-black uppercase tracking-tighter leading-[0.85] text-[var(--text)] drop-shadow-sm" animationType="chars" />
+                  <section className="pt-8 sm:pt-14 pb-8 sm:pb-12 text-center flex flex-col items-center relative">
+                    <AnimatedText text="Engineering Dictionary" el="h1" className="text-[17vw] sm:text-[11vw] font-black uppercase tracking-tighter leading-[0.85] text-[var(--text)] drop-shadow-sm" animationType="chars" />
 
                     <h2 className="text-xl sm:text-2xl font-bold text-[var(--neo-green)] mt-8 uppercase tracking-widest flex items-center gap-3">
-                      <Network className="w-5 h-5 sm:w-6 sm:h-6" /> Computing Dictionary
+                      <Network className="w-5 h-5 sm:w-6 sm:h-6" /> For CSE Students
                     </h2>
 
                     {/* Creative Stats UI */}
@@ -845,7 +947,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                       </div>
                     </div>
 
-                    <MagneticButton onClick={() => { searchInputRef.current?.focus(); setIsSearchOpen(true); }} className="px-12 py-5 text-sm font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl mt-4 border border-[var(--border)]">
+                    <MagneticButton onClick={() => { searchInputRef.current?.focus(); setIsSearchOpen(true); }} className="w-full max-w-xs sm:w-auto px-8 sm:px-12 py-4 sm:py-5 text-sm font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl mt-4 border border-[var(--border)]">
                       Search Dictionary
                     </MagneticButton>
                   </section>
@@ -856,14 +958,14 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                      className="px-6"
+                      className="px-0"
                     >
                       <div className="flex items-center gap-3 mb-2">
                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--neo-green)]/20 to-[var(--neo-purple)]/20 flex items-center justify-center">
                           <Sparkles className="w-4 h-4 text-[var(--text)]" />
                         </div>
                         <div>
-                          <h3 className="text-sm font-black uppercase tracking-widest text-[var(--text)]">Based on your searches</h3>
+                          <h3 className="text-sm font-black uppercase tracking-widest text-[var(--text)]">Based on Your Search History</h3>
                           <p className="text-[11px] text-[var(--muted)] font-medium mt-0.5">AI analyzed your recent {history.length} topic{history.length !== 1 ? 's' : ''} and suggests</p>
                         </div>
                       </div>
@@ -880,37 +982,26 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                           animate="visible"
                           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6"
                         >
-                          {aiSuggestions.map((sugg: any, i: number) => {
-                            const isMatched = sugg.matched;
-                            const displayTerm = isMatched && sugg.dbTerm ? sugg.dbTerm : sugg.term;
+                          {aiSuggestions.map((sugg: AiSuggestion, i: number) => {
+                            const displayTerm = sugg.dbTerm || sugg.term;
                             return (
                               <motion.div
                                 key={i}
                                 variants={staggerItem}
                                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                                onClick={() => isMatched && sugg.id ? navigate(`/concept/${sugg.id}`) : undefined}
-                                className={cn(
-                                  "group p-6 rounded-2xl border backdrop-blur-xl transition-all relative overflow-hidden",
-                                  isMatched
-                                    ? "border-[var(--border)] bg-[var(--hover)]/30 cursor-pointer hover:border-[var(--neo-green)]/40 hover:shadow-lg"
-                                    : "border-dashed border-[var(--border)] bg-[var(--hover)]/15 cursor-not-allowed opacity-75"
-                                )}
+                                onClick={() => sugg.id ? navigate(`/concept/${sugg.id}`) : undefined}
+                                className="group p-6 rounded-2xl border backdrop-blur-xl transition-all relative overflow-hidden border-[var(--border)] bg-[var(--hover)]/30 cursor-pointer hover:border-[var(--neo-green)]/40 hover:shadow-lg"
                               >
                                 <div className="absolute inset-0 bg-gradient-to-br from-[var(--neo-green)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                 <div className="relative z-10">
                                   <div className="flex items-center gap-2 mb-3">
                                     <Sparkles className="w-3.5 h-3.5 text-[var(--neo-green)] opacity-60" />
                                     <h4 className="font-bold text-[var(--text)] tracking-tight text-base">{displayTerm}</h4>
-                                    {!isMatched && (
-                                      <span className="text-[9px] uppercase tracking-widest bg-[var(--muted)]/20 px-2 py-0.5 rounded text-[var(--muted)] ml-auto">Coming Soon</span>
-                                    )}
                                   </div>
                                   <p className="text-[13px] text-[var(--muted)] leading-relaxed">{sugg.reason}</p>
-                                  {isMatched && (
-                                    <div className="flex items-center gap-1 mt-4 text-xs font-bold text-[var(--neo-green)] uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
-                                      Explore <ArrowRight className="w-3 h-3" />
-                                    </div>
-                                  )}
+                                  <div className="flex items-center gap-1 mt-4 text-xs font-bold text-[var(--neo-green)] uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
+                                    Explore <ArrowRight className="w-3 h-3" />
+                                  </div>
                                 </div>
                               </motion.div>
                             )
@@ -919,7 +1010,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                       )}
                     </motion.section>
                   )}
-                  <section className="px-6">
+                  <section className="px-0">
                     <motion.div
                       variants={staggerContainer}
                       initial="hidden"
@@ -949,142 +1040,169 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
 
         <AnimatePresence>
           {isRightPanelOpen && (
-            <motion.aside initial={{ width: 0 }} animate={{ width: 380 }} exit={{ width: 0 }} className="w-[380px] h-full bg-[var(--bg)] border-l border-[var(--border)] flex flex-col shrink-0 shadow-2xl z-50">
-              <div className="p-8 pb-6 border-b border-[var(--border)]/50 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Bot className="w-5 h-5 text-[var(--neo-green)]" />
-                  <span className="font-bold text-sm uppercase tracking-[0.2em]">Intelligence</span>
-                </div>
-                <button onClick={() => setIsRightPanelOpen(false)} className="p-2 hover:bg-[var(--hover)] rounded-full transition-colors text-muted hover:text-[var(--text)]"><X className="w-5 h-5" /></button>
-              </div>
-              <div className="flex mx-8 mt-6 mb-4 p-1 bg-[var(--hover)] rounded-[32px] border border-[var(--border)]/50 shadow-inner overflow-hidden">
-                {(['ask', 'roadmap'] as const).map(t => (
-                  <button key={t} onClick={() => setRightPanelMode(t)} className={`flex-1 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-full transition-all duration-300 ${rightPanelMode === t ? 'bg-[var(--text)] text-[var(--bg)] shadow-md' : 'bg-transparent text-[var(--muted)] hover:text-[var(--text)]'}`}>{t}</button>
-                ))}
-              </div>
-              <div className="flex-1 overflow-y-auto space-y-6">
-                {rightPanelMode === 'ask' ? (
-                  <div className="flex flex-col h-full overflow-hidden">
-                    {/* New Chat button — only visible when there are messages */}
-                    {chatMessages.length > 0 && (
-                      <div className="px-8 pt-2 pb-1 flex justify-end">
-                        <button
-                          onClick={() => setChatMessages([])}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] hover:text-[var(--text)] hover:bg-[var(--hover)] border border-transparent hover:border-[var(--border)] transition-all"
-                        >
-                          <Sparkles className="w-3 h-3" />
-                          New Chat
-                        </button>
-                      </div>
-                    )}
-                    <div className="flex-1 overflow-y-auto space-y-4 mb-4 custom-scrollbar px-8 py-2">
-                      {chatMessages.length === 0 && (
-                        <div className="flex flex-col items-center justify-center h-full text-center py-16 opacity-60">
-                          <MessageSquare className="w-8 h-8 text-[var(--muted)] mb-3" />
-                          <p className="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">Ask anything</p>
-                          <p className="text-[11px] text-[var(--muted)] mt-1 max-w-[200px]">Start a conversation about any concept</p>
-                        </div>
-                      )}
-                      {chatMessages.map((m, i) => (
-                        <div key={i} className={cn(
-                          "p-5 shadow-sm border border-[var(--border)]",
-                          m.role === 'user'
-                            ? 'bg-[var(--text)] text-[var(--bg)] rounded-[20px] rounded-br-[4px] ml-10'
-                            : 'bg-[var(--card)] rounded-[20px] rounded-bl-[4px] mr-6'
-                        )}>
-                          <div className="prose prose-sm dark:prose-invert max-w-none"><Markdown>{m.text}</Markdown></div>
-                        </div>
-                      ))}
-                      {isDiscussing && (
-                        <div className="p-5 rounded-[20px] rounded-bl-[4px] border border-[var(--border)] bg-[var(--card)] mr-6 flex items-center gap-3">
-                          <Loader2 className="w-4 h-4 animate-spin text-muted" />
-                          <span className="text-xs text-[var(--muted)] font-medium">Thinking...</span>
-                        </div>
-                      )}
-                      <div ref={chatEndRef} />
-                    </div>
-                    <div className="mt-auto relative px-8 pb-6">
-                      <div className="relative group">
-                        <textarea
-                          value={discussionQuery}
-                          onChange={e => setDiscussionQuery(e.target.value)}
-                          placeholder="Ask anything..."
-                          className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[24px] p-4 pr-14 min-h-[52px] max-h-[120px] resize-none text-sm font-medium outline-none focus:border-[var(--text)] focus:ring-4 focus:ring-[var(--border)]/20 shadow-sm transition-all custom-scrollbar"
-                          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); discussFurther(); } }}
-                        />
-                        <button onClick={discussFurther} disabled={isDiscussing} className="absolute bottom-3 right-3 w-9 h-9 bg-[var(--text)] text-[var(--bg)] rounded-full flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-all outline-none">
-                          {isDiscussing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 ml-0.5" />}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ) : rightPanelMode === 'roadmap' ? (
-                  <div className="flex flex-col h-full overflow-hidden px-8">
-                    <div className="flex-1 overflow-y-auto pb-8 custom-scrollbar pt-2">
-                      <div className="relative group mb-6">
-                        <textarea
-                          value={roadmapQuery}
-                          onChange={(e) => setRoadmapQuery(e.target.value)}
-                          placeholder="e.g., Guide me through Backend Development..."
-                          className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[24px] p-5 min-h-[120px] text-sm font-medium resize-none focus:border-[var(--text)] focus:ring-4 focus:ring-[var(--border)]/20 shadow-sm transition-all custom-scrollbar outline-none"
-                          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); generateRoadmap(); } }}
-                        />
-                      </div>
-                      <MagneticButton disabled={isGeneratingRoadmap || !roadmapQuery.trim()} onClick={generateRoadmap} className="w-full py-4 text-xs font-black uppercase tracking-[0.2em] rounded-[24px] shadow-lg border border-[var(--border)]">
-                        {isGeneratingRoadmap ? 'Processing...' : 'Generate Pathway'}
-                      </MagneticButton>
-
-                      {activeRoadmap && (
-                        <AnimatePresence>
-                          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-10 space-y-6">
-                            <h4 className="font-bold text-[13px] uppercase tracking-widest text-[var(--neo-green)] mb-6">{activeRoadmap.query}</h4>
-                            <div className="space-y-4">
-                              {activeRoadmap.steps.map((step, i) => {
-                                const isMatched = step.matched;
-                                return (
-                                  <div
-                                    key={i}
-                                    className={cn(
-                                      "p-6 bg-[var(--card)] rounded-[24px] border shadow-sm transition-all group",
-                                      isMatched
-                                        ? "border-[var(--border)] cursor-pointer hover:border-[var(--neo-green)]/50 hover:shadow-md"
-                                        : "border-dashed border-[var(--border)] opacity-70 cursor-not-allowed"
-                                    )}
-                                    onClick={() => isMatched && step.id && navigate(`/concept/${step.id}`)}
-                                  >
-                                    <div className="flex items-center justify-between mb-3">
-                                      <span className={cn(
-                                        "font-bold text-[15px] transition-colors",
-                                        isMatched && "group-hover:text-[var(--neo-green)]"
-                                      )}>
-                                        <span className="opacity-50 text-xs mr-2">{step.order}</span>
-                                        {step.term}
-                                      </span>
-                                      <div className="flex items-center gap-3">
-                                        {!isMatched && (
-                                          <span className="text-[9px] uppercase tracking-widest bg-[var(--muted)]/20 px-2 py-1 rounded text-[var(--muted)]">Incoming</span>
-                                        )}
-                                        {isMatched && <ArrowRight className="w-3.5 h-3.5 text-muted group-hover:text-[var(--text)] transition-colors" />}
-                                      </div>
-                                    </div>
-                                    <p className="text-[13px] text-muted leading-relaxed opacity-90">{step.reason}</p>
-                                  </div>
-                                )
-                              })}
-                            </div>
-                            <MagneticButton onClick={() => saveRoadmap(activeRoadmap)} className="w-full py-4 mt-8 text-xs font-black uppercase tracking-widest rounded-[32px] border border-[var(--border)] flex items-center justify-center gap-3">
-                              <Save className="w-4 h-4" /> Save Timeline
-                            </MagneticButton>
-                          </motion.div>
-                        </AnimatePresence>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  null
+            <>
+              {isCompactLayout && (
+                <motion.button
+                  key="panel-backdrop"
+                  type="button"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setIsRightPanelOpen(false)}
+                  className="absolute inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
+                  aria-label="Close AI panel backdrop"
+                />
+              )}
+              <motion.aside
+                initial={isCompactLayout ? { x: '100%' } : { width: 0 }}
+                animate={isCompactLayout ? { x: 0 } : { width: 390 }}
+                exit={isCompactLayout ? { x: '100%' } : { width: 0 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className={cn(
+                  "h-full bg-[var(--bg)] border-l border-[var(--border)] flex flex-col shrink-0 shadow-2xl z-50",
+                  isCompactLayout ? "absolute inset-y-0 right-0 w-full sm:w-[430px] max-w-full" : "w-[390px]"
                 )}
-              </div>
-            </motion.aside>
+              >
+                <div className="px-4 sm:px-6 py-4 border-b border-[var(--border)]/60 bg-[var(--card)]/65 backdrop-blur-md">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="inline-flex items-center gap-3 rounded-2xl border border-[var(--border)]/60 bg-[var(--hover)]/70 px-3 py-2">
+                      <span className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--neo-green)]/90 to-[var(--neo-purple)]/70 text-[var(--pop-black)] flex items-center justify-center shadow-sm">
+                        <Sparkles className="w-4 h-4" />
+                      </span>
+                      <div className="leading-tight">
+                        <p className="font-bold text-sm uppercase tracking-[0.2em]">Intelligence</p>
+                        <p className="text-[10px] uppercase tracking-[0.16em] text-[var(--muted)] mt-1">AI Assistant</p>
+                      </div>
+                    </div>
+                    <button onClick={() => setIsRightPanelOpen(false)} className="p-2 hover:bg-[var(--hover)] rounded-full transition-colors text-muted hover:text-[var(--text)]"><X className="w-5 h-5" /></button>
+                  </div>
+                </div>
+
+                <div className="flex mx-4 sm:mx-6 mt-4 mb-4 p-1 bg-[var(--hover)] rounded-[20px] border border-[var(--border)]/60 shadow-inner overflow-hidden">
+                  {(['ask', 'roadmap'] as const).map(t => (
+                    <button key={t} onClick={() => setRightPanelMode(t)} className={`flex-1 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl transition-all duration-300 ${rightPanelMode === t ? 'bg-[var(--text)] text-[var(--bg)] shadow-md' : 'bg-transparent text-[var(--muted)] hover:text-[var(--text)]'}`}>{t}</button>
+                  ))}
+                </div>
+
+                <div className="flex-1 overflow-y-auto space-y-5">
+                  {rightPanelMode === 'ask' ? (
+                    <div className="flex flex-col h-full overflow-hidden">
+                      {chatMessages.length > 0 && (
+                        <div className="px-4 sm:px-6 pt-1 pb-1 flex justify-end">
+                          <button
+                            onClick={() => setChatMessages([])}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] hover:text-[var(--text)] hover:bg-[var(--hover)] border border-transparent hover:border-[var(--border)] transition-all"
+                          >
+                            <Sparkles className="w-3 h-3" />
+                            New Chat
+                          </button>
+                        </div>
+                      )}
+                      <div className="flex-1 overflow-y-auto space-y-4 mb-4 custom-scrollbar px-4 sm:px-6 py-2">
+                        {chatMessages.length === 0 && (
+                          <div className="flex flex-col items-center justify-center h-full text-center py-14 opacity-65">
+                            <MessageSquare className="w-8 h-8 text-[var(--muted)] mb-3" />
+                            <p className="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">Ask a concept question</p>
+                            <p className="text-[11px] text-[var(--muted)] mt-1 max-w-[240px]">Get concise concept explanations and next-step references.</p>
+                          </div>
+                        )}
+                        {chatMessages.map((m, i) => (
+                          <div key={i} className={cn(
+                            "p-4 shadow-sm border border-[var(--border)]",
+                            m.role === 'user'
+                              ? 'bg-[var(--text)] text-[var(--bg)] rounded-[20px] rounded-br-[4px] ml-6'
+                              : 'bg-[var(--card)] rounded-[20px] rounded-bl-[4px] mr-4'
+                          )}>
+                            <div className="prose prose-sm dark:prose-invert max-w-none"><Markdown>{m.text}</Markdown></div>
+                          </div>
+                        ))}
+                        {isDiscussing && (
+                          <div className="p-4 rounded-[20px] rounded-bl-[4px] border border-[var(--border)] bg-[var(--card)] mr-4 flex items-center gap-3">
+                            <Loader2 className="w-4 h-4 animate-spin text-muted" />
+                            <span className="text-xs text-[var(--muted)] font-medium">Thinking...</span>
+                          </div>
+                        )}
+                        <div ref={chatEndRef} />
+                      </div>
+                      <div className="mt-auto relative px-4 sm:px-6 pb-5 sm:pb-6 space-y-2.5">
+                        <div className="relative group">
+                          <textarea
+                            value={discussionQuery}
+                            onChange={e => setDiscussionQuery(e.target.value)}
+                            placeholder="Ask the assistant..."
+                            className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[22px] p-4 pr-14 min-h-[52px] max-h-[120px] resize-none text-sm font-medium outline-none focus:border-[var(--neo-green)] focus:ring-4 focus:ring-[var(--border)]/25 shadow-sm transition-all custom-scrollbar"
+                            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); discussFurther(); } }}
+                          />
+                          <button onClick={discussFurther} disabled={isDiscussing} className="absolute bottom-3 right-3 w-9 h-9 bg-[var(--text)] text-[var(--bg)] rounded-full flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-all outline-none">
+                            {isDiscussing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 ml-0.5" />}
+                          </button>
+                        </div>
+                        <p className="text-[10px] text-[var(--muted)] leading-relaxed">
+                          AI-generated response. For reference and learning support only.
+                        </p>
+                      </div>
+                    </div>
+                  ) : rightPanelMode === 'roadmap' ? (
+                    <div className="flex flex-col h-full overflow-hidden px-4 sm:px-6">
+                      <div className="flex-1 overflow-y-auto pb-8 custom-scrollbar pt-2">
+                        <div className="relative group mb-4">
+                          <textarea
+                            value={roadmapQuery}
+                            onChange={(e) => setRoadmapQuery(e.target.value)}
+                            placeholder="e.g., Guide me through backend development..."
+                            className="w-full bg-[var(--card)] border-2 border-[var(--border)] rounded-[24px] p-5 min-h-[112px] text-sm font-medium resize-none focus:border-[var(--neo-green)] focus:ring-4 focus:ring-[var(--border)]/25 shadow-sm transition-all custom-scrollbar outline-none"
+                            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); generateRoadmap(); } }}
+                          />
+                        </div>
+                        <MagneticButton disabled={isGeneratingRoadmap || !roadmapQuery.trim()} onClick={generateRoadmap} className="w-full py-4 text-xs font-black uppercase tracking-[0.2em] rounded-[24px] shadow-lg border border-[var(--border)]">
+                          {isGeneratingRoadmap ? 'Processing...' : 'Generate Pathway'}
+                        </MagneticButton>
+                        <p className="text-[10px] text-[var(--muted)] leading-relaxed mt-2 mb-2">
+                          AI-generated roadmap. For reference and planning only.
+                        </p>
+
+                        {activeRoadmap && (
+                          <AnimatePresence>
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-8 space-y-5">
+                              <h4 className="font-bold text-[13px] uppercase tracking-widest text-[var(--neo-green)]">{activeRoadmap.query}</h4>
+                              {activeRoadmap.steps.length === 0 ? (
+                                <div className="p-5 rounded-2xl border border-dashed border-[var(--border)] bg-[var(--card)]/50">
+                                  <p className="text-xs text-[var(--muted)]">No database-matched steps were found. Try a narrower topic or include one exact concept.</p>
+                                </div>
+                              ) : (
+                                <div className="space-y-4">
+                                  {activeRoadmap.steps.map((step, i) => (
+                                    <div
+                                      key={i}
+                                      className="p-5 bg-[var(--card)] rounded-[24px] border border-[var(--border)] shadow-sm transition-all group cursor-pointer hover:border-[var(--neo-green)]/50 hover:shadow-md"
+                                      onClick={() => step.id && navigate(`/concept/${step.id}`)}
+                                    >
+                                      <div className="flex items-center justify-between mb-2.5">
+                                        <span className="font-bold text-[15px] transition-colors group-hover:text-[var(--neo-green)]">
+                                          <span className="opacity-50 text-xs mr-2">{step.order}</span>
+                                          {step.term}
+                                        </span>
+                                        <ArrowRight className="w-3.5 h-3.5 text-muted group-hover:text-[var(--text)] transition-colors" />
+                                      </div>
+                                      <p className="text-[13px] text-muted leading-relaxed opacity-90">{step.reason}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                              {activeRoadmap.steps.length > 0 && (
+                                <MagneticButton onClick={() => saveRoadmap(activeRoadmap)} className="w-full py-4 mt-6 text-xs font-black uppercase tracking-widest rounded-[32px] border border-[var(--border)] flex items-center justify-center gap-3">
+                                  <Save className="w-4 h-4" /> Save Timeline
+                                </MagneticButton>
+                              )}
+                            </motion.div>
+                          </AnimatePresence>
+                        )}
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              </motion.aside>
+            </>
           )}
         </AnimatePresence>
       </div>

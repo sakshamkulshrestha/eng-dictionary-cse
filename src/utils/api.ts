@@ -90,8 +90,8 @@ export const DictionaryApi = {
   /**
    * Smart Search History Analysis
    */
-  async analyzeHistory(history: string[]): Promise<{ suggestions: { term: string, reason: string }[] }> {
-    return request<{ suggestions: { term: string, reason: string }[] }>('/analyze-history', {
+  async analyzeHistory(history: string[]): Promise<{ suggestions: { term: string, reason: string, matched?: boolean, dbTerm?: string | null, id?: string | null, score?: number }[] }> {
+    return request<{ suggestions: { term: string, reason: string, matched?: boolean, dbTerm?: string | null, id?: string | null, score?: number }[] }>('/analyze-history', {
       method: 'POST',
       body: JSON.stringify({ history })
     });

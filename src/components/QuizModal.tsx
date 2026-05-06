@@ -90,7 +90,7 @@ export function QuizModal({ isOpen, onClose, concepts }: QuizModalProps) {
         <div className="p-8 border-b border-border flex items-center justify-between bg-ink/[0.02]">
           <div className="flex items-center gap-3">
             <Brain className="w-6 h-6 text-gold" />
-            <h2 className="text-h2 serif font-bold">Lexicon Challenge</h2>
+            <h2 className="text-h2 serif font-bold">CSE Dictionary Challenge</h2>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-ink/5 rounded-full transition-colors">
             <X className="w-5 h-5" />
@@ -201,7 +201,7 @@ export function QuizModal({ isOpen, onClose, concepts }: QuizModalProps) {
                   onClick={onClose}
                   className="px-8 py-4 border border-border text-small font-bold uppercase tracking-widest hover:border-ink transition-colors"
                 >
-                  Return to Lexicon
+                  Return to Dictionary
                 </button>
               </div>
             </div>

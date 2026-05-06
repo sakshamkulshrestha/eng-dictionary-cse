@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { UserSettings, Roadmap } from '../types';
 
 export function useUserState() {
+  const SETTINGS_KEY = 'cseDictionarySettings';
+  const LEGACY_SETTINGS_KEY = 'lexiconSettings';
+
   const [user] = useState<null>(null);
   const [userProfile] = useState<any>(null);
   const [isAuthReady] = useState(true);
@@ -19,7 +22,7 @@ export function useUserState() {
   });
 
   const [settings, setSettings] = useState<UserSettings>(() => {
-    const saved = localStorage.getItem('lexiconSettings');
+    const saved = localStorage.getItem(SETTINGS_KEY) || localStorage.getItem(LEGACY_SETTINGS_KEY);
     return saved ? JSON.parse(saved) : {
       theme: 'light',
       fontSize: 'standard',
@@ -45,7 +48,8 @@ export function useUserState() {
   }, [roadmaps]);
 
   useEffect(() => {
-    localStorage.setItem('lexiconSettings', JSON.stringify(settings));
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    localStorage.removeItem(LEGACY_SETTINGS_KEY);
     document.documentElement.setAttribute('data-theme', settings.theme);
     document.documentElement.setAttribute('data-font-size', settings.fontSize);
     document.documentElement.setAttribute('data-font-family', settings.fontFamily);
@@ -124,7 +128,7 @@ export function useUserState() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `thinking-os-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `engineering-dictionary-cse-backup-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };

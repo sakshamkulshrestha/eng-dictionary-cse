@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { ObjectId } from 'mongodb';
 import { getDB } from './db.js';
-import { findClosestTerm } from './services/termMatcher.js';
+import { findClosestTerm, getTopTermCandidates } from './services/termMatcher.js';
 import { termCache } from './services/termCache.js';
 
 const app = express();
@@ -15,37 +15,130 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 const getNvidiaKey = () => process.env.NVIDIA_API_KEY || '';
 
+function parseJsonPayload(rawText: string) {
+  try {
+    return JSON.parse(rawText);
+  } catch {
+    const cleaned = rawText
+      .replace(/^```json\s*/i, '')
+      .replace(/^```\s*/i, '')
+      .replace(/```$/i, '')
+      .trim();
+    return JSON.parse(cleaned);
+  }
+}
+
+function buildShortlistedTerms(seeds: string[], limit: number) {
+  const uniqueTerms: string[] = [];
+  const seen = new Set<string>();
+  const safeSeeds = seeds.filter(Boolean).map((seed) => seed.trim()).filter(Boolean);
+
+  for (const seed of safeSeeds) {
+    const candidates = getTopTermCandidates(seed, Math.max(60, Math.floor(limit / 2)));
+    for (const candidate of candidates) {
+      if (!seen.has(candidate.id)) {
+        seen.add(candidate.id);
+        uniqueTerms.push(candidate.term);
+        if (uniqueTerms.length >= limit) break;
+      }
+    }
+    if (uniqueTerms.length >= limit) break;
+  }
+
+  if (uniqueTerms.length < Math.min(40, limit)) {
+    for (const fallbackTerm of termCache.getTerms()) {
+      if (!seen.has(fallbackTerm.id)) {
+        seen.add(fallbackTerm.id);
+        uniqueTerms.push(fallbackTerm.term);
+        if (uniqueTerms.length >= limit) break;
+      }
+    }
+  }
+
+  return uniqueTerms.slice(0, limit);
+}
+
+function mapRoadmapStepsToDatabase(steps: any[]) {
+  const mapped = steps.map((step: any, index: number) => {
+    const match = findClosestTerm(String(step?.term || ''));
+    return {
+      term: match.dbTerm || String(step?.term || ''),
+      reason: String(step?.reason || 'This step builds the required foundations.'),
+      order: Number(step?.order || index + 1),
+      matched: match.matched,
+      dbTerm: match.dbTerm,
+      id: match.id,
+      score: match.score
+    };
+  }).filter((step) => step.matched && step.id);
+
+  const uniqueSteps: typeof mapped = [];
+  const seen = new Set<string>();
+  for (const step of mapped) {
+    const key = step.id || step.term.toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      uniqueSteps.push(step);
+    }
+  }
+
+  return uniqueSteps
+    .sort((a, b) => a.order - b.order)
+    .map((step, index) => ({ ...step, order: index + 1 }))
+    .slice(0, 10);
+}
+
+function buildFallbackRoadmap(query: string, shortlistedTerms: string[]) {
+  const steps = shortlistedTerms
+    .slice(0, 7)
+    .map((term, index) => {
+      const match = findClosestTerm(term);
+      if (!match.matched || !match.id || !match.dbTerm) return null;
+      return {
+        term: match.dbTerm,
+        reason: index === 0
+          ? `Start with ${match.dbTerm} to establish the core vocabulary for "${query}".`
+          : `Learn ${match.dbTerm} next to build progressively from earlier concepts.`,
+        order: index + 1,
+        matched: true,
+        dbTerm: match.dbTerm,
+        id: match.id,
+        score: match.score
+      };
+    })
+    .filter(Boolean);
+
+  return steps;
+}
+
 app.post('/api/generate-roadmap', async (req, res) => {
   try {
     const { query } = req.body;
     if (!query) return res.status(400).json({ error: 'Query is required' });
 
-    // Build a compact list of real DB terms for the AI to pick from
-    const allTermNames = termCache.getTerms().map(t => t.term);
-    // Limit to ~500 terms related to the query domain to stay within token limits
-    const termListStr = allTermNames.join(', ');
+    const shortlistedTerms = buildShortlistedTerms([query], 180);
+    const termListStr = shortlistedTerms.join(', ');
 
     const payload = {
       model: "nvidia/nemotron-3-nano-30b-a3b",
       messages: [{
         role: "user",
         content: `I want to learn: "${query}".
-Generate a step-by-step learning roadmap.
-Provide a logical order and a brief reason why each step is important.
+Generate a step-by-step learning roadmap with 6 to 10 steps.
+Provide a logical order and one brief reason per step.
 
 CRITICAL RULE: Each "term" in each step MUST be a single, specific technical concept — NOT a compound phrase or sentence.
-You MUST pick terms from this dictionary of available terms whenever possible:
+You MUST pick every term from this shortlist of available dictionary terms:
 [${termListStr}]
 
-If a concept exists in the list above, use the EXACT spelling from the list.
-If a concept truly does not exist in the list, you may use a short, standard technical term (1-3 words max).
-
-Output ONLY a JSON object with two keys: "title" (a short, meaningful string summarizing the roadmap), and "steps" containing an array of objects. Each object must have "term" (string — a single concept name), "reason" (string), and "order" (number).`
+Use EXACT spellings from the shortlist.
+Output ONLY a JSON object with keys: "title" (string) and "steps" (array of objects).
+Each step object must include: "term" (string), "reason" (string), "order" (number).`
       }],
-      temperature: 0.7,
+      temperature: 0.5,
       top_p: 1,
-      max_tokens: 16384,
-      reasoning_budget: 16384,
+      max_tokens: 2200,
+      reasoning_budget: 1024,
       chat_template_kwargs: { enable_thinking: true },
       stream: false,
       response_format: { type: "json_object" }
@@ -69,23 +162,20 @@ Output ONLY a JSON object with two keys: "title" (a short, meaningful string sum
     const text = data?.choices?.[0]?.message?.content;
 
     if (!text) throw new Error('Empty response from Nvidia API');
-    const parsed = JSON.parse(text);
+    const parsed = parseJsonPayload(text);
+    const aiSteps = Array.isArray(parsed?.steps) ? parsed.steps : [];
 
-    // AI generated the steps, now map them to internal dictionary terms
-    if (parsed.steps && Array.isArray(parsed.steps)) {
-      parsed.steps = parsed.steps.map((step: any) => {
-        const match = findClosestTerm(step.term);
-        return {
-          ...step,
-          matched: match.matched,
-          dbTerm: match.dbTerm,
-          id: match.id,
-          score: match.score
-        };
-      });
+    let mappedSteps = mapRoadmapStepsToDatabase(aiSteps);
+    if (mappedSteps.length === 0) {
+      mappedSteps = buildFallbackRoadmap(query, shortlistedTerms);
     }
 
-    res.json(parsed);
+    res.json({
+      title: typeof parsed?.title === 'string' && parsed.title.trim()
+        ? parsed.title.trim()
+        : `Roadmap: ${query}`,
+      steps: mappedSteps
+    });
   } catch (error: any) {
     console.error('Roadmap generate failed:', error);
     res.status(500).json({ error: error.message || 'Failed to generate roadmap' });
@@ -139,27 +229,36 @@ app.post('/api/analyze-history', async (req, res) => {
       return res.json({ suggestions: [] });
     }
 
-    const allTermNames = termCache.getTerms().map(t => t.term);
-    const termListStr = allTermNames.join(', ');
+    const cleanHistory = history
+      .map((item: any) => String(item || '').trim())
+      .filter(Boolean)
+      .slice(0, 12);
+
+    const shortlistedTerms = buildShortlistedTerms(cleanHistory, 120);
+    if (shortlistedTerms.length === 0) return res.json({ suggestions: [] });
+    const termListStr = shortlistedTerms.join(', ');
 
     const payload = {
       model: "nvidia/nemotron-3-nano-30b-a3b",
       messages: [{
         role: "user",
-        content: `Based on the following recent computing search history: [${history.join(', ')}].
-Suggest exactly 3 relevant computing or software engineering concepts the user should explore next.
+        content: `Based on this recent CSE search history: [${cleanHistory.join(', ')}].
+Suggest exactly 4 next concepts the user should explore.
 
-CRITICAL RULE: Each "term" MUST be a single, specific technical concept (1-3 words max) — NOT a compound phrase or sentence.
-You MUST pick terms from this dictionary of available terms whenever possible:
+CRITICAL RULES:
+1) Each "term" MUST be selected from the shortlist below.
+2) Use exact spelling from the shortlist.
+3) Do not repeat any term from the user's history.
+
+Shortlist:
 [${termListStr}]
 
-If a concept exists in the list above, use the EXACT spelling from the list.
-Prioritize core/fundamental concepts.
-Output ONLY a JSON object with a single key "suggestions" containing an array of objects. Each object must have "term" (string — a single concept name from the list) and "reason" (string).`
+Output ONLY JSON:
+{ "suggestions": [{ "term": string, "reason": string }] }`
       }],
-      temperature: 0.7,
+      temperature: 0.35,
       top_p: 1,
-      max_tokens: 2048,
+      max_tokens: 1100,
       stream: false,
       response_format: { type: "json_object" }
     };
@@ -184,23 +283,53 @@ Output ONLY a JSON object with a single key "suggestions" containing an array of
       return res.json({ suggestions: [] });
     }
 
-    const parsed = JSON.parse(text);
+    const parsed = parseJsonPayload(text);
+    const historySet = new Set(cleanHistory.map((item) => item.toLowerCase()));
+    const aiSuggestions = Array.isArray(parsed?.suggestions) ? parsed.suggestions : [];
 
-    // Map each AI suggestion through the intelligent term matcher
-    if (parsed.suggestions && Array.isArray(parsed.suggestions)) {
-      parsed.suggestions = parsed.suggestions.map((s: any) => {
-        const match = findClosestTerm(s.term);
+    const mappedSuggestions = aiSuggestions
+      .map((suggestion: any) => {
+        const match = findClosestTerm(String(suggestion?.term || ''));
         return {
-          ...s,
+          term: match.dbTerm || String(suggestion?.term || ''),
+          reason: String(suggestion?.reason || 'Builds naturally from your recent search trail.'),
           matched: match.matched,
           dbTerm: match.dbTerm,
           id: match.id,
           score: match.score
         };
-      });
+      })
+      .filter((suggestion) => suggestion.matched && suggestion.id && !historySet.has(suggestion.term.toLowerCase()));
+
+    const dedupedSuggestions: typeof mappedSuggestions = [];
+    const seenIds = new Set<string>();
+    for (const suggestion of mappedSuggestions) {
+      const key = suggestion.id || suggestion.term.toLowerCase();
+      if (!seenIds.has(key)) {
+        seenIds.add(key);
+        dedupedSuggestions.push(suggestion);
+      }
     }
 
-    res.json(parsed);
+    if (dedupedSuggestions.length < 3) {
+      for (const candidate of shortlistedTerms) {
+        const match = findClosestTerm(candidate);
+        if (!match.matched || !match.id || !match.dbTerm) continue;
+        if (historySet.has(match.dbTerm.toLowerCase()) || seenIds.has(match.id)) continue;
+        dedupedSuggestions.push({
+          term: match.dbTerm,
+          reason: 'Recommended from your recent learning history and available dictionary coverage.',
+          matched: true,
+          dbTerm: match.dbTerm,
+          id: match.id,
+          score: match.score
+        });
+        seenIds.add(match.id);
+        if (dedupedSuggestions.length >= 4) break;
+      }
+    }
+
+    res.json({ suggestions: dedupedSuggestions.slice(0, 4) });
   } catch (error: any) {
     console.error('Analyze history failed:', error);
     res.status(500).json({ error: error.message || 'Analysis failed' });

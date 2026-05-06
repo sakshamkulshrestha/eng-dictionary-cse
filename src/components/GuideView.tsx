@@ -72,7 +72,7 @@ export default function GuideView({ onClose }: GuideViewProps) {
         >
           {/* Header */}
           <motion.header variants={fadeUp} className="text-center">
-            <h1 className="text-4xl sm:text-5xl font-black tracking-tighter mb-4">Lexicon Guide</h1>
+            <h1 className="text-4xl sm:text-5xl font-black tracking-tighter mb-4">Engineering Dictionary for CSE Guide</h1>
             <p className="text-muted text-sm font-medium max-w-lg mx-auto">
               A student-led research project developed and managed by IMTech students, University of Hyderabad.
             </p>
@@ -194,10 +194,10 @@ export default function GuideView({ onClose }: GuideViewProps) {
           </motion.section>
 
           {/* Support & Suggestions */}
-          <motion.section variants={fadeUp} className="mt-24 p-10 bg-[var(--text)] rounded-3xl text-center text-[var(--bg)]">
-            <h2 className="text-2xl font-bold mb-4 flex items-center justify-center gap-2">Have a suggestion?</h2>
-            <p className="text-[var(--bg)]/70 mb-8 max-w-md mx-auto text-sm">Help us improve the dictionary. Suggest new terms or report errors via our Google Form.</p>
-            <a href="https://forms.gle/yFKUyDdgt8FL4y2M6" target="_blank" className="inline-block bg-[var(--bg)] text-[var(--text)] px-8 py-3 rounded-full font-black text-sm hover:scale-105 transition-transform shadow-lg">Support & Suggestions</a>
+          <motion.section variants={fadeUp} className="mt-24 p-8 sm:p-10 rounded-3xl text-center border border-slate-700/60 bg-[radial-gradient(circle_at_15%_15%,#1E293B_0%,#111827_45%,#020617_100%)] shadow-2xl">
+            <h2 className="!text-slate-50 text-2xl font-bold mb-4 flex items-center justify-center gap-2">Have a suggestion?</h2>
+            <p className="text-slate-300/85 mb-8 max-w-md mx-auto text-sm">Help us improve the dictionary. Suggest new terms or report errors via our Google Form.</p>
+            <a href="https://forms.gle/yFKUyDdgt8FL4y2M6" target="_blank" className="inline-block bg-slate-50 text-slate-900 px-8 py-3 rounded-full font-black text-sm hover:scale-105 transition-transform shadow-lg">Support & Suggestions</a>
           </motion.section>
         </motion.div>
       </div>
