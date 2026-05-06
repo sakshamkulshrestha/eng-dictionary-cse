@@ -51,3 +51,10 @@ export interface UserState {
 }
 
 export type LayoutState = 'grid' | 'list' | 'detail';
+
+export interface HealthStatus {
+  status: 'ok';
+  timestamp: string;
+  uptimeSeconds: number;
+  environment: string;
+}

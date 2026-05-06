@@ -15,101 +15,14 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 const getNvidiaKey = () => process.env.NVIDIA_API_KEY || '';
 
-function parseJsonPayload(rawText: string) {
-  try {
-    return JSON.parse(rawText);
-  } catch {
-    const cleaned = rawText
-      .replace(/^```json\s*/i, '')
-      .replace(/^```\s*/i, '')
-      .replace(/```$/i, '')
-      .trim();
-    return JSON.parse(cleaned);
-  }
-}
-
-function buildShortlistedTerms(seeds: string[], limit: number) {
-  const uniqueTerms: string[] = [];
-  const seen = new Set<string>();
-  const safeSeeds = seeds.filter(Boolean).map((seed) => seed.trim()).filter(Boolean);
-
-  for (const seed of safeSeeds) {
-    const candidates = getTopTermCandidates(seed, Math.max(60, Math.floor(limit / 2)));
-    for (const candidate of candidates) {
-      if (!seen.has(candidate.id)) {
-        seen.add(candidate.id);
-        uniqueTerms.push(candidate.term);
-        if (uniqueTerms.length >= limit) break;
-      }
-    }
-    if (uniqueTerms.length >= limit) break;
-  }
-
-  if (uniqueTerms.length < Math.min(40, limit)) {
-    for (const fallbackTerm of termCache.getTerms()) {
-      if (!seen.has(fallbackTerm.id)) {
-        seen.add(fallbackTerm.id);
-        uniqueTerms.push(fallbackTerm.term);
-        if (uniqueTerms.length >= limit) break;
-      }
-    }
-  }
-
-  return uniqueTerms.slice(0, limit);
-}
-
-function mapRoadmapStepsToDatabase(steps: any[]) {
-  const mapped = steps.map((step: any, index: number) => {
-    const match = findClosestTerm(String(step?.term || ''));
-    return {
-      term: match.dbTerm || String(step?.term || ''),
-      reason: String(step?.reason || 'This step builds the required foundations.'),
-      order: Number(step?.order || index + 1),
-      matched: match.matched,
-      dbTerm: match.dbTerm,
-      id: match.id,
-      score: match.score
-    };
-  }).filter((step) => step.matched && step.id);
-
-  const uniqueSteps: typeof mapped = [];
-  const seen = new Set<string>();
-  for (const step of mapped) {
-    const key = step.id || step.term.toLowerCase();
-    if (!seen.has(key)) {
-      seen.add(key);
-      uniqueSteps.push(step);
-    }
-  }
-
-  return uniqueSteps
-    .sort((a, b) => a.order - b.order)
-    .map((step, index) => ({ ...step, order: index + 1 }))
-    .slice(0, 10);
-}
-
-function buildFallbackRoadmap(query: string, shortlistedTerms: string[]) {
-  const steps = shortlistedTerms
-    .slice(0, 7)
-    .map((term, index) => {
-      const match = findClosestTerm(term);
-      if (!match.matched || !match.id || !match.dbTerm) return null;
-      return {
-        term: match.dbTerm,
-        reason: index === 0
-          ? `Start with ${match.dbTerm} to establish the core vocabulary for "${query}".`
-          : `Learn ${match.dbTerm} next to build progressively from earlier concepts.`,
-        order: index + 1,
-        matched: true,
-        dbTerm: match.dbTerm,
-        id: match.id,
-        score: match.score
-      };
-    })
-    .filter(Boolean);
-
-  return steps;
-}
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptimeSeconds: Math.floor(process.uptime()),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
 
 app.post('/api/generate-roadmap', async (req, res) => {
   try {

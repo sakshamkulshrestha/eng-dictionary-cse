@@ -69,6 +69,20 @@ This project enforces strict rules regarding environment variables to guarantee 
    ```
    *By default, the application runs on `http://localhost:3000`.*
 
+4. **Verify Service Health (Optional Quick Check)**:
+   ```bash
+   curl http://localhost:3000/api/health
+   ```
+   Expected response shape:
+   ```json
+   {
+     "status": "ok",
+     "timestamp": "2026-05-06T00:00:00.000Z",
+     "uptimeSeconds": 12,
+     "environment": "development"
+   }
+   ```
+
 ---
 
 ## 🚀 Deployment config

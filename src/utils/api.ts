@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-import { Concept, RoadmapStep } from '../types';
+import { Concept, HealthStatus, RoadmapStep } from '../types';
 
 /**
  * Handles all backend API requests with consistent error semantics
@@ -46,6 +46,13 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
 }
 
 export const DictionaryApi = {
+  /**
+   * Backend liveness and runtime metadata
+   */
+  async getHealth(): Promise<HealthStatus> {
+    return request<HealthStatus>('/health');
+  },
+
   /**
    * Fetch all terms, optionally filtered by domain
    */
