@@ -4,6 +4,7 @@ export interface CachedTerm {
   id: string;
   term: string;
   domain: string;
+  definition: string;
   normalized: string;
   superNormalized: string;
   aliases: string[];
@@ -28,7 +29,7 @@ class TermCache {
       for (const col of collections) {
         // Fetch all basic fields needed for matching to keep memory footprint low
         const data = await db.collection(col.name).find({}, {
-          projection: { _id: 1, term: 1, domain: 1, aliases: 1 }
+          projection: { _id: 1, term: 1, domain: 1, aliases: 1, one_line_definition: 1 }
         }).toArray();
 
         for (const doc of data) {
@@ -38,6 +39,7 @@ class TermCache {
             id: doc._id.toString(),
             term: doc.term,
             domain: doc.domain,
+            definition: doc.one_line_definition || '',
             normalized: normalizeTerm(doc.term),
             superNormalized: superNormalizeTerm(doc.term),
             aliases: doc.aliases ? (Array.isArray(doc.aliases) ? doc.aliases.map(a => normalizeTerm(a)) : [normalizeTerm(doc.aliases)]) : []

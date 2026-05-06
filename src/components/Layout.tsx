@@ -11,7 +11,7 @@ import {
   Volume2, AlertCircle, Sparkles, LayoutGrid,
   BookMarked, Clock, Bot, Star, Database
 } from 'lucide-react';
-import { Concept, Roadmap, RoadmapStep, UserSettings } from '../types';
+import { Concept, Roadmap, RoadmapStep, UserSettings, ChatMessage } from '../types';
 import { getFullDomainName } from '../utils/domains';
 import Fuse from 'fuse.js';
 import { clsx, type ClassValue } from 'clsx';
@@ -265,7 +265,8 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
     user, userProfile, isAuthReady,
     bookmarks, toggleBookmark, history, addToHistory, clearHistory, clearSystem,
     roadmaps, saveRoadmap, deleteRoadmap, settings, updateSettings,
-    exportData, importData
+    resolvedTheme, exportData, importData,
+    chatConversations, saveChatConversation, deleteChatConversation
   } = useUserState();
 
   const [concepts, setConcepts] = useState<Concept[]>([]);
@@ -282,8 +283,10 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
   const [rightPanelMode, setRightPanelMode] = useState<'ask' | 'roadmap' | 'saved'>('ask');
   const [discussionQuery, setDiscussionQuery] = useState('');
   const [isDiscussing, setIsDiscussing] = useState(false);
-  const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'ai', text: string, relatedTerms?: string[] }[]>([]);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [isCompactLayout, setIsCompactLayout] = useState(() => window.innerWidth < 1024);
+  const [roadmapLoadingPhase, setRoadmapLoadingPhase] = useState(0);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -389,6 +392,13 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
   const generateRoadmap = async () => {
     if (!roadmapQuery.trim()) return;
     setIsGeneratingRoadmap(true);
+    setRoadmapLoadingPhase(0);
+
+    // Progress through loading phases while waiting
+    const phaseTimer = setInterval(() => {
+      setRoadmapLoadingPhase(prev => Math.min(prev + 1, 3));
+    }, 4000);
+
     try {
       const data = await DictionaryApi.generateRoadmap(roadmapQuery);
       const steps: RoadmapStep[] = data.steps || [];
@@ -424,6 +434,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
     } catch (error: any) {
       alert('Failed to generate roadmap: ' + (error.message || 'Unknown error'));
     } finally {
+      clearInterval(phaseTimer);
       setIsGeneratingRoadmap(false);
     }
   };
@@ -580,7 +591,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
   }, [isSearchOpen, isRightPanelOpen, searchQuery, uniqueSearchResults, history, concepts, selectedIndex, navigate, addToHistory]);
 
   return (
-    <div className={cn("flex flex-col h-[100vh] w-full bg-[var(--bg)] overflow-hidden", settings.theme === 'light' && "light")}>
+    <div className={cn("flex flex-col h-[100vh] w-full bg-[var(--bg)] overflow-hidden", resolvedTheme === 'light' && "light")}>
       <AnimatePresence>
         {isLoading && (
           <motion.div
@@ -603,7 +614,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
               </motion.div>
               <div className="min-w-0">
                 <p className="font-black text-[10px] sm:text-xs uppercase tracking-[0.2em] text-[var(--text)] leading-none truncate">
-                  Engineering Dictionary
+                  Lexicon
                 </p>
                 <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-[var(--muted)] mt-1 hidden sm:block">
                   For CSE
@@ -837,7 +848,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                   </MagneticButton>
                 </div>
               ) : view === 'settings' ? (
-                <SettingsView key="settings" isDark={settings.theme === 'dark'} setIsDark={(d) => updateSettings({ theme: d ? 'dark' : 'light' })} fontSize={settings.fontSize} setFontSize={(s: any) => updateSettings({ fontSize: s })} reduceMotion={settings.reduceMotion} setReduceMotion={(r) => updateSettings({ reduceMotion: r })} autoSpeak={settings.autoSpeak} setAutoSpeak={(a) => updateSettings({ autoSpeak: a })} fontFamily={settings.fontFamily} setFontFamily={(f: any) => updateSettings({ fontFamily: f })} onClearHistory={clearHistory} onClearBookmarks={clearSystem} bookmarks={bookmarks} />
+                <SettingsView key="settings" theme={settings.theme} setTheme={(t) => updateSettings({ theme: t })} resolvedTheme={resolvedTheme} fontSize={settings.fontSize} setFontSize={(s: any) => updateSettings({ fontSize: s })} reduceMotion={settings.reduceMotion} setReduceMotion={(r) => updateSettings({ reduceMotion: r })} autoSpeak={settings.autoSpeak} setAutoSpeak={(a) => updateSettings({ autoSpeak: a })} fontFamily={settings.fontFamily} setFontFamily={(f: any) => updateSettings({ fontFamily: f })} onClearHistory={clearHistory} onClearBookmarks={clearSystem} bookmarks={bookmarks} />
               ) : view === 'bookmarks' ? (
                 <BookmarksView key="bookmarks" bookmarks={bookmarks} roadmaps={roadmaps} concepts={concepts} onNavigate={(id) => navigate(`/concept/${id}`)} onClose={() => navigate(-1)} onRemoveBookmark={toggleBookmark} onDeleteRoadmap={deleteRoadmap} onOpenRoadmap={(r) => { setActiveRoadmap(r); setRightPanelMode('roadmap'); setIsRightPanelOpen(true); }} />
               ) : view === 'guide' ? (
@@ -918,7 +929,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
               ) : (
                 <div key="home" className="space-y-16">
                   <section className="pt-8 sm:pt-14 pb-8 sm:pb-12 text-center flex flex-col items-center relative">
-                    <AnimatedText text="Engineering Dictionary" el="h1" className="text-[17vw] sm:text-[11vw] font-black uppercase tracking-tighter leading-[0.85] text-[var(--text)] drop-shadow-sm" animationType="chars" />
+                    <AnimatedText text="Lexicon" el="h1" className="text-[17vw] sm:text-[11vw] font-black uppercase tracking-tighter leading-[0.85] text-[var(--text)] drop-shadow-sm" animationType="chars" />
 
                     <h2 className="text-xl sm:text-2xl font-bold text-[var(--neo-green)] mt-8 uppercase tracking-widest flex items-center gap-3">
                       <Network className="w-5 h-5 sm:w-6 sm:h-6" /> For CSE Students
@@ -1074,7 +1085,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                         <p className="text-[10px] uppercase tracking-[0.16em] text-[var(--muted)] mt-1">AI Assistant</p>
                       </div>
                     </div>
-                    <button onClick={() => setIsRightPanelOpen(false)} className="p-2 hover:bg-[var(--hover)] rounded-full transition-colors text-muted hover:text-[var(--text)]"><X className="w-5 h-5" /></button>
+                    <button onClick={() => { if (chatMessages.length > 0) { saveChatConversation(chatMessages, activeChatId || undefined); } setIsRightPanelOpen(false); }} className="p-2 hover:bg-[var(--hover)] rounded-full transition-colors text-muted hover:text-[var(--text)]"><X className="w-5 h-5" /></button>
                   </div>
                 </div>
 
@@ -1088,9 +1099,15 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                   {rightPanelMode === 'ask' ? (
                     <div className="flex flex-col h-full overflow-hidden">
                       {chatMessages.length > 0 && (
-                        <div className="px-4 sm:px-6 pt-1 pb-1 flex justify-end">
+                        <div className="px-4 sm:px-6 pt-1 pb-1 flex justify-end gap-2">
                           <button
-                            onClick={() => setChatMessages([])}
+                            onClick={() => {
+                              if (chatMessages.length > 0) {
+                                saveChatConversation(chatMessages, activeChatId || undefined);
+                              }
+                              setChatMessages([]);
+                              setActiveChatId(null);
+                            }}
                             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] hover:text-[var(--text)] hover:bg-[var(--hover)] border border-transparent hover:border-[var(--border)] transition-all"
                           >
                             <Sparkles className="w-3 h-3" />
@@ -1099,11 +1116,37 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                         </div>
                       )}
                       <div className="flex-1 overflow-y-auto space-y-4 mb-4 custom-scrollbar px-4 sm:px-6 py-2">
-                        {chatMessages.length === 0 && (
+                        {chatMessages.length === 0 && chatConversations.length === 0 && (
                           <div className="flex flex-col items-center justify-center h-full text-center py-14 opacity-65">
                             <MessageSquare className="w-8 h-8 text-[var(--muted)] mb-3" />
                             <p className="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">Ask a concept question</p>
                             <p className="text-[11px] text-[var(--muted)] mt-1 max-w-[240px]">Get concise concept explanations and next-step references.</p>
+                          </div>
+                        )}
+                        {chatMessages.length === 0 && chatConversations.length > 0 && (
+                          <div className="space-y-2">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-[var(--muted)] px-1 mb-3">Previous Chats</p>
+                            {chatConversations.slice(0, 20).map((convo) => (
+                              <div
+                                key={convo.id}
+                                className="group flex items-center justify-between p-3.5 rounded-2xl border border-[var(--border)] bg-[var(--card)]/50 hover:bg-[var(--hover)] cursor-pointer transition-all"
+                                onClick={() => {
+                                  setChatMessages(convo.messages);
+                                  setActiveChatId(convo.id);
+                                }}
+                              >
+                                <div className="min-w-0 flex-1">
+                                  <p className="text-sm font-semibold truncate">{convo.title}</p>
+                                  <p className="text-[10px] text-[var(--muted)] mt-0.5">{convo.messages.length} messages · {new Date(convo.updatedAt).toLocaleDateString()}</p>
+                                </div>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); deleteChatConversation(convo.id); }}
+                                  className="p-1.5 rounded-full opacity-0 group-hover:opacity-100 hover:bg-red-500/10 hover:text-red-500 transition-all text-[var(--muted)]"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            ))}
                           </div>
                         )}
                         {chatMessages.map((m, i) => (
@@ -1113,7 +1156,33 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                               ? 'bg-[var(--text)] text-[var(--bg)] rounded-[20px] rounded-br-[4px] ml-6'
                               : 'bg-[var(--card)] rounded-[20px] rounded-bl-[4px] mr-4'
                           )}>
-                            <div className="prose prose-sm dark:prose-invert max-w-none"><Markdown>{m.text}</Markdown></div>
+                            <div className="prose prose-sm dark:prose-invert max-w-none chat-markdown">
+                              <Markdown components={{
+                                code({ className, children, ...props }: any) {
+                                  const match = /language-(\w+)/.exec(className || '');
+                                  const codeStr = String(children).replace(/\n$/, '');
+                                  if (match) {
+                                    return (
+                                      <div className="relative group/code my-3 rounded-xl overflow-hidden border border-[var(--border)]">
+                                        <div className="flex items-center justify-between px-4 py-2 bg-[#1e1e1e] border-b border-[#333]">
+                                          <span className="text-[10px] font-bold uppercase tracking-widest text-[#888]">{match[1]}</span>
+                                          <button
+                                            onClick={() => { navigator.clipboard.writeText(codeStr); }}
+                                            className="text-[10px] font-bold uppercase tracking-wider text-[#888] hover:text-white transition-colors flex items-center gap-1"
+                                          >
+                                            <Copy className="w-3 h-3" /> Copy
+                                          </button>
+                                        </div>
+                                        <SyntaxHighlighter language={match[1]} style={vscDarkPlus} customStyle={{ margin: 0, padding: '16px', fontSize: '13px', background: '#1e1e1e' }}>
+                                          {codeStr}
+                                        </SyntaxHighlighter>
+                                      </div>
+                                    );
+                                  }
+                                  return <code className="px-1.5 py-0.5 rounded-md bg-[var(--hover)] text-[var(--neo-green)] text-[13px] font-mono" {...props}>{children}</code>;
+                                }
+                              }}>{m.text}</Markdown>
+                            </div>
                           </div>
                         ))}
                         {isDiscussing && (
@@ -1154,8 +1223,13 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); generateRoadmap(); } }}
                           />
                         </div>
-                        <MagneticButton disabled={isGeneratingRoadmap || !roadmapQuery.trim()} onClick={generateRoadmap} className="w-full py-4 text-xs font-black uppercase tracking-[0.2em] rounded-[24px] shadow-lg border border-[var(--border)]">
-                          {isGeneratingRoadmap ? 'Processing...' : 'Generate Pathway'}
+                        <MagneticButton disabled={isGeneratingRoadmap || !roadmapQuery.trim()} onClick={() => { setRoadmapLoadingPhase(0); generateRoadmap(); }} className="w-full py-4 text-xs font-black uppercase tracking-[0.2em] rounded-[24px] shadow-lg border border-[var(--border)]">
+                          {isGeneratingRoadmap ? (
+                            <span className="flex items-center justify-center gap-2.5">
+                              <span className="w-2 h-2 rounded-full bg-[var(--neo-green)] animate-pulse" />
+                              {['Analyzing query...', 'Searching 9,800+ terms...', 'Building learning pathway...', 'Almost there...'][roadmapLoadingPhase]}
+                            </span>
+                          ) : 'Generate Pathway'}
                         </MagneticButton>
                         <p className="text-[10px] text-[var(--muted)] leading-relaxed mt-2 mb-2">
                           AI-generated roadmap. For reference and planning only.

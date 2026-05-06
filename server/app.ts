@@ -2,14 +2,89 @@ import express from 'express';
 import cors from 'cors';
 import { ObjectId } from 'mongodb';
 import { getDB } from './db.js';
-import { findClosestTerm, getTopTermCandidates } from './services/termMatcher.js';
-import { termCache } from './services/termCache.js';
+import { findClosestTerm, getSmartCandidates } from './services/termMatcher.js';
 
 const app = express();
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+// --- Helper Functions ---
+
+function parseJsonPayload(text: string): any {
+  if (!text) return null;
+  try {
+    // Extract the JSON object from any surrounding text
+    const start = text.indexOf('{');
+    const end = text.lastIndexOf('}');
+    if (start === -1 || end === -1) return null;
+    let jsonStr = text.substring(start, end + 1);
+
+    // --- Attempt 1: Try direct parse ---
+    try { return JSON.parse(jsonStr); } catch {}
+
+    // --- Attempt 2: Fix common AI JSON mistakes ---
+    // Remove trailing commas before ] or }
+    jsonStr = jsonStr.replace(/,\s*([\]}])/g, '$1');
+    // Fix unescaped newlines/tabs inside string values
+    jsonStr = jsonStr.replace(/(?<=:\s*"[^"]*)\n/g, '\\n');
+    jsonStr = jsonStr.replace(/(?<=:\s*"[^"]*)\t/g, '\\t');
+    try { return JSON.parse(jsonStr); } catch {}
+
+    // --- Attempt 3: Handle truncated JSON (AI ran out of tokens) ---
+    // If the JSON is cut off mid-array, try to close it
+    let fixedStr = jsonStr;
+    // Count open/close brackets
+    const openBrackets = (fixedStr.match(/\[/g) || []).length;
+    const closeBrackets = (fixedStr.match(/\]/g) || []).length;
+    const openBraces = (fixedStr.match(/\{/g) || []).length;
+    const closeBraces = (fixedStr.match(/\}/g) || []).length;
+
+    // Remove any trailing incomplete object (e.g., { "term": "Bub )
+    fixedStr = fixedStr.replace(/,\s*\{[^}]*$/g, '');
+
+    // Add missing closing brackets/braces
+    for (let i = 0; i < openBrackets - closeBrackets; i++) fixedStr += ']';
+    for (let i = 0; i < openBraces - closeBraces; i++) fixedStr += '}';
+
+    // Remove trailing commas again after truncation fix
+    fixedStr = fixedStr.replace(/,\s*([\]}])/g, '$1');
+
+    try { return JSON.parse(fixedStr); } catch {}
+
+    // --- Attempt 4: Extract steps array manually using regex ---
+    const stepsMatch = text.match(/"steps"\s*:\s*\[([\s\S]*?)\]/);
+    const titleMatch = text.match(/"title"\s*:\s*"([^"]+)"/);
+    if (stepsMatch) {
+      const stepsContent = stepsMatch[1];
+      // Extract individual step objects
+      const stepRegex = /\{\s*"term"\s*:\s*"([^"]+)"\s*,\s*"reason"\s*:\s*"([^"]+)"\s*,\s*"order"\s*:\s*(\d+)\s*\}/g;
+      const steps: any[] = [];
+      let match;
+      while ((match = stepRegex.exec(stepsContent)) !== null) {
+        steps.push({ term: match[1], reason: match[2], order: parseInt(match[3]) });
+      }
+      if (steps.length > 0) {
+        return { title: titleMatch?.[1] || '', steps };
+      }
+    }
+
+    console.error("JSON parse failed after all recovery attempts. Raw text:", text.slice(0, 500));
+    return null;
+  } catch (e) {
+    console.error("JSON parse failed:", e);
+    return null;
+  }
+}
+
+
+// For analyze-history which still uses the shortlist approach
+function buildShortlistedTerms(inputs: string[], limit: number = 120): string[] {
+  const combinedInput = inputs.join(' ');
+  const candidates = getSmartCandidates(combinedInput, limit);
+  return candidates.map(c => c.term);
+}
 
 // --- API Routes ---
 
@@ -29,30 +104,34 @@ app.post('/api/generate-roadmap', async (req, res) => {
     const { query } = req.body;
     if (!query) return res.status(400).json({ error: 'Query is required' });
 
-    const shortlistedTerms = buildShortlistedTerms([query], 180);
-    const termListStr = shortlistedTerms.join(', ');
+    console.log(`🚀 Roadmap request: "${query}"`);
 
+    // ====================================================================
+    // PHASE 1: AI decides what terms belong in the roadmap (from its own
+    //          knowledge), AND orders them from basic → advanced.
+    //          No database search needed here — AI knows what concepts exist.
+    // ====================================================================
     const payload = {
       model: "nvidia/nemotron-3-nano-30b-a3b",
-      messages: [{
-        role: "user",
-        content: `I want to learn: "${query}".
-Generate a step-by-step learning roadmap with 6 to 10 steps.
-Provide a logical order and one brief reason per step.
+      messages: [
+        {
+          role: "system",
+          content: "You are a computer science education assistant. You ONLY respond with valid JSON. You ONLY discuss computer science topics. Refuse any non-CS requests."
+        },
+        {
+          role: "user",
+          content: `List ALL specific computer science terms related to: "${query}".
 
-CRITICAL RULE: Each "term" in each step MUST be a single, specific technical concept — NOT a compound phrase or sentence.
-You MUST pick every term from this shortlist of available dictionary terms:
-[${termListStr}]
+Each term must be a single specific concept name like "Bubble Sort" or "For Loop".
+Do NOT use vague phrases. Order from basic to advanced. Be comprehensive.
 
-Use EXACT spellings from the shortlist.
-Output ONLY a JSON object with keys: "title" (string) and "steps" (array of objects).
-Each step object must include: "term" (string), "reason" (string), "order" (number).`
-      }],
-      temperature: 0.5,
-      top_p: 1,
-      max_tokens: 2200,
-      reasoning_budget: 1024,
-      chat_template_kwargs: { enable_thinking: true },
+Respond with ONLY this JSON format:
+{"title":"<short title>","steps":[{"term":"<exact concept name>","reason":"<one short sentence>","order":<number>}]}`
+        }
+      ],
+      temperature: 0.2,
+      top_p: 0.85,
+      max_tokens: 4096,
       stream: false,
       response_format: { type: "json_object" }
     };
@@ -75,19 +154,54 @@ Each step object must include: "term" (string), "reason" (string), "order" (numb
     const text = data?.choices?.[0]?.message?.content;
 
     if (!text) throw new Error('Empty response from Nvidia API');
+
+    // Debug: log first 600 chars of raw response to diagnose parse issues
+    console.log(`📝 Raw AI response (first 600 chars): ${text.slice(0, 600)}`);
+
     const parsed = parseJsonPayload(text);
     const aiSteps = Array.isArray(parsed?.steps) ? parsed.steps : [];
 
-    let mappedSteps = mapRoadmapStepsToDatabase(aiSteps);
-    if (mappedSteps.length === 0) {
-      mappedSteps = buildFallbackRoadmap(query, shortlistedTerms);
+    console.log(`🤖 AI suggested ${aiSteps.length} terms: [${aiSteps.slice(0, 8).map((s: any) => s.term).join(', ')}${aiSteps.length > 8 ? '...' : ''}]`);
+
+    // ====================================================================
+    // PHASE 2: Match each AI-suggested term against the database.
+    //          findClosestTerm uses fuzzy matching, so "Bubble Sort" will
+    //          match even if the DB has "Bubble sort" or "BubbleSort".
+    //          Only terms that exist in the DB make it through.
+    // ====================================================================
+    const matchedSteps: any[] = [];
+    const seenIds = new Set<string>();
+
+    for (const step of aiSteps) {
+      const termName = String(step.term || '').trim();
+      if (!termName) continue;
+
+      const match = findClosestTerm(termName);
+
+      if (match.matched && match.id && !seenIds.has(match.id)) {
+        seenIds.add(match.id);
+        matchedSteps.push({
+          term: match.dbTerm || termName,
+          reason: step.reason || '',
+          order: matchedSteps.length + 1,
+          matched: true,
+          dbTerm: match.dbTerm,
+          id: match.id,
+          score: match.score
+        });
+      }
     }
+
+    // Re-number orders sequentially
+    matchedSteps.forEach((s, i) => { s.order = i + 1; });
+
+    console.log(`✅ Roadmap: ${matchedSteps.length}/${aiSteps.length} AI terms matched in DB for "${query}"`);
 
     res.json({
       title: typeof parsed?.title === 'string' && parsed.title.trim()
         ? parsed.title.trim()
         : `Roadmap: ${query}`,
-      steps: mappedSteps
+      steps: matchedSteps
     });
   } catch (error: any) {
     console.error('Roadmap generate failed:', error);
@@ -102,15 +216,19 @@ app.post('/api/chat', async (req, res) => {
 
     const payload = {
       model: "nvidia/nemotron-3-nano-30b-a3b",
-      messages: [{
-        role: "user",
-        content: `${contextBlock}\n\nUser: ${message}\nKeep answer concise, clear, and engaging. If you mention concept names, prefix with [CONCEPT: name] for referencing.`
-      }],
-      temperature: 1,
-      top_p: 1,
-      max_tokens: 16384,
-      reasoning_budget: 16384,
-      chat_template_kwargs: { enable_thinking: true },
+      messages: [
+        {
+          role: "system",
+          content: "You are Lexicon AI, a computer science education assistant. You ONLY answer questions about computer science, programming, software engineering, and related technical topics. If a user asks about anything unrelated to CS/tech, politely decline and redirect them to CS topics. Keep answers concise, clear, and educational."
+        },
+        {
+          role: "user",
+          content: `${contextBlock}\n\nUser: ${message}\nKeep answer concise, clear, and engaging. Use markdown formatting for code blocks. If you mention concept names, prefix with [CONCEPT: name] for referencing.`
+        }
+      ],
+      temperature: 0.7,
+      top_p: 0.9,
+      max_tokens: 4096,
       stream: false
     };
 
@@ -132,6 +250,61 @@ app.post('/api/chat', async (req, res) => {
   } catch (error: any) {
     console.error('Chat failed:', error);
     res.status(500).json({ error: error.message || 'Chat failed' });
+  }
+});
+
+// Generate a concise AI-powered title for a chat conversation
+app.post('/api/chat-title', async (req, res) => {
+  try {
+    const { messages } = req.body;
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      return res.json({ title: 'Chat' });
+    }
+
+    // Build a compact summary of the conversation for title generation
+    const summary = messages
+      .slice(0, 6)
+      .map((m: any) => `${m.role === 'user' ? 'User' : 'AI'}: ${String(m.text || '').slice(0, 100)}`)
+      .join('\n');
+
+    const payload = {
+      model: "nvidia/nemotron-3-nano-30b-a3b",
+      messages: [{
+        role: "user",
+        content: `Generate a very short title (3-6 words) that summarizes this conversation. Output ONLY the title text, nothing else.\n\n${summary}`
+      }],
+      temperature: 0.3,
+      top_p: 0.9,
+      max_tokens: 30,
+      stream: false
+    };
+
+    const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getNvidiaKey()}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      return res.json({ title: messages.find((m: any) => m.role === 'user')?.text?.slice(0, 40) || 'Chat' });
+    }
+
+    const data = await response.json();
+    let title = (data?.choices?.[0]?.message?.content || '').trim();
+
+    // Clean up: remove quotes, newlines, etc.
+    title = title.replace(/^["'`]+|["'`]+$/g, '').replace(/\n/g, ' ').trim();
+    if (!title || title.length > 60) {
+      title = messages.find((m: any) => m.role === 'user')?.text?.slice(0, 40) || 'Chat';
+    }
+
+    res.json({ title });
+  } catch (error: any) {
+    console.error('Chat title generation failed:', error);
+    res.json({ title: 'Chat' });
   }
 });
 

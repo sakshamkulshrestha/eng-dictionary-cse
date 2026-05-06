@@ -102,5 +102,15 @@ export const DictionaryApi = {
       method: 'POST',
       body: JSON.stringify({ history })
     });
+  },
+
+  /**
+   * Generate an AI-powered title for a chat conversation
+   */
+  async generateChatTitle(messages: { role: string; text: string }[]): Promise<{ title: string }> {
+    return request<{ title: string }>('/chat-title', {
+      method: 'POST',
+      body: JSON.stringify({ messages })
+    });
   }
 };

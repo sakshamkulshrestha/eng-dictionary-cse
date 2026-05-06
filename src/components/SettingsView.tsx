@@ -4,8 +4,9 @@ import { Moon, Type, Volume2, Eye, Palette, Keyboard, Database, Download, Upload
 import MagneticButton from './primitives/MagneticButton';
 
 interface SettingsViewProps {
-  isDark: boolean;
-  setIsDark: (v: boolean) => void;
+  theme: 'system' | 'light' | 'dark';
+  setTheme: (v: 'system' | 'light' | 'dark') => void;
+  resolvedTheme: 'light' | 'dark';
   fontSize: string;
   setFontSize: (v: string) => void;
   autoSpeak?: boolean;
@@ -60,7 +61,7 @@ function SettingRow({ icon, iconBg, title, description, action }: { icon: React.
 }
 
 export default function SettingsView({
-  isDark, setIsDark,
+  theme, setTheme, resolvedTheme,
   fontSize, setFontSize,
   autoSpeak, setAutoSpeak,
   reduceMotion, setReduceMotion,
@@ -96,7 +97,7 @@ export default function SettingsView({
         >
           <motion.header variants={fadeUp} className="mb-8">
             <h1 className="text-page-title mb-3">Settings</h1>
-            <p className="text-muted text-sm font-medium">Customize your Engineering Dictionary for CSE experience.</p>
+            <p className="text-muted text-sm font-medium">Customize your Lexicon for CSE experience.</p>
           </motion.header>
 
           {/* Appearance */}
@@ -104,11 +105,23 @@ export default function SettingsView({
             <h2 className="text-[10px] font-black text-muted uppercase tracking-[0.4em] pl-1">Appearance</h2>
             <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl overflow-hidden">
               <SettingRow
-                icon={isDark ? <Moon className="w-5 h-5 text-[var(--pop-black)]" strokeWidth={2.5} /> : <Sun className="w-5 h-5 text-[var(--pop-black)]" strokeWidth={2.5} />}
+                icon={resolvedTheme === 'dark' ? <Moon className="w-5 h-5 text-[var(--pop-black)]" strokeWidth={2.5} /> : <Sun className="w-5 h-5 text-[var(--pop-black)]" strokeWidth={2.5} />}
                 iconBg="bg-[var(--manna-gold)]"
-                title="Dark Mode"
-                description="Switch between light and dark theme"
-                action={<ToggleSwitch checked={isDark} onChange={setIsDark} />}
+                title="Theme"
+                description="Choose system, light, or dark mode"
+                action={
+                  <div className="flex items-center border border-[var(--border)] rounded-xl overflow-hidden">
+                    {(['system', 'light', 'dark'] as const).map(t => (
+                      <button
+                        key={t}
+                        onClick={() => setTheme(t)}
+                        className={`px-3 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${theme === t ? 'bg-[var(--text)] text-[var(--bg)]' : 'text-muted hover:text-[var(--text)]'}`}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                }
               />
               <SettingRow
                 icon={<Type className="w-5 h-5 text-white" strokeWidth={2.5} />}

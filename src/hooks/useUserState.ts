@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { UserSettings, Roadmap } from '../types';
+import { useState, useEffect, useCallback } from 'react';
+import { UserSettings, Roadmap, ChatConversation, ChatMessage } from '../types';
 
 export function useUserState() {
   const SETTINGS_KEY = 'cseDictionarySettings';
@@ -24,7 +24,7 @@ export function useUserState() {
   const [settings, setSettings] = useState<UserSettings>(() => {
     const saved = localStorage.getItem(SETTINGS_KEY) || localStorage.getItem(LEGACY_SETTINGS_KEY);
     return saved ? JSON.parse(saved) : {
-      theme: 'light',
+      theme: 'system',
       fontSize: 'standard',
       fontFamily: 'default',
       focusMode: false,
@@ -34,6 +34,79 @@ export function useUserState() {
       autoSpeak: false
     };
   });
+
+  // --- Chat History Persistence ---
+  const [chatConversations, setChatConversations] = useState<ChatConversation[]>(() => {
+    const saved = localStorage.getItem('chatConversations');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('chatConversations', JSON.stringify(chatConversations));
+  }, [chatConversations]);
+
+  const saveChatConversation = useCallback((messages: ChatMessage[], existingId?: string) => {
+    if (!messages || messages.length === 0) return;
+    // Immediate fallback title from first user message
+    const firstUserMsg = messages.find(m => m.role === 'user');
+    const fallbackTitle = firstUserMsg
+      ? firstUserMsg.text.slice(0, 50) + (firstUserMsg.text.length > 50 ? '...' : '')
+      : 'Chat';
+    const now = Date.now();
+
+    let convoId = existingId;
+
+    if (existingId) {
+      setChatConversations(prev => prev.map(c =>
+        c.id === existingId ? { ...c, messages, updatedAt: now } : c
+      ));
+    } else {
+      convoId = crypto.randomUUID();
+      const newConvo: ChatConversation = {
+        id: convoId,
+        title: fallbackTitle,
+        messages,
+        createdAt: now,
+        updatedAt: now
+      };
+      setChatConversations(prev => [newConvo, ...prev].slice(0, 50));
+    }
+
+    // Fire async AI title generation (non-blocking)
+    if (convoId && messages.length >= 2) {
+      import('../utils/api').then(({ DictionaryApi }) => {
+        DictionaryApi.generateChatTitle(messages).then(({ title }) => {
+          if (title && title !== 'Chat') {
+            setChatConversations(prev => prev.map(c =>
+              c.id === convoId ? { ...c, title } : c
+            ));
+          }
+        }).catch(() => { /* silently ignore title generation failures */ });
+      });
+    }
+
+    return convoId;
+  }, []);
+
+  const deleteChatConversation = useCallback((id: string) => {
+    setChatConversations(prev => prev.filter(c => c.id !== id));
+  }, []);
+
+  // --- Resolve effective theme (system → actual dark/light) ---
+  const [systemPrefersDark, setSystemPrefersDark] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
+  );
+
+  useEffect(() => {
+    const mql = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = (e: MediaQueryListEvent) => setSystemPrefersDark(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
+
+  const resolvedTheme = settings.theme === 'system'
+    ? (systemPrefersDark ? 'dark' : 'light')
+    : settings.theme;
 
 
 
@@ -50,7 +123,7 @@ export function useUserState() {
   useEffect(() => {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
     localStorage.removeItem(LEGACY_SETTINGS_KEY);
-    document.documentElement.setAttribute('data-theme', settings.theme);
+    document.documentElement.setAttribute('data-theme', resolvedTheme);
     document.documentElement.setAttribute('data-font-size', settings.fontSize);
     document.documentElement.setAttribute('data-font-family', settings.fontFamily);
 
@@ -83,7 +156,7 @@ export function useUserState() {
     }
 
     // Apply theme class to body for tailwind dark mode if needed
-    if (settings.theme === 'dark') {
+    if (resolvedTheme === 'dark') {
       document.documentElement.classList.add('dark');
       document.documentElement.classList.remove('light');
     } else {
@@ -109,7 +182,7 @@ export function useUserState() {
       document.documentElement.style.removeProperty('--color-accent');
       document.documentElement.style.removeProperty('--color-accent-fg');
     }
-  }, [settings]);
+  }, [settings, resolvedTheme]);
 
   const updateSettings = (newSettings: Partial<UserSettings>) => {
     setSettings(prev => ({ ...prev, ...newSettings }));
@@ -193,7 +266,11 @@ export function useUserState() {
     deleteRoadmap,
     settings,
     updateSettings,
+    resolvedTheme,
     exportData,
-    importData
+    importData,
+    chatConversations,
+    saveChatConversation,
+    deleteChatConversation
   };
 }

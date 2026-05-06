@@ -15,6 +15,20 @@ export interface Concept {
   comparisons?: { target: string; note: string; winner_scenario?: string }[];
 }
 
+export interface ChatMessage {
+  role: 'user' | 'ai';
+  text: string;
+  relatedTerms?: string[];
+}
+
+export interface ChatConversation {
+  id: string;
+  title: string;
+  messages: ChatMessage[];
+  createdAt: number;
+  updatedAt: number;
+}
+
 export interface RoadmapStep {
   term: string;
   reason: string;
@@ -33,7 +47,7 @@ export interface Roadmap {
 }
 
 export interface UserSettings {
-  theme: 'light' | 'dark';
+  theme: 'system' | 'light' | 'dark';
   fontSize: 'standard' | 'large' | 'small' | 'medium';
   fontFamily: 'default' | 'sans' | 'system' | 'mono' | 'dyslexic';
   focusMode: boolean;

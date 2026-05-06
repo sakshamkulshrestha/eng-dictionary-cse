@@ -72,7 +72,7 @@ export default function GuideView({ onClose }: GuideViewProps) {
         >
           {/* Header */}
           <motion.header variants={fadeUp} className="text-center">
-            <h1 className="text-4xl sm:text-5xl font-black tracking-tighter mb-4">Engineering Dictionary for CSE Guide</h1>
+            <h1 className="text-4xl sm:text-5xl font-black tracking-tighter mb-4">Lexicon for CSE Guide</h1>
             <p className="text-muted text-sm font-medium max-w-lg mx-auto">
               A student-led research project developed and managed by IMTech students, University of Hyderabad.
             </p>

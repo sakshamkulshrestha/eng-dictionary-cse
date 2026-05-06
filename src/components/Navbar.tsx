@@ -36,7 +36,7 @@ export default function Navbar() {
             </div>
 
             <span className="text-xl font-semibold tracking-tight text-[var(--text)] hidden sm:block">
-              Engineering Dictionary for CSE
+              Lexicon for CSE
             </span>
           </Link>
 
