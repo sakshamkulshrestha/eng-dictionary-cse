@@ -73,7 +73,9 @@ export function useUserState() {
     }
 
     // Fire async AI title generation (non-blocking)
-    if (convoId && messages.length >= 2) {
+    const userMessagesCount = messages.filter(m => m.role === 'user').length;
+    // Generate title on the 2nd user message to have more context
+    if (convoId && userMessagesCount === 2 && messages[messages.length - 1].role === 'user') {
       import('../utils/api').then(({ DictionaryApi }) => {
         DictionaryApi.generateChatTitle(messages).then(({ title }) => {
           if (title && title !== 'Chat') {
@@ -90,6 +92,28 @@ export function useUserState() {
 
   const deleteChatConversation = useCallback((id: string) => {
     setChatConversations(prev => prev.filter(c => c.id !== id));
+  }, []);
+
+  // --- Roadmap History Persistence (Auto-saved) ---
+  const [roadmapHistory, setRoadmapHistory] = useState<Roadmap[]>(() => {
+    const saved = localStorage.getItem('roadmapHistory');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('roadmapHistory', JSON.stringify(roadmapHistory));
+  }, [roadmapHistory]);
+
+  const saveRoadmapToHistory = useCallback((roadmap: Roadmap) => {
+    setRoadmapHistory(prev => {
+      // Avoid duplicates
+      const filtered = prev.filter(r => r.id !== roadmap.id);
+      return [roadmap, ...filtered].slice(0, 30); // Keep last 30
+    });
+  }, []);
+
+  const clearRoadmapHistory = useCallback(() => {
+    setRoadmapHistory([]);
   }, []);
 
   // --- Resolve effective theme (system → actual dark/light) ---
@@ -271,6 +295,9 @@ export function useUserState() {
     importData,
     chatConversations,
     saveChatConversation,
-    deleteChatConversation
+    deleteChatConversation,
+    roadmapHistory,
+    saveRoadmapToHistory,
+    clearRoadmapHistory
   };
 }

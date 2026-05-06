@@ -266,7 +266,8 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
     bookmarks, toggleBookmark, history, addToHistory, clearHistory, clearSystem,
     roadmaps, saveRoadmap, deleteRoadmap, settings, updateSettings,
     resolvedTheme, exportData, importData,
-    chatConversations, saveChatConversation, deleteChatConversation
+    chatConversations, saveChatConversation, deleteChatConversation,
+    roadmapHistory, saveRoadmapToHistory, clearRoadmapHistory
   } = useUserState();
 
   const [concepts, setConcepts] = useState<Concept[]>([]);
@@ -285,6 +286,8 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
   const [isDiscussing, setIsDiscussing] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [showRecentChats, setShowRecentChats] = useState(false);
+  const [showRecentRoadmaps, setShowRecentRoadmaps] = useState(false);
   const [isCompactLayout, setIsCompactLayout] = useState(() => window.innerWidth < 1024);
   const [roadmapLoadingPhase, setRoadmapLoadingPhase] = useState(0);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -430,6 +433,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
         createdAt: Date.now()
       };
       setActiveRoadmap(newRoadmap);
+      saveRoadmapToHistory(newRoadmap);
       setRoadmapQuery('');
     } catch (error: any) {
       alert('Failed to generate roadmap: ' + (error.message || 'Unknown error'));
@@ -706,8 +710,25 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                           initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.4, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                          className="px-4 py-3 border-t border-dashed border-[var(--border)]"
+                          className="px-4 py-3 border-t border-dashed border-[var(--border)] flex flex-col gap-2"
                         >
+                          <button
+                            onClick={() => {
+                              const query = searchQuery;
+                              setIsSearchOpen(false);
+                              setSearchQuery('');
+                              setRightPanelMode('ask');
+                              setIsRightPanelOpen(true);
+                              setTimeout(() => discussFurther(query), 100);
+                            }}
+                            className="flex items-center gap-2.5 text-[12px] font-semibold text-[var(--muted)] hover:text-[var(--neo-purple)] transition-colors group text-left"
+                          >
+                            <span className="w-5 h-5 rounded-full bg-[var(--neo-purple)]/15 flex items-center justify-center shrink-0 group-hover:bg-[var(--neo-purple)]/25 transition-colors">
+                              <Bot className="w-2.5 h-2.5 text-[var(--neo-purple)]" />
+                            </span>
+                            <span>Not finding what you need? <strong className="text-[var(--text)] font-bold group-hover:text-[var(--neo-purple)] transition-colors">Ask AI directly →</strong></span>
+                          </button>
+                          
                           <a
                             href="https://forms.gle/yFKUyDdgt8FL4y2M6"
                             target="_blank"
@@ -717,7 +738,7 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                             <span className="w-5 h-5 rounded-full bg-[var(--neo-green)]/15 flex items-center justify-center shrink-0 group-hover:bg-[var(--neo-green)]/25 transition-colors">
                               <Send className="w-2.5 h-2.5 text-[var(--neo-green)]" />
                             </span>
-                            <span>Can't find <strong className="text-[var(--text)] font-bold">"{searchQuery}"</strong>? Request it here →</span>
+                            <span>Want us to add <strong className="text-[var(--text)] font-bold group-hover:text-[var(--neo-green)] transition-colors">"{searchQuery}"</strong>? Request it here →</span>
                           </a>
                         </motion.div>
                       )}
@@ -1139,15 +1160,26 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                         </div>
                       )}
                       <div className="flex-1 overflow-y-auto space-y-4 mb-4 custom-scrollbar px-4 sm:px-6 py-2">
-                        {chatMessages.length === 0 && chatConversations.length === 0 && (
-                          <div className="flex flex-col items-center justify-center h-full text-center py-14 opacity-65">
+                        {chatMessages.length === 0 && (
+                          <div className="flex flex-col items-center justify-center h-full text-center py-6 opacity-65">
                             <MessageSquare className="w-8 h-8 text-[var(--muted)] mb-3" />
-                            <p className="text-xs font-bold uppercase tracking-widest text-[var(--muted)]">Ask a concept question</p>
-                            <p className="text-[11px] text-[var(--muted)] mt-1 max-w-[240px]">Get concise concept explanations and next-step references.</p>
+                            <p className="text-xs font-bold uppercase tracking-widest text-[var(--text)]">New Chat</p>
+                            <p className="text-[11px] text-[var(--muted)] mt-1 max-w-[240px] mb-6">Ask about computer science concepts, algorithms, and architectures.</p>
+                            
+                            {chatConversations.length > 0 && (
+                              <button
+                                onClick={() => setShowRecentChats(!showRecentChats)}
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--border)] bg-[var(--card)]/50 text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] hover:text-[var(--text)] hover:bg-[var(--hover)] transition-all"
+                              >
+                                <History className="w-3.5 h-3.5" />
+                                Recent Chats
+                                {showRecentChats ? <ChevronDown className="w-3 h-3 ml-1" /> : <ChevronRight className="w-3 h-3 ml-1" />}
+                              </button>
+                            )}
                           </div>
                         )}
-                        {chatMessages.length === 0 && chatConversations.length > 0 && (
-                          <div className="space-y-2">
+                        {chatMessages.length === 0 && chatConversations.length > 0 && showRecentChats && (
+                          <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
                             <p className="text-[10px] font-black uppercase tracking-widest text-[var(--muted)] px-1 mb-3">Previous Chats</p>
                             {chatConversations.slice(0, 20).map((convo) => (
                               <div
@@ -1257,6 +1289,39 @@ export default function Layout({ view }: { view?: 'settings' | 'guide' | 'bookma
                         <p className="text-[10px] text-[var(--muted)] leading-relaxed mt-2 mb-2">
                           AI-generated roadmap. For reference and planning only.
                         </p>
+
+                        {!activeRoadmap && roadmapHistory.length > 0 && (
+                          <div className="mt-6">
+                            <div className="flex justify-center mb-4">
+                              <button
+                                onClick={() => setShowRecentRoadmaps(!showRecentRoadmaps)}
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--border)] bg-[var(--card)]/50 text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] hover:text-[var(--text)] hover:bg-[var(--hover)] transition-all"
+                              >
+                                <History className="w-3.5 h-3.5" />
+                                Recent Roadmaps
+                                {showRecentRoadmaps ? <ChevronDown className="w-3 h-3 ml-1" /> : <ChevronRight className="w-3 h-3 ml-1" />}
+                              </button>
+                            </div>
+                            
+                            {showRecentRoadmaps && (
+                              <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+                                {roadmapHistory.slice(0, 10).map((r) => (
+                                  <div
+                                    key={r.id}
+                                    className="group flex items-center justify-between p-3.5 rounded-2xl border border-[var(--border)] bg-[var(--card)]/50 hover:bg-[var(--hover)] cursor-pointer transition-all"
+                                    onClick={() => setActiveRoadmap(r)}
+                                  >
+                                    <div className="min-w-0 flex-1">
+                                      <p className="text-sm font-semibold truncate text-[var(--neo-green)]">{r.query}</p>
+                                      <p className="text-[10px] text-[var(--muted)] mt-0.5">{r.steps.length} steps · {new Date(r.createdAt).toLocaleDateString()}</p>
+                                    </div>
+                                    <ArrowRight className="w-3.5 h-3.5 text-[var(--muted)] opacity-0 group-hover:opacity-100 transition-all" />
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
 
                         {activeRoadmap && (
                           <AnimatePresence>
