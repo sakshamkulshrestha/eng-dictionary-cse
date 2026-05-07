@@ -10,6 +10,16 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
+// --- Global Cache Prevention Middleware ---
+// Prevents Edge CDNs, proxies, and browsers from caching API responses,
+// ensuring stale 403s or outdated data aren't served to users.
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
+
 // --- Helper Functions ---
 
 function parseJsonPayload(text: string): any {

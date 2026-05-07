@@ -16,6 +16,7 @@ export class ApiError extends Error {
 async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
   try {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
+      cache: 'no-store',
       ...options,
       headers: {
         'Content-Type': 'application/json',
