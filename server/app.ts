@@ -17,6 +17,17 @@ app.use((req, res, next) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
+
+  // Intercept response to dynamically clear site data on 401/403 errors
+  const originalSend = res.send;
+  res.send = function(body) {
+    if (res.statusCode === 401 || res.statusCode === 403) {
+      // Instructs compliant browsers to immediately wipe cookies and cache
+      res.setHeader('Clear-Site-Data', '"cache", "cookies", "storage"');
+    }
+    return originalSend.call(this, body);
+  };
+  
   next();
 });
 
@@ -32,7 +43,7 @@ function parseJsonPayload(text: string): any {
     let jsonStr = text.substring(start, end + 1);
 
     // --- Attempt 1: Try direct parse ---
-    try { return JSON.parse(jsonStr); } catch {}
+    try { return JSON.parse(jsonStr); } catch { }
 
     // --- Attempt 2: Fix common AI JSON mistakes ---
     // Remove trailing commas before ] or }
@@ -40,7 +51,7 @@ function parseJsonPayload(text: string): any {
     // Fix unescaped newlines/tabs inside string values
     jsonStr = jsonStr.replace(/(?<=:\s*"[^"]*)\n/g, '\\n');
     jsonStr = jsonStr.replace(/(?<=:\s*"[^"]*)\t/g, '\\t');
-    try { return JSON.parse(jsonStr); } catch {}
+    try { return JSON.parse(jsonStr); } catch { }
 
     // --- Attempt 3: Handle truncated JSON (AI ran out of tokens) ---
     // If the JSON is cut off mid-array, try to close it
@@ -61,7 +72,7 @@ function parseJsonPayload(text: string): any {
     // Remove trailing commas again after truncation fix
     fixedStr = fixedStr.replace(/,\s*([\]}])/g, '$1');
 
-    try { return JSON.parse(fixedStr); } catch {}
+    try { return JSON.parse(fixedStr); } catch { }
 
     // --- Attempt 4: Extract steps array manually using regex ---
     const stepsMatch = text.match(/"steps"\s*:\s*\[([\s\S]*?)\]/);
@@ -126,7 +137,7 @@ app.post('/api/generate-roadmap', async (req, res) => {
       messages: [
         {
           role: "system",
-          content: "You are a computer science education assistant. You ONLY respond with valid JSON. You ONLY discuss computer science topics. Refuse any non-CS requests."
+          content: "You are a CS education assistant, you have to give answer on CS related terms only in easy and clear way. Dont give unnecesary replies, give only point to point brief knowledge"
         },
         {
           role: "user",
@@ -233,7 +244,7 @@ app.post('/api/chat', async (req, res) => {
         },
         {
           role: "user",
-          content: `${contextBlock}\n\nUser: ${message}\nKeep answer concise, clear, and engaging. Use markdown formatting for code blocks. If you mention concept names, prefix with [CONCEPT: name] for referencing.`
+          content: `${contextBlock}\n\nUser: ${message}\nKeep answer concise, clear, and engaging. If you mention concept names, prefix with [CONCEPT: name] for referencing.`
         }
       ],
       temperature: 0.7,
