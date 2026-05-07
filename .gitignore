@@ -29,3 +29,5 @@ temp/
 
 # Keep local single-use data out of repo
 data/
+
+.antigravityignore
